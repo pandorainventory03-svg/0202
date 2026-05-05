@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SmartScan Pro - Zero Artifact</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Roboto', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+            background: #f5f7fb;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .app-bar {
+            background: linear-gradient(135deg, #4aa3ff 0%, #1a5bc4 100%);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .app-bar i { font-size: 1.5rem; }
+        .app-bar h1 { font-size: 1.3rem; font-weight: 500; letter-spacing: 0.5px; }
+        .app-bar p { font-size: 0.7rem; opacity: 0.9; margin-left: auto; }
+
+        .content {
+            padding: 16px;
+            padding-bottom: 80px;
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            color: #1e293b;
+            font-size: 0.9rem;
+        }
+
+        .card-header i { color: #4aa3ff; font-size: 1.1rem; }
+
+        .card-body { padding: 16px; }
+
+        .tab-buttons {
+            display: flex;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 40px;
+            margin-bottom: 16px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            border-radius: 32px;
+            padding: 10px 0;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #1a5bc4;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .camera-preview {
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            display: none;
+            margin-bottom: 16px;
+        }
+        .camera-preview.active { display: block; }
+        #cameraVideo { width: 100%; height: auto; display: block; }
+
+        .camera-controls {
+            position: absolute;
+            bottom: 16px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            padding: 12px;
+        }
+
+        .cam-btn {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 40px;
+            padding: 10px 24px;
+            color: white;
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .upload-btn {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .upload-btn i { font-size: 2.5rem; color: #4aa3ff; display: block; margin-bottom: 8px; }
+        .upload-btn span { color: #475569; font-size: 0.85rem; }
+
+        .doc-list { max-height: 220px; overflow-y: auto; }
+        .doc-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            gap: 12px;
+        }
+        .doc-icon {
+            width: 44px;
+            height: 44px;
+            background: #eef2ff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .doc-icon i { font-size: 1.3rem; color: #4aa3ff; }
+        .doc-info { flex: 1; }
+        .doc-title { font-weight: 500; font-size: 0.85rem; color: #1e293b; }
+        .doc-date { font-size: 0.7rem; color: #94a3b8; }
+        .doc-delete { color: #ef4444; background: none; border: none; font-size: 1.1rem; cursor: pointer; padding: 8px; }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .action-btn {
+            flex: 1;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .action-btn.primary {
+            background: #1a5bc4;
+            color: white;
+            box-shadow: 0 2px 8px rgba(26, 91, 196, 0.3);
+        }
+        .action-btn.primary:active { transform: scale(0.97); background: #0f4a9e; }
+        .action-btn.secondary {
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+        }
+        .action-btn:disabled { opacity: 0.5; transform: none; }
+
+        .preview-container {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .info-note {
+            background: #eef2ff;
+            border-radius: 14px;
+            padding: 10px 12px;
+            margin-top: 12px;
+            font-size: 0.7rem;
+            color: #1e40af;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-container { margin-top: 12px; display: none; }
+        .progress-bar { height: 3px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
+        .progress-fill { width: 0%; height: 100%; background: #1a5bc4; transition: width 0.3s; }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 16px 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            border-top: 1px solid #e2e8f0;
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        .nav-item {
+            text-align: center;
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 40px;
+            color: #94a3b8;
+            font-size: 0.7rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+        .nav-item i { font-size: 1.2rem; }
+        .nav-item.active { color: #1a5bc4; background: #eef2ff; }
+
+        footer { text-align: center; font-size: 0.6rem; padding: 12px; color: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div class="app-bar">
+        <i class="fas fa-scanner"></i>
+        <h1>SmartScan Pro</h1>
+        <p><i class="fas fa-brush"></i> Zero Artifact</p>
+    </div>
+
+    <div class="content">
+        <div class="tab-buttons">
+            <button class="tab-btn active" id="tabGallery"><i class="fas fa-images"></i> Galeri</button>
+            <button class="tab-btn" id="tabCamera"><i class="fas fa-camera"></i> Kamera</button>
+        </div>
+
+        <div class="camera-preview" id="cameraPreview">
+            <video id="cameraVideo" autoplay playsinline muted></video>
+            <div class="camera-controls">
+                <button class="cam-btn" id="captureBtn"><i class="fas fa-camera"></i> Ambil</button>
+                <button class="cam-btn" id="closeCameraBtn"><i class="fas fa-times"></i> Tutup</button>
+            </div>
+        </div>
+
+        <div class="card" id="gallerySection">
+            <div class="card-header"><i class="fas fa-folder-open"></i><span>Pilih dari Galeri</span></div>
+            <div class="card-body">
+                <div class="upload-btn" id="uploadTrigger">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Klik untuk memilih gambar (bisa multiple)</span>
+                    <input type="file" id="imageLoader" accept="image/jpeg, image/png, image/jpg" multiple style="display: none;">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-list-ul"></i>
+                <span>Halaman Discan</span>
+                <span style="margin-left: auto; background:#eef2ff; padding:2px 10px; border-radius:20px; font-size:0.7rem;" id="docCount">0</span>
+            </div>
+            <div class="card-body">
+                <div class="doc-list" id="documentListContainer">
+                    <div style="text-align: center; color: #94a3b8; padding: 24px;">
+                        <i class="fas fa-file-alt" style="font-size: 2rem; margin-bottom: 8px; display: block;"></i>
+                        Belum ada halaman
+                    </div>
+                </div>
+                <button id="clearAllBtn" style="margin-top: 12px; background: none; border: none; color: #ef4444; font-size: 0.75rem; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <i class="fas fa-trash-alt"></i> Hapus Semua
+                </button>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-btn primary" id="scanCurrentBtn"><i class="fas fa-magic"></i> Scan & Tambah</button>
+            <button class="action-btn secondary" id="exportPdfBtn" disabled><i class="fas fa-save"></i> Simpan PDF</button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-eye"></i>
+                <span>Preview Hasil Scan</span>
+                <span style="margin-left: auto; font-size:0.65rem; background:#eef2ff; padding:2px 8px; border-radius:20px;">Wolf-Jolion</span>
+            </div>
+            <div class="card-body">
+                <div class="preview-container">
+                    <canvas id="resultCanvas" width="380" height="450" style="width:100%; height:auto; background:white;"></canvas>
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                    </div>
+                </div>
+                <div class="info-note">
+                    <i class="fas fa-microchip"></i>
+                    <span>Wolf-Jolion thresholding • Adaptive contrast • Zero shadow • No artifacts</span>
+                </div>
+            </div>
+        </div>
+        <footer><i class="fas fa-bolt"></i> Zero Artifact • Multi halaman • Save as PDF</footer>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item active" id="navGallery"><i class="fas fa-images"></i><span>Galeri</span></button>
+        <button class="nav-item" id="navCamera"><i class="fas fa-camera"></i><span>Kamera</span></button>
+        <button class="nav-item" id="navDocs"><i class="fas fa-file-alt"></i><span>Dokumen</span></button>
+    </div>
+
+<script>
+    (function(){
+        const imageLoader = document.getElementById('imageLoader');
+        const uploadTrigger = document.getElementById('uploadTrigger');
+        const scanBtn = document.getElementById('scanCurrentBtn');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const resultCanvas = document.getElementById('resultCanvas');
+        const documentListContainer = document.getElementById('documentListContainer');
+        const docCountSpan = document.getElementById('docCount');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const gallerySection = document.getElementById('gallerySection');
+        const cameraPreview = document.getElementById('cameraPreview');
+        const cameraVideo = document.getElementById('cameraVideo');
+        const captureBtn = document.getElementById('captureBtn');
+        const closeCameraBtn = document.getElementById('closeCameraBtn');
+        const tabGallery = document.getElementById('tabGallery');
+        const tabCamera = document.getElementById('tabCamera');
+        const navGallery = document.getElementById('navGallery');
+        const navCamera = document.getElementById('navCamera');
+        const navDocs = document.getElementById('navDocs');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+
+        let documents = [];
+        let stream = null;
+        let isCameraMode = false;
+
+        function updateProgress(percent) {
+            if (progressContainer.style.display === 'none') progressContainer.style.display = 'block';
+            progressFill.style.width = percent + '%';
+            if (percent >= 100) setTimeout(() => { progressContainer.style.display = 'none'; }, 500);
+        }
+
+        // Wolf-Jolion Thresholding - Zero artifacts, preserves stroke thickness
+        function processWolfJolion(imageElement) {
+            return new Promise((resolve) => {
+                updateProgress(10);
+                let imgWidth = imageElement.naturalWidth, imgHeight = imageElement.naturalHeight;
+                let dispWidth = imgWidth, dispHeight = imgHeight;
+                const maxDim = 1400;
+                if (imgWidth > maxDim || imgHeight > maxDim) {
+                    const ratio = Math.min(maxDim / imgWidth, maxDim / imgHeight);
+                    dispWidth = Math.floor(imgWidth * ratio);
+                    dispHeight = Math.floor(imgHeight * ratio);
+                }
+                
+                updateProgress(20);
+                const canvas = document.createElement('canvas');
+                canvas.width = dispWidth;
+                canvas.height = dispHeight;
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                ctx.drawImage(imageElement, 0, 0, dispWidth, dispHeight);
+                
+                let imgData = ctx.getImageData(0, 0, dispWidth, dispHeight);
+                let data = imgData.data;
+                
+                // Grayscale conversion
+                for(let i=0; i<data.length; i+=4) {
+                    let r = data[i], g = data[i+1], b = data[i+2];
+                    let gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                    data[i] = data[i+1] = data[i+2] = gray;
+                }
+                
+                updateProgress(35);
+                const width = dispWidth, height = dispHeight;
+                const windowSize = 35;
+                const half = Math.floor(windowSize / 2);
+                const k = 0.5; // Wolf parameter
+                const R = 128;
+                
+                // Build integral images for fast mean and variance
+                let integral = new Array(height+1);
+                let integralSq = new Array(height+1);
+                for(let i=0; i<=height; i++) {
+                    integral[i] = new Array(width+1).fill(0);
+                    integralSq[i] = new Array(width+1).fill(0);
+                }
+                
+                for(let y=0; y<height; y++) {
+                    let rowSum = 0, rowSumSq = 0;
+                    for(let x=0; x<width; x++) {
+                        let idx = (y*width + x)*4;
+                        let val = data[idx];
+                        rowSum += val;
+                        rowSumSq += val * val;
+                        integral[y+1][x+1] = integral[y][x+1] + rowSum;
+                        integralSq[y+1][x+1] = integralSq[y][x+1] + rowSumSq;
+                    }
+                }
+                
+                function getBlockStats(x1, y1, x2, y2) {
+                    let sum = integral[y2][x2] - integral[y1][x2] - integral[y2][x1] + integral[y1][x1];
+                    let sumSq = integralSq[y2][x2] - integralSq[y1][x2] - integralSq[y2][x1] + integralSq[y1][x1];
+                    let count = (x2 - x1) * (y2 - y1);
+                    let mean = sum / count;
+                    let variance = (sumSq / count) - (mean * mean);
+                    let stdDev = Math.sqrt(Math.max(variance, 0));
+                    return { mean, stdDev, count };
+                }
+                
+                // Find global minimum and maximum for dynamic range
+                let minVal = 255, maxVal = 0;
+                for(let i=0; i<data.length; i+=4) {
+                    if(data[i] < minVal) minVal = data[i];
+                    if(data[i] > maxVal) maxVal = data[i];
+                }
+                const dynamicRange = maxVal - minVal;
+                
+                const outputData = new Uint8ClampedArray(data.length);
+                
+                for(let y=0; y<height; y++) {
+                    for(let x=0; x<width; x++) {
+                        let x1 = Math.max(0, x - half);
+                        let y1 = Math.max(0, y - half);
+                        let x2 = Math.min(width, x + half + 1);
+                        let y2 = Math.min(height, y + half + 1);
+                        let { mean, stdDev, count } = getBlockStats(x1, y1, x2, y2);
+                        
+                        // Wolf-Jolion formula: T = mean + k * ( (stdDev/R - 1) * (mean - min) )
+                        let threshold = mean + k * ((stdDev / R) - 1) * (mean - minVal);
+                        
+                        // Adaptive clamping
+                        threshold = Math.min(mean + 30, Math.max(mean - 30, threshold));
+                        threshold = Math.min(220, Math.max(40, threshold));
+                        
+                        let idx = (y*width + x)*4;
+                        let binaryVal = (data[idx] < threshold) ? 0 : 255;
+                        outputData[idx] = outputData[idx+1] = outputData[idx+2] = binaryVal;
+                        outputData[idx+3] = 255;
+                    }
+                }
+                
+                updateProgress(70);
+                
+                // Post-processing: Remove only salt-and-pepper noise (preserves text)
+                const cleanData = new Uint8ClampedArray(outputData.length);
+                for(let i=0; i<outputData.length; i++) cleanData[i] = outputData[i];
+                
+                // Remove isolated white dots in black areas
+                for(let y=1; y<height-1; y++) {
+                    for(let x=1; x<width-1; x++) {
+                        let idx = (y*width + x)*4;
+                        if (outputData[idx] === 0) {
+                            let whiteNeighbors = 0;
+                            for(let dy=-1; dy<=1; dy++) {
+                                for(let dx=-1; dx<=1; dx++) {
+                                    let nIdx = ((y+dy)*width + (x+dx))*4;
+                                    if (outputData[nIdx] === 255) whiteNeighbors++;
+                                }
+                            }
+                            if (whiteNeighbors >= 7) {
+                                cleanData[idx] = cleanData[idx+1] = cleanData[idx+2] = 255;
+                            }
+                        }
+                    }
+                }
+                
+                // Remove isolated black dots in white areas
+                for(let y=1; y<height-1; y++) {
+                    for(let x=1; x<width-1; x++) {
+                        let idx = (y*width + x)*4;
+                        if (cleanData[idx] === 255) {
+                            let blackNeighbors = 0;
+                            for(let dy=-1; dy<=1; dy++) {
+                                for(let dx=-1; dx<=1; dx++) {
+                                    let nIdx = ((y+dy)*width + (x+dx))*4;
+                                    if (cleanData[nIdx] === 0) blackNeighbors++;
+                                }
+                            }
+                            if (blackNeighbors <= 1 && blackNeighbors > 0) {
+                                // This is likely noise
+                                cleanData[idx] = cleanData[idx+1] = cleanData[idx+2] = 255;
+                            }
+                        }
+                    }
+                }
+                
+                updateProgress(90);
+                
+                // Optional: Light smoothing to connect broken strokes without thickening
+                const finalData = new Uint8ClampedArray(cleanData.length);
+                for(let i=0; i<cleanData.length; i++) finalData[i] = cleanData[i];
+                
+                for(let y=1; y<height-1; y++) {
+                    for(let x=1; x<width-1; x++) {
+                        let idx = (y*width + x)*4;
+                        if (cleanData[idx] === 255) {
+                            let blackCount = 0;
+                            for(let dy=-1; dy<=1; dy++) {
+                                for(let dx=-1; dx<=1; dx++) {
+                                    let nIdx = ((y+dy)*width + (x+dx))*4;
+                                    if (cleanData[nIdx] === 0) blackCount++;
+                                }
+                            }
+                            // If surrounded by 5+ black pixels, should be black (connect strokes)
+                            if (blackCount >= 5) {
+                                finalData[idx] = finalData[idx+1] = finalData[idx+2] = 0;
+                            }
+                        }
+                    }
+                }
+                
+                updateProgress(95);
+                const finalCanvas = document.createElement('canvas');
+                finalCanvas.width = width;
+                finalCanvas.height = height;
+                const finalCtx = finalCanvas.getContext('2d');
+                const outImgData = finalCtx.createImageData(width, height);
+                outImgData.data.set(finalData);
+                finalCtx.putImageData(outImgData, 0, 0);
+                
+                updateProgress(100);
+                resolve(finalCanvas);
+            });
+        }
+
+        async function scanAndAdd(imageElement) {
+            if (!imageElement) return false;
+            scanBtn.innerHTML = '<span class="spinner"></span> Memproses...';
+            scanBtn.disabled = true;
+            try {
+                const processedCanvas = await processWolfJolion(imageElement);
+                const ctxRes = resultCanvas.getContext('2d');
+                let pw = processedCanvas.width, ph = processedCanvas.height;
+                const maxW = 450;
+                if (pw > maxW) { const ratio = maxW / pw; pw = maxW; ph = processedCanvas.height * ratio; }
+                resultCanvas.width = pw; resultCanvas.height = ph;
+                ctxRes.drawImage(processedCanvas, 0, 0, pw, ph);
+                documents.push({ canvas: processedCanvas, date: new Date() });
+                updateDocumentList();
+                exportPdfBtn.disabled = false;
+                scanBtn.innerHTML = '<i class="fas fa-magic"></i> Scan & Tambah';
+                scanBtn.disabled = false;
+                return true;
+            } catch(err) {
+                console.error(err);
+                alert("Gagal memproses gambar");
+                scanBtn.innerHTML = '<i class="fas fa-magic"></i> Scan & Tambah';
+                scanBtn.disabled = false;
+                return false;
+            }
+        }
+
+        function updateDocumentList() {
+            docCountSpan.innerText = documents.length;
+            if (documents.length === 0) {
+                documentListContainer.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 24px;"><i class="fas fa-file-alt" style="font-size: 2rem; margin-bottom: 8px; display: block;"></i>Belum ada halaman</div>';
+                exportPdfBtn.disabled = true;
+                return;
+            }
+            let html = '';
+            documents.forEach((doc, idx) => {
+                html += `
+                    <div class="doc-item">
+                        <div class="doc-icon"><i class="fas fa-file-image"></i></div>
+                        <div class="doc-info">
+                            <div class="doc-title">Halaman ${idx+1}</div>
+                            <div class="doc-date">${doc.date.toLocaleTimeString()}</div>
+                        </div>
+                        <button class="doc-delete delete-doc" data-index="${idx}"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                `;
+            });
+            documentListContainer.innerHTML = html;
+            document.querySelectorAll('.delete-doc').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(btn.dataset.index);
+                    documents.splice(idx, 1);
+                    updateDocumentList();
+                });
+            });
+        }
+
+        clearAllBtn.addEventListener('click', () => {
+            if (confirm("Hapus semua halaman?")) {
+                documents = [];
+                updateDocumentList();
+                const ctx = resultCanvas.getContext('2d');
+                ctx.fillStyle = "#f8fafc";
+                ctx.fillRect(0, 0, resultCanvas.width, resultCanvas.height);
+                exportPdfBtn.disabled = true;
+            }
+        });
+
+        async function exportMultiPagePdf() {
+            if (documents.length === 0) { alert("Tidak ada halaman."); return; }
+            const fileName = prompt("Nama file PDF:", `Scan_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}`);
+            if (!fileName) return;
+            exportPdfBtn.innerHTML = '<span class="spinner"></span> Membuat PDF...';
+            exportPdfBtn.disabled = true;
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                const margin = 10, fitWidth = pageWidth - (margin * 2);
+                for (let i = 0; i < documents.length; i++) {
+                    const canvas = documents[i].canvas;
+                    const imgRatio = canvas.height / canvas.width;
+                    let imgHeightMm = fitWidth * imgRatio;
+                    if (imgHeightMm > pageHeight - margin*2) imgHeightMm = pageHeight - margin*2;
+                    const imgDataUrl = canvas.toDataURL('image/jpeg', 0.97);
+                    if (i > 0) pdf.addPage();
+                    pdf.addImage(imgDataUrl, 'JPEG', margin, margin, fitWidth, imgHeightMm, undefined, 'FAST');
+                }
+                pdf.save(`${fileName}.pdf`);
+                exportPdfBtn.innerHTML = '<i class="fas fa-save"></i> Simpan PDF';
+                exportPdfBtn.disabled = false;
+            } catch(err) { alert("Gagal membuat PDF"); exportPdfBtn.innerHTML = '<i class="fas fa-save"></i> Simpan PDF'; exportPdfBtn.disabled = false; }
+        }
+
+        // Camera functions
+        async function startCamera() {
+            try {
+                if (stream) stream.getTracks().forEach(track => track.stop());
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                cameraVideo.srcObject = stream;
+                cameraPreview.classList.add('active');
+                isCameraMode = true;
+            } catch(err) { alert("Tidak dapat mengakses kamera: " + err.message); }
+        }
+        
+        function stopCamera() {
+            if (stream) { stream.getTracks().forEach(track => track.stop()); stream = null; }
+            cameraVideo.srcObject = null;
+            cameraPreview.classList.remove('active');
+            isCameraMode = false;
+        }
+        
+        function captureAndScan() {
+            if (!cameraVideo.videoWidth) { alert("Kamera belum siap"); return; }
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = cameraVideo.videoWidth;
+            tempCanvas.height = cameraVideo.videoHeight;
+            tempCanvas.getContext('2d').drawImage(cameraVideo, 0, 0);
+            const img = new Image();
+            img.onload = async () => await scanAndAdd(img);
+            img.src = tempCanvas.toDataURL('image/jpeg', 0.95);
+        }
+
+        // Gallery
+        uploadTrigger.addEventListener('click', () => imageLoader.click());
+        imageLoader.addEventListener('change', async (event) => {
+            const files = Array.from(event.target.files);
+            for (const file of files) {
+                if (!file.type.match('image/jpeg') && !file.type.match('image/png')) continue;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = async () => await scanAndAdd(img);
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+            imageLoader.value = '';
+        });
+
+        scanBtn.addEventListener('click', async () => {
+            if (isCameraMode && cameraVideo.videoWidth) captureAndScan();
+            else alert("Gunakan kamera atau pilih dari galeri");
+        });
+
+        exportPdfBtn.addEventListener('click', exportMultiPagePdf);
+        
+        function setMode(mode) {
+            if (mode === 'gallery') {
+                stopCamera();
+                gallerySection.style.display = 'block';
+                cameraPreview.classList.remove('active');
+                tabGallery.classList.add('active'); tabCamera.classList.remove('active');
+                navGallery.classList.add('active'); navCamera.classList.remove('active'); navDocs.classList.remove('active');
+                isCameraMode = false;
+            } else if (mode === 'camera') {
+                gallerySection.style.display = 'none';
+                startCamera();
+                tabCamera.classList.add('active'); tabGallery.classList.remove('active');
+                navCamera.classList.add('active'); navGallery.classList.remove('active'); navDocs.classList.remove('active');
+                isCameraMode = true;
+            } else if (mode === 'docs') {
+                document.getElementById('documentListContainer').scrollIntoView({ behavior: 'smooth' });
+                navDocs.classList.add('active'); navGallery.classList.remove('active'); navCamera.classList.remove('active');
+            }
+        }
+        
+        tabGallery.addEventListener('click', () => setMode('gallery'));
+        tabCamera.addEventListener('click', () => setMode('camera'));
+        navGallery.addEventListener('click', () => setMode('gallery'));
+        navCamera.addEventListener('click', () => setMode('camera'));
+        navDocs.addEventListener('click', () => setMode('docs'));
+        
+        closeCameraBtn.addEventListener('click', stopCamera);
+        captureBtn.addEventListener('click', captureAndScan);
+        
+        setMode('gallery');
+        
+        const ctxPlace = resultCanvas.getContext('2d');
+        ctxPlace.fillStyle = "#f8fafc";
+        ctxPlace.fillRect(0, 0, resultCanvas.width, resultCanvas.height);
+        ctxPlace.fillStyle = "#94a3b8";
+        ctxPlace.font = "12px 'Roboto'";
+        ctxPlace.fillText("Hasil scan bersih tanpa artefak", 25, resultCanvas.height/2);
+    })();
+</script>
+</body>
+</html>
