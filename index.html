@@ -1,1463 +1,1387 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SmartScan Pro - Zero Artifact</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
-    </script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CamScanner Pro</title>
 
-        body {
-            font-family: 'Roboto', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
-            background: #f5f7fb;
-            padding: 0;
-            min-height: 100vh;
-        }
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+  </script>
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
 
-        .app-bar {
-            background: linear-gradient(135deg, #4aa3ff 0%, #1a5bc4 100%);
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: white;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-        .app-bar i {
-            font-size: 1.5rem;
-        }
-        .app-bar h1 {
-            font-size: 1.3rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-        .app-bar p {
-            font-size: 0.7rem;
-            opacity: 0.9;
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .app-bar .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #7bed9f;
-            display: inline-block;
-            animation: pulse-dot 1.5s ease-in-out infinite;
-        }
-        .app-bar .status-dot.loading {
-            background: #f9ca24;
-        }
-        @keyframes pulse-dot {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.5;
-                transform: scale(0.85);
-            }
-        }
+  <style>
+    /* ===== RESET & BASE ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        .content {
-            padding: 16px;
-            padding-bottom: 80px;
-            max-width: 550px;
-            margin: 0 auto;
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #eef2f7;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      margin: 0;
+    }
 
-        .card {
-            background: white;
-            border-radius: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-        }
+    /* ===== WRAPPER ===== */
+    .app-wrapper {
+      max-width: 480px;
+      width: 100%;
+      height: 100vh;
+      max-height: 860px;
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.20);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      margin: 12px;
+    }
 
-        .card-header {
-            padding: 14px 16px;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 500;
-            color: #1e293b;
-            font-size: 0.9rem;
-        }
-        .card-header i {
-            color: #4aa3ff;
-            font-size: 1.1rem;
-        }
-        .card-body {
-            padding: 16px;
-        }
+    /* ===== HEADER ===== */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+      background: #ffffff;
+      border-bottom: 1px solid #f0f2f6;
+      flex-shrink: 0;
+    }
+    .app-header .left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .app-header .logo {
+      background: linear-gradient(145deg, #1a237e, #0d47a1);
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 20px;
+      box-shadow: 0 4px 10px rgba(13, 71, 161, 0.25);
+    }
+    .app-header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0a1929;
+      letter-spacing: -0.3px;
+    }
+    .app-header h1 small {
+      font-size: 11px;
+      font-weight: 400;
+      color: #546e7a;
+      display: block;
+      margin-top: -2px;
+    }
+    .app-header .right i {
+      font-size: 20px;
+      color: #1a237e;
+      background: #e8edf5;
+      padding: 8px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .app-header .right i:hover {
+      background: #d0d9e8;
+    }
 
-        .tab-buttons {
-            display: flex;
-            gap: 8px;
-            background: #f1f5f9;
-            padding: 4px;
-            border-radius: 40px;
-            margin-bottom: 16px;
-        }
-        .tab-btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            border-radius: 32px;
-            padding: 10px 0;
-            font-weight: 500;
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: #64748b;
-            transition: all 0.2s;
-        }
-        .tab-btn.active {
-            background: white;
-            color: #1a5bc4;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
+    /* ===== CONTENT ===== */
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      background: #f8faff;
+    }
+    .app-content::-webkit-scrollbar {
+      width: 4px;
+    }
+    .app-content::-webkit-scrollbar-thumb {
+      background: #c5cae9;
+      border-radius: 8px;
+    }
 
-        .camera-preview {
-            background: #000;
-            border-radius: 20px;
-            overflow: hidden;
-            position: relative;
-            display: none;
-            margin-bottom: 16px;
-        }
-        .camera-preview.active {
-            display: block;
-        }
-        #cameraVideo {
-            width: 100%;
-            height: auto;
-            display: block;
-            max-height: 400px;
-            object-fit: cover;
-        }
+    /* ===== PAGE: BERANDA & SCAN ===== */
+    .page {
+      display: none;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .page.active {
+      display: flex;
+    }
 
-        .camera-controls {
-            position: absolute;
-            bottom: 16px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            padding: 12px;
-        }
-        .cam-btn {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            border: none;
-            border-radius: 40px;
-            padding: 10px 24px;
-            color: white;
-            font-weight: 500;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
+    /* ===== UPLOAD ZONE ===== */
+    .upload-zone {
+      border: 2px dashed #b0bec5;
+      border-radius: 24px;
+      padding: 28px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+    .upload-zone:hover {
+      border-color: #42a5f5;
+      background: #f5faff;
+    }
+    .upload-zone.dragover {
+      border-color: #1a237e;
+      background: #e8eaf6;
+      transform: scale(1.005);
+    }
+    .upload-zone .icon-upload {
+      font-size: 48px;
+      color: #78909c;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .upload-zone h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a237e;
+    }
+    .upload-zone p {
+      color: #78909c;
+      font-size: 13px;
+      margin-top: 2px;
+    }
+    .upload-zone .sub-text {
+      font-size: 11px;
+      color: #b0bec5;
+      margin-top: 6px;
+    }
+    #fileInput {
+      display: none;
+    }
 
-        .upload-btn {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e1;
-            border-radius: 20px;
-            padding: 24px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .upload-btn:hover {
-            border-color: #4aa3ff;
-            background: #f0f7ff;
-        }
-        .upload-btn i {
-            font-size: 2.5rem;
-            color: #4aa3ff;
-            display: block;
-            margin-bottom: 8px;
-        }
-        .upload-btn span {
-            color: #475569;
-            font-size: 0.85rem;
-        }
+    /* ===== PREVIEW SECTION ===== */
+    .preview-section {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      animation: fadeUp 0.3s ease;
+    }
+    .preview-section.active {
+      display: flex;
+    }
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
 
-        .doc-list {
-            max-height: 220px;
-            overflow-y: auto;
-        }
-        .doc-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
-            gap: 12px;
-        }
-        .doc-icon {
-            width: 44px;
-            height: 44px;
-            background: #eef2ff;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .doc-icon i {
-            font-size: 1.3rem;
-            color: #4aa3ff;
-        }
-        .doc-info {
-            flex: 1;
-        }
-        .doc-title {
-            font-weight: 500;
-            font-size: 0.85rem;
-            color: #1e293b;
-        }
-        .doc-date {
-            font-size: 0.7rem;
-            color: #94a3b8;
-        }
-        .doc-delete {
-            color: #ef4444;
-            background: none;
-            border: none;
-            font-size: 1.1rem;
-            cursor: pointer;
-            padding: 8px;
-        }
+    .scan-frame-wrapper {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 12px;
+      border: 1px solid #e8edf4;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .scan-frame {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #eef2f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+      max-height: 340px;
+    }
+    .scan-frame img,
+    .scan-frame canvas {
+      max-width: 100%;
+      max-height: 340px;
+      width: auto;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      object-fit: contain;
+    }
+    .scan-frame canvas {
+      background: #fff;
+    }
+    .scan-frame .corner {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-color: #1a237e;
+      border-style: solid;
+      border-width: 0;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .scan-frame .corner.tl { top: 10px; left: 10px; border-top-width: 3px; border-left-width: 3px; border-radius: 3px 0 0 0; }
+    .scan-frame .corner.tr { top: 10px; right: 10px; border-top-width: 3px; border-right-width: 3px; border-radius: 0 3px 0 0; }
+    .scan-frame .corner.bl { bottom: 10px; left: 10px; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 3px; }
+    .scan-frame .corner.br { bottom: 10px; right: 10px; border-bottom-width: 3px; border-right-width: 3px; border-radius: 0 0 3px 0; }
 
-        .action-buttons {
-            display: flex;
-            gap: 12px;
-            margin: 16px 0;
-        }
-        .action-btn {
-            flex: 1;
-            border: none;
-            border-radius: 40px;
-            padding: 12px 0;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .action-btn.primary {
-            background: #1a5bc4;
-            color: white;
-            box-shadow: 0 2px 8px rgba(26, 91, 196, 0.3);
-        }
-        .action-btn.primary:active {
-            transform: scale(0.97);
-            background: #0f4a9e;
-        }
-        .action-btn.secondary {
-            background: #f1f5f9;
-            color: #1e293b;
-            border: 1px solid #e2e8f0;
-        }
-        .action-btn:disabled {
-            opacity: 0.5;
-            transform: none;
-            cursor: not-allowed;
-        }
+    .scan-line {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #42a5f5, #1a237e, #42a5f5, transparent);
+      box-shadow: 0 0 16px rgba(26,35,126,0.25);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+      top: 0;
+    }
+    .scan-line.active {
+      opacity: 1;
+      animation: scanMove 2.0s ease-in-out infinite;
+    }
+    @keyframes scanMove {
+      0% { top: 5%; }
+      50% { top: 90%; }
+      100% { top: 5%; }
+    }
 
-        .preview-container {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 12px;
-            text-align: center;
-            position: relative;
-        }
-        .preview-container canvas {
-            max-width: 100%;
-            height: auto;
-            border-radius: 12px;
-            background: white;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
+    /* ===== CAMERA VIEW ===== */
+    .camera-container {
+      position: relative;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      min-height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .camera-container video {
+      width: 100%;
+      border-radius: 16px;
+      display: block;
+      background: #111;
+    }
+    .camera-container .camera-overlay {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .camera-container .camera-overlay button {
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 28px;
+      color: #1a237e;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .camera-container .camera-overlay button:hover {
+      transform: scale(1.05);
+    }
+    .camera-container .camera-overlay button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .camera-container .camera-overlay .btn-close-cam {
+      background: rgba(255,80,80,0.9);
+      color: #fff;
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+    }
 
-        .filter-bar {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 12px 0 8px 0;
-        }
-        .filter-btn {
-            background: #f1f5f9;
-            border: none;
-            border-radius: 30px;
-            padding: 6px 14px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            color: #475569;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .filter-btn.active {
-            background: #1a5bc4;
-            color: white;
-            box-shadow: 0 2px 6px rgba(26, 91, 196, 0.25);
-        }
-        .filter-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
+    /* ===== MODE & SLIDER ===== */
+    .mode-control {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 16px;
+      background: #f5f8fc;
+      padding: 10px 16px;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+    }
+    .mode-control span.label {
+      font-weight: 600;
+      font-size: 13px;
+      color: #1a237e;
+    }
+    .mode-control label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #1a237e;
+    }
+    .mode-control input[type="radio"] {
+      accent-color: #1a237e;
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
 
-        .status-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            border-radius: 12px;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            z-index: 5;
-        }
-        .status-overlay.active {
-            display: flex;
-        }
-        .status-overlay .spinner-big {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 12px;
-        }
-        .status-overlay p {
-            font-size: 0.85rem;
-            font-weight: 400;
-            letter-spacing: 0.3px;
-        }
+    .threshold-control {
+      background: #f5f8fc;
+      border-radius: 16px;
+      padding: 10px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 16px;
+      border: 1px solid #e2e8f0;
+    }
+    .threshold-control label {
+      font-weight: 600;
+      font-size: 13px;
+      color: #1a237e;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .threshold-control input[type="range"] {
+      flex: 1;
+      min-width: 100px;
+      accent-color: #1a237e;
+      height: 5px;
+      border-radius: 4px;
+      background: #d0d9e8;
+    }
+    .threshold-control .value-display {
+      background: #1a237e;
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 2px 12px;
+      border-radius: 30px;
+      min-width: 40px;
+      text-align: center;
+    }
+    .threshold-control .hint {
+      font-size: 11px;
+      color: #78909c;
+      margin-left: auto;
+    }
 
-        .info-note {
-            background: #eef2ff;
-            border-radius: 14px;
-            padding: 10px 12px;
-            margin-top: 12px;
-            font-size: 0.7rem;
-            color: #1e40af;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .info-note .badge {
-            background: #1a5bc4;
-            color: white;
-            padding: 1px 10px;
-            border-radius: 30px;
-            font-size: 0.6rem;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
+    /* ===== ACTION BUTTONS ===== */
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 40px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1 1 auto;
+      min-width: 80px;
+      background: #e8edf5;
+      color: #1a237e;
+    }
+    .btn-primary {
+      background: linear-gradient(145deg, #1a237e, #0d47a1);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(13, 71, 161, 0.25);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13, 71, 161, 0.35); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
 
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 16px 20px;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-            border-top: 1px solid #e2e8f0;
-            max-width: 550px;
-            margin: 0 auto;
-        }
-        .nav-item {
-            text-align: center;
-            background: none;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 40px;
-            color: #94a3b8;
-            font-size: 0.7rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .nav-item i {
-            font-size: 1.2rem;
-        }
-        .nav-item.active {
-            color: #1a5bc4;
-            background: #eef2ff;
-        }
+    .btn-success {
+      background: linear-gradient(145deg, #1b5e20, #2e7d32);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(27, 94, 32, 0.20);
+    }
+    .btn-success:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(27, 94, 32, 0.30); }
+    .btn-success:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
 
-        footer {
-            text-align: center;
-            font-size: 0.6rem;
-            padding: 12px;
-            color: #94a3b8;
-        }
+    .btn-danger-outline {
+      background: transparent;
+      color: #b71c1c;
+      border: 2px solid #ffcdd2;
+    }
+    .btn-danger-outline:hover { background: #ffebee; border-color: #c62828; }
 
-        .engine-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.65rem;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 4px 12px;
-            border-radius: 20px;
-        }
-        .engine-status .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #7bed9f;
-        }
-        .engine-status .dot.waiting {
-            background: #f9ca24;
-        }
-        .engine-status .dot.error {
-            background: #ff6b6b;
-        }
+    .btn .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-        @media (max-width: 480px) {
-            .filter-bar .filter-btn {
-                font-size: 0.6rem;
-                padding: 5px 10px;
-            }
-            .app-bar h1 {
-                font-size: 1.0rem;
-            }
-        }
-    </style>
+    /* ===== RIWAYAT ===== */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-bottom: 12px;
+    }
+    .history-item {
+      background: #fff;
+      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid #e8edf4;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .history-item .thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #eef2f7;
+    }
+    .history-item .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .history-item .info {
+      flex: 1;
+    }
+    .history-item .info .title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #0a1929;
+    }
+    .history-item .info .date {
+      font-size: 11px;
+      color: #90a4ae;
+      margin-top: 2px;
+    }
+    .history-item .actions {
+      display: flex;
+      gap: 8px;
+    }
+    .history-item .actions button {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      color: #78909c;
+      cursor: pointer;
+      padding: 4px;
+      transition: 0.2s;
+      border-radius: 8px;
+    }
+    .history-item .actions button:hover {
+      background: #f0f2f6;
+    }
+    .history-item .actions button.danger {
+      color: #e53935;
+    }
+    .history-empty {
+      text-align: center;
+      color: #90a4ae;
+      padding: 40px 0;
+      font-size: 14px;
+    }
+
+    /* ===== BOTTOM NAV ===== */
+    .bottom-nav {
+      background: #ffffff;
+      border-top: 1px solid #e8edf4;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 6px 0 10px;
+      flex-shrink: 0;
+    }
+    .bottom-nav .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      font-size: 10px;
+      color: #90a4ae;
+      cursor: pointer;
+      transition: 0.2s;
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: none;
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+    }
+    .bottom-nav .nav-item i {
+      font-size: 20px;
+    }
+    .bottom-nav .nav-item.active {
+      color: #1a237e;
+      font-weight: 600;
+    }
+    .bottom-nav .nav-item.active i {
+      color: #1a237e;
+    }
+    .bottom-nav .nav-item:hover {
+      color: #546e7a;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 500px) {
+      .app-wrapper {
+        border-radius: 0;
+        margin: 0;
+        max-height: 100vh;
+        height: 100vh;
+      }
+      .app-content {
+        padding: 12px 14px 4px;
+      }
+      .app-header {
+        padding: 12px 14px 10px;
+      }
+      .app-header h1 {
+        font-size: 16px;
+      }
+      .upload-zone {
+        padding: 20px 12px;
+      }
+      .upload-zone .icon-upload {
+        font-size: 38px;
+      }
+      .btn {
+        padding: 8px 14px;
+        font-size: 12px;
+        min-width: 60px;
+      }
+      .scan-frame {
+        min-height: 160px;
+        max-height: 260px;
+      }
+      .scan-frame img,
+      .scan-frame canvas {
+        max-height: 260px;
+      }
+      .threshold-control,
+      .mode-control {
+        padding: 8px 12px;
+      }
+      .threshold-control .hint {
+        display: none;
+      }
+      .camera-container {
+        min-height: 200px;
+      }
+      .camera-container .camera-overlay button {
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+      }
+    }
+    @media (max-width: 400px) {
+      .bottom-nav .nav-item {
+        font-size: 9px;
+        padding: 2px 8px;
+      }
+      .bottom-nav .nav-item i {
+        font-size: 18px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="app-bar">
-        <i class="fas fa-scanner"></i>
-        <h1>SmartScan Pro</h1>
-        <p><i class="fas fa-brush"></i> Zero Artifact</p>
-        <div class="engine-status" id="engineStatus">
-            <span class="dot waiting" id="statusDot"></span>
-            <span id="statusText">Memuat engine...</span>
+
+<div class="app-wrapper">
+
+  <!-- ===== HEADER ===== -->
+  <header class="app-header">
+    <div class="left">
+      <div class="logo"><i class="fas fa-print"></i></div>
+      <h1>CamScanner <small>Pro Scan</small></h1>
+    </div>
+    <div class="right">
+      <i class="fas fa-cog"></i>
+    </div>
+  </header>
+
+  <!-- ===== CONTENT ===== -->
+  <div class="app-content" id="appContent">
+
+    <!-- ===== PAGE BERANDA ===== -->
+    <div class="page active" id="pageHome">
+      <!-- UPLOAD ZONE -->
+      <div class="upload-zone" id="uploadZone">
+        <span class="icon-upload"><i class="fas fa-cloud-upload-alt"></i></span>
+        <h3>Seret atau klik untuk unggah</h3>
+        <p>Foto dokumen dari galeri</p>
+        <div class="sub-text">JPG, PNG, BMP, WEBP (maks. 10 MB)</div>
+        <input type="file" id="fileInput" accept="image/*" />
+      </div>
+
+      <!-- PREVIEW SECTION -->
+      <section class="preview-section" id="previewSection">
+        <div class="scan-frame-wrapper">
+          <div class="scan-frame" id="scanFrame">
+            <img id="previewImage" src="" alt="Preview" />
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+            <div class="scan-line" id="scanLine"></div>
+          </div>
         </div>
+
+        <div class="mode-control" id="modeControl" style="display:none;">
+          <span class="label"><i class="fas fa-palette"></i> Mode:</span>
+          <label><input type="radio" name="scanMode" value="bw" checked id="modeBW" /> Hitam-Putih</label>
+          <label><input type="radio" name="scanMode" value="color" id="modeColor" /> Berwarna</label>
+        </div>
+
+        <div class="threshold-control" id="thresholdControl" style="display:none;">
+          <label><i class="fas fa-circle"></i> Kehitaman</label>
+          <input type="range" id="thresholdSlider" min="50" max="220" value="150" step="1" />
+          <span class="value-display" id="thresholdValue">150</span>
+          <span class="hint">⬅️ terang · hitam ➡️</span>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-primary" id="btnScan"><i class="fas fa-camera"></i> Scan</button>
+          <button class="btn btn-success" id="btnDownloadPNG" disabled><i class="fas fa-image"></i> PNG</button>
+          <button class="btn btn-success" id="btnDownloadPDF" disabled><i class="fas fa-file-pdf"></i> PDF</button>
+          <button class="btn btn-danger-outline" id="btnReset"><i class="fas fa-undo-alt"></i> Reset</button>
+        </div>
+        <button class="btn btn-primary" id="btnSaveHistory" disabled style="background: #6a1b9a; box-shadow: 0 4px 12px rgba(106,27,154,0.25);">
+          <i class="fas fa-save"></i> Simpan ke Riwayat
+        </button>
+      </section>
     </div>
 
-    <div class="content">
-
-        <div class="tab-buttons">
-            <button class="tab-btn active" id="tabGallery"><i class="fas fa-images"></i> Galeri</button>
-            <button class="tab-btn" id="tabCamera"><i class="fas fa-camera"></i> Kamera</button>
+    <!-- ===== PAGE SCAN (KAMERA) ===== -->
+    <div class="page" id="pageScan">
+      <div class="camera-container" id="cameraContainer">
+        <video id="video" autoplay playsinline></video>
+        <div class="camera-overlay">
+          <button class="btn-close-cam" id="btnCloseCam"><i class="fas fa-times"></i></button>
+          <button id="btnCapture"><i class="fas fa-camera"></i></button>
         </div>
-
-        <div class="camera-preview" id="cameraPreview">
-            <video id="cameraVideo" autoplay playsinline muted></video>
-            <div class="camera-controls">
-                <button class="cam-btn" id="captureBtn"><i class="fas fa-camera"></i> Ambil</button>
-                <button class="cam-btn" id="closeCameraBtn"><i class="fas fa-times"></i> Tutup</button>
-            </div>
-        </div>
-
-        <div class="card" id="gallerySection">
-            <div class="card-header"><i class="fas fa-folder-open"></i><span>Pilih dari Galeri</span></div>
-            <div class="card-body">
-                <div class="upload-btn" id="uploadTrigger">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>Klik untuk pilih gambar (bisa multiple)</span>
-                    <input type="file" id="imageLoader" accept="image/jpeg,image/png,image/jpg" multiple style="display:none;">
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-list-ul"></i>
-                <span>Halaman Discan</span>
-                <span style="margin-left:auto;background:#eef2ff;padding:2px 10px;border-radius:20px;font-size:0.7rem;" id="docCount">0</span>
-            </div>
-            <div class="card-body">
-                <div class="doc-list" id="documentListContainer">
-                    <div style="text-align:center;color:#94a3b8;padding:24px;">
-                        <i class="fas fa-file-alt" style="font-size:2rem;margin-bottom:8px;display:block;"></i>
-                        Belum ada halaman
-                    </div>
-                </div>
-                <button id="clearAllBtn" style="margin-top:12px;background:none;border:none;color:#ef4444;font-size:0.75rem;display:flex;align-items:center;gap:4px;cursor:pointer;">
-                    <i class="fas fa-trash-alt"></i> Hapus Semua
-                </button>
-            </div>
-        </div>
-
-        <div class="action-buttons">
-            <button class="action-btn primary" id="scanCurrentBtn"><i class="fas fa-magic"></i> Scan & Tambah</button>
-            <button class="action-btn secondary" id="exportPdfBtn" disabled><i class="fas fa-save"></i> Simpan PDF</button>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-eye"></i>
-                <span>Preview Hasil Scan</span>
-                <span style="margin-left:auto;font-size:0.65rem;background:#eef2ff;padding:2px 8px;border-radius:20px;">OpenCV.js</span>
-            </div>
-            <div class="card-body">
-                <div class="preview-container" id="previewContainer">
-                    <canvas id="resultCanvas" style="width:100%;height:auto;background:white;border-radius:12px;"></canvas>
-                    <div class="status-overlay" id="statusOverlay">
-                        <div class="spinner-big"></div>
-                        <p id="statusMessage">Memproses...</p>
-                    </div>
-                </div>
-
-                <div class="filter-bar" id="filterBar">
-                    <button class="filter-btn active" data-mode="original">Original</button>
-                    <button class="filter-btn" data-mode="auto">Auto</button>
-                    <button class="filter-btn" data-mode="grayscale">Grayscale</button>
-                    <button class="filter-btn" data-mode="bw">B&W</button>
-                </div>
-
-                <div class="info-note">
-                    <i class="fas fa-microchip"></i>
-                    <span>OpenCV.js engine • Deteksi dokumen otomatis • Koreksi perspektif • 4 mode filter</span>
-                    <span class="badge" id="docStatusBadge">Belum diproses</span>
-                </div>
-            </div>
-        </div>
-        <footer><i class="fas fa-bolt"></i> Zero Artifact • Multi halaman • OpenCV.js • Save as PDF</footer>
+      </div>
+      <p style="font-size:12px; color:#78909c; text-align:center; margin-top:-8px;">Arahkan ke dokumen, lalu tekan tombol kamera</p>
     </div>
 
-    <div class="bottom-nav">
-        <button class="nav-item active" id="navGallery"><i class="fas fa-images"></i><span>Galeri</span></button>
-        <button class="nav-item" id="navCamera"><i class="fas fa-camera"></i><span>Kamera</span></button>
-        <button class="nav-item" id="navDocs"><i class="fas fa-file-alt"></i><span>Dokumen</span></button>
+    <!-- ===== PAGE RIWAYAT ===== -->
+    <div class="page" id="pageHistory">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <h3 style="font-size:16px; color:#0a1929;"><i class="fas fa-history"></i> Riwayat Scan</h3>
+        <button id="btnClearHistory" class="btn btn-danger-outline" style="padding:4px 14px; font-size:12px; min-width:auto;">
+          <i class="fas fa-trash"></i> Hapus Semua
+        </button>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">Belum ada riwayat scan.</div>
+      </div>
     </div>
 
-    <script>
-        (function() {
-            'use strict';
+    <!-- spacer -->
+    <div style="flex:1; min-height:10px;"></div>
+  </div>
 
-            // ---- DOM refs ----
-            const imageLoader = document.getElementById('imageLoader');
-            const uploadTrigger = document.getElementById('uploadTrigger');
-            const scanBtn = document.getElementById('scanCurrentBtn');
-            const exportPdfBtn = document.getElementById('exportPdfBtn');
-            const resultCanvas = document.getElementById('resultCanvas');
-            const documentListContainer = document.getElementById('documentListContainer');
-            const docCountSpan = document.getElementById('docCount');
-            const clearAllBtn = document.getElementById('clearAllBtn');
-            const gallerySection = document.getElementById('gallerySection');
-            const cameraPreview = document.getElementById('cameraPreview');
-            const cameraVideo = document.getElementById('cameraVideo');
-            const captureBtn = document.getElementById('captureBtn');
-            const closeCameraBtn = document.getElementById('closeCameraBtn');
-            const tabGallery = document.getElementById('tabGallery');
-            const tabCamera = document.getElementById('tabCamera');
-            const navGallery = document.getElementById('navGallery');
-            const navCamera = document.getElementById('navCamera');
-            const navDocs = document.getElementById('navDocs');
-            const statusOverlay = document.getElementById('statusOverlay');
-            const statusMessage = document.getElementById('statusMessage');
-            const docStatusBadge = document.getElementById('docStatusBadge');
-            const filterBar = document.getElementById('filterBar');
-            const filterBtns = filterBar.querySelectorAll('.filter-btn');
-            const statusText = document.getElementById('statusText');
-            const statusDot = document.getElementById('statusDot');
+  <!-- ===== BOTTOM NAV ===== -->
+  <div class="bottom-nav">
+    <button class="nav-item active" data-page="home"><i class="fas fa-home"></i><span>Beranda</span></button>
+    <button class="nav-item" data-page="scan"><i class="fas fa-camera-retro"></i><span>Scan</span></button>
+    <button class="nav-item" data-page="history"><i class="fas fa-history"></i><span>Riwayat</span></button>
+    <button class="nav-item" data-page="home"><i class="fas fa-user-cog"></i><span>Profil</span></button>
+  </div>
 
-            // ---- State ----
-            let documents = [];
-            let stream = null;
-            let isCameraMode = false;
-            let cvReady = false;
-            let currentImageData = null; // { canvas, originalWidth, originalHeight, processedCanvas, corners }
-            let currentFilter = 'original';
-            let processingLock = false;
+</div>
 
-            // ---- OpenCV.js loading ----
-            function setEngineStatus(text, ready) {
-                statusText.textContent = text;
-                if (ready) {
-                    statusDot.className = 'dot';
-                    statusDot.style.background = '#7bed9f';
-                } else {
-                    statusDot.className = 'dot waiting';
-                    statusDot.style.background = '#f9ca24';
-                }
+<script>
+  (function() {
+    'use strict';
+
+    // =============================================
+    // DOM REFS
+    // =============================================
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const previewSection = document.getElementById('previewSection');
+    const previewImage = document.getElementById('previewImage');
+    const scanLine = document.getElementById('scanLine');
+    const btnScan = document.getElementById('btnScan');
+    const btnPNG = document.getElementById('btnDownloadPNG');
+    const btnPDF = document.getElementById('btnDownloadPDF');
+    const btnReset = document.getElementById('btnReset');
+    const btnSaveHistory = document.getElementById('btnSaveHistory');
+    const scanFrame = document.getElementById('scanFrame');
+    const thresholdSlider = document.getElementById('thresholdSlider');
+    const thresholdValue = document.getElementById('thresholdValue');
+    const thresholdControl = document.getElementById('thresholdControl');
+    const modeControl = document.getElementById('modeControl');
+    const modeBW = document.getElementById('modeBW');
+    const modeColor = document.getElementById('modeColor');
+
+    // Camera
+    const video = document.getElementById('video');
+    const btnCapture = document.getElementById('btnCapture');
+    const btnCloseCam = document.getElementById('btnCloseCam');
+
+    // Pages
+    const pageMap = {
+      home: document.getElementById('pageHome'),
+      scan: document.getElementById('pageScan'),
+      history: document.getElementById('pageHistory')
+    };
+    const navButtons = document.querySelectorAll('.nav-item[data-page]');
+
+    // History
+    const historyList = document.getElementById('historyList');
+    const btnClearHistory = document.getElementById('btnClearHistory');
+
+    // =============================================
+    // STATE
+    // =============================================
+    let imageDataUrl = null;
+    let originalColorData = null;
+    let canvasWidth = 0, canvasHeight = 0;
+    let scannedCanvas = null;
+    let isScanning = false;
+    let isProcessing = false;
+    let stream = null;
+    let cameraActive = false;
+
+    // =============================================
+    // KERNEL
+    // =============================================
+    const blurKernel = [[1,2,1],[2,4,2],[1,2,1]];
+    const blurDivisor = 16;
+    const sharpenKernel = [[0,-1,0],[-1,5,-1],[0,-1,0]];
+    const sharpenDivisor = 1;
+    const sharpenOffset = 0;
+
+    // =============================================
+    // HELPERS
+    // =============================================
+    function applyKernel3x3(srcData, w, h, kernel, divisor, offset) {
+      const result = new Uint8ClampedArray(srcData.length);
+      for (let i=0; i<srcData.length; i++) result[i]=srcData[i];
+      for (let y=1; y<h-1; y++) {
+        for (let x=1; x<w-1; x++) {
+          let sum=0;
+          for (let ky=-1; ky<=1; ky++) {
+            for (let kx=-1; kx<=1; kx++) {
+              const idx = ((y+ky)*w + (x+kx))*4;
+              sum += srcData[idx] * kernel[ky+1][kx+1];
             }
+          }
+          const idx = (y*w + x)*4;
+          let val = sum/divisor + offset;
+          val = Math.min(255, Math.max(0, Math.round(val)));
+          result[idx]=val; result[idx+1]=val; result[idx+2]=val;
+        }
+      }
+      return result;
+    }
 
-            function initOpenCV() {
-                setEngineStatus('Memuat OpenCV.js...', false);
-                const script = document.createElement('script');
-                script.src = 'https://docs.opencv.org/4.10.0/opencv.js';
-                script.async = true;
-                script.onload = function() {
-                    if (typeof cv !== 'undefined') {
-                        if (cv.onRuntimeInitialized) {
-                            cv.onRuntimeInitialized = function() {
-                                cvReady = true;
-                                setEngineStatus('Engine siap', true);
-                                enableScanButtons(true);
-                                console.log('OpenCV.js siap');
-                            };
-                        } else {
-                            // fallback
-                            setTimeout(function() {
-                                if (typeof cv !== 'undefined') {
-                                    cvReady = true;
-                                    setEngineStatus('Engine siap', true);
-                                    enableScanButtons(true);
-                                    console.log('OpenCV.js siap (fallback)');
-                                }
-                            }, 2000);
-                        }
-                    } else {
-                        setEngineStatus('Gagal muat OpenCV.js', false);
-                        statusDot.className = 'dot error';
-                        statusDot.style.background = '#ff6b6b';
-                        console.error('OpenCV.js tidak ditemukan');
-                    }
-                };
-                script.onerror = function() {
-                    setEngineStatus('Gagal muat OpenCV.js', false);
-                    statusDot.className = 'dot error';
-                    statusDot.style.background = '#ff6b6b';
-                    console.error('Gagal memuat OpenCV.js');
-                };
-                document.head.appendChild(script);
+    function applyKernel3x3Color(srcData, w, h, kernel, divisor, offset) {
+      const result = new Uint8ClampedArray(srcData.length);
+      for (let i=0; i<srcData.length; i++) result[i]=srcData[i];
+      for (let y=1; y<h-1; y++) {
+        for (let x=1; x<w-1; x++) {
+          let r=0,g=0,b=0;
+          for (let ky=-1; ky<=1; ky++) {
+            for (let kx=-1; kx<=1; kx++) {
+              const idx = ((y+ky)*w + (x+kx))*4;
+              const k = kernel[ky+1][kx+1];
+              r += srcData[idx]*k;
+              g += srcData[idx+1]*k;
+              b += srcData[idx+2]*k;
             }
+          }
+          const idx = (y*w + x)*4;
+          result[idx] = Math.min(255, Math.max(0, Math.round(r/divisor + offset)));
+          result[idx+1] = Math.min(255, Math.max(0, Math.round(g/divisor + offset)));
+          result[idx+2] = Math.min(255, Math.max(0, Math.round(b/divisor + offset)));
+        }
+      }
+      return result;
+    }
 
-            function enableScanButtons(enabled) {
-                scanBtn.disabled = !enabled;
-                filterBtns.forEach(b => b.disabled = !enabled);
-                if (!enabled) {
-                    scanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Tunggu...';
-                } else {
-                    scanBtn.innerHTML = '<i class="fas fa-magic"></i> Scan & Tambah';
-                }
+    function cleanupBinary(srcData, w, h) {
+      const result = new Uint8ClampedArray(srcData.length);
+      for (let i=0; i<srcData.length; i++) result[i]=srcData[i];
+      for (let y=1; y<h-1; y++) {
+        for (let x=1; x<w-1; x++) {
+          const idx = (y*w + x)*4;
+          const center = srcData[idx];
+          let black=0;
+          for (let ky=-1; ky<=1; ky++) {
+            for (let kx=-1; kx<=1; kx++) {
+              if (ky===0 && kx===0) continue;
+              const nIdx = ((y+ky)*w + (x+kx))*4;
+              if (srcData[nIdx] < 128) black++;
             }
+          }
+          let newVal = center;
+          if (center < 128 && black <= 2) newVal = 255;
+          else if (center >= 128 && black >= 7) newVal = 0;
+          result[idx]=newVal; result[idx+1]=newVal; result[idx+2]=newVal;
+        }
+      }
+      return result;
+    }
 
-            // ---- Helper: Canvas utilities ----
-            function loadImageToCanvas(img, maxDim) {
-                return new Promise((resolve) => {
-                    const canvas = document.createElement('canvas');
-                    let w = img.naturalWidth || img.width;
-                    let h = img.naturalHeight || img.height;
-                    if (maxDim && (w > maxDim || h > maxDim)) {
-                        const ratio = Math.min(maxDim / w, maxDim / h);
-                        w = Math.floor(w * ratio);
-                        h = Math.floor(h * ratio);
-                    }
-                    canvas.width = w;
-                    canvas.height = h;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
-                    resolve(canvas);
-                });
+    function processColorMode(srcData, w, h) {
+      const data = new Uint8ClampedArray(srcData);
+      for (let i=0; i<data.length; i+=4) {
+        let r=data[i], g=data[i+1], b=data[i+2];
+        r = ((r-128)*1.3 + 128) + 20;
+        g = ((g-128)*1.3 + 128) + 20;
+        b = ((b-128)*1.3 + 128) + 20;
+        data[i]=Math.min(255,Math.max(0,r));
+        data[i+1]=Math.min(255,Math.max(0,g));
+        data[i+2]=Math.min(255,Math.max(0,b));
+      }
+      const bgTh=180, whiten=0.7;
+      for (let i=0; i<data.length; i+=4) {
+        const avg = (data[i]+data[i+1]+data[i+2])/3;
+        if (avg > bgTh) {
+          const factor = (avg - bgTh) / (255 - bgTh);
+          const strength = factor * whiten;
+          data[i] = Math.min(255, data[i] + (255-data[i])*strength);
+          data[i+1] = Math.min(255, data[i+1] + (255-data[i+1])*strength);
+          data[i+2] = Math.min(255, data[i+2] + (255-data[i+2])*strength);
+        }
+      }
+      return applyKernel3x3Color(data, w, h, sharpenKernel, sharpenDivisor, sharpenOffset);
+    }
+
+    // =============================================
+    // PROSES SCAN UTAMA
+    // =============================================
+    function processScan(threshold, mode) {
+      if (!originalColorData) return;
+      isProcessing = true;
+      requestAnimationFrame(() => {
+        try {
+          const w=canvasWidth, h=canvasHeight;
+          const srcData = new Uint8ClampedArray(originalColorData.data);
+          let finalData;
+          if (mode === 'color') {
+            finalData = processColorMode(srcData, w, h);
+          } else {
+            const grayData = new Uint8ClampedArray(srcData.length);
+            for (let i=0; i<srcData.length; i+=4) {
+              const gray = 0.299*srcData[i] + 0.587*srcData[i+1] + 0.114*srcData[i+2];
+              grayData[i]=gray; grayData[i+1]=gray; grayData[i+2]=gray; grayData[i+3]=255;
             }
-
-            function canvasToMat(canvas) {
-                return cv.imread(canvas);
+            const blurred = applyKernel3x3(grayData, w, h, blurKernel, blurDivisor, 0);
+            const sharpened = applyKernel3x3(blurred, w, h, sharpenKernel, sharpenDivisor, sharpenOffset);
+            const binaryData = new Uint8ClampedArray(sharpened.length);
+            const th = threshold;
+            for (let i=0; i<sharpened.length; i+=4) {
+              const val = sharpened[i] >= th ? 255 : 0;
+              binaryData[i]=val; binaryData[i+1]=val; binaryData[i+2]=val; binaryData[i+3]=255;
             }
+            finalData = cleanupBinary(binaryData, w, h);
+          }
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = w; canvas.height = h;
+          const imageData = new ImageData(finalData, w, h);
+          ctx.putImageData(imageData, 0, 0);
+          const existing = scanFrame.querySelector('canvas');
+          if (existing) existing.remove();
+          previewImage.style.display = 'none';
+          scanFrame.appendChild(canvas);
+          canvas.style.maxWidth = '100%';
+          canvas.style.maxHeight = '340px';
+          canvas.style.borderRadius = '12px';
+          scannedCanvas = canvas;
+          btnPNG.disabled = false;
+          btnPDF.disabled = false;
+          btnSaveHistory.disabled = false;
+          isProcessing = false;
+        } catch(err) {
+          console.error(err);
+          alert('❌ Gagal memproses: '+err.message);
+          isProcessing = false;
+        }
+      });
+    }
 
-            function matToCanvas(mat) {
-                const canvas = document.createElement('canvas');
-                cv.imshow(canvas, mat);
-                return canvas;
+    // =============================================
+    // UPLOAD (dari file atau hasil capture)
+    // =============================================
+    function loadImageFromDataURL(dataUrl) {
+      imageDataUrl = dataUrl;
+      previewImage.src = dataUrl;
+      previewImage.style.display = 'block';
+      const old = scanFrame.querySelector('canvas');
+      if (old) old.remove();
+      previewSection.classList.add('active');
+      scannedCanvas = null;
+      originalColorData = null;
+      btnPNG.disabled = true;
+      btnPDF.disabled = true;
+      btnSaveHistory.disabled = true;
+      scanLine.classList.remove('active');
+      uploadZone.style.display = 'none';
+      thresholdControl.style.display = 'none';
+      modeControl.style.display = 'none';
+      btnScan.disabled = false;
+      btnScan.innerHTML = '<i class="fas fa-camera"></i> Scan';
+      // Siapkan data asli
+      const img = new Image();
+      img.onload = function() {
+        const tempCanvas = document.createElement('canvas');
+        const ctx = tempCanvas.getContext('2d');
+        let w=img.width, h=img.height;
+        const maxDim=1400;
+        if (w>maxDim || h>maxDim) {
+          const ratio = Math.min(maxDim/w, maxDim/h);
+          w=Math.round(w*ratio); h=Math.round(h*ratio);
+        }
+        tempCanvas.width=w; tempCanvas.height=h;
+        ctx.drawImage(img,0,0,w,h);
+        const imageData = ctx.getImageData(0,0,w,h);
+        originalColorData = new ImageData(new Uint8ClampedArray(imageData.data), w, h);
+        canvasWidth=w; canvasHeight=h;
+        modeControl.style.display = 'flex';
+        thresholdControl.style.display = 'flex';
+        const mode = modeColor.checked ? 'color' : 'bw';
+        const th = parseInt(thresholdSlider.value,10);
+        thresholdValue.textContent = th;
+        processScan(th, mode);
+      };
+      img.src = dataUrl;
+    }
+
+    function handleFile(file) {
+      if (!file) return;
+      const valid = ['image/jpeg','image/png','image/bmp','image/webp','image/gif'];
+      if (!valid.includes(file.type)) { alert('Format tidak didukung.'); return; }
+      if (file.size > 10*1024*1024) { alert('Maksimal 10 MB.'); return; }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        loadImageFromDataURL(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ===== EVENT UPLOAD =====
+    uploadZone.addEventListener('dragover', e=>{ e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragleave', ()=> uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', e=>{
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+    uploadZone.addEventListener('click', ()=> fileInput.click());
+    fileInput.addEventListener('change', e=>{
+      if (e.target.files.length) handleFile(e.target.files[0]);
+      fileInput.value = '';
+    });
+
+    // ===== SCAN (proses ulang) =====
+    btnScan.addEventListener('click', ()=>{
+      if (!originalColorData || isScanning || isProcessing) return;
+      isScanning = true;
+      btnScan.disabled = true;
+      btnScan.innerHTML = '<span class="spinner"></span> Memproses...';
+      scanLine.classList.add('active');
+      const mode = modeColor.checked ? 'color' : 'bw';
+      const th = parseInt(thresholdSlider.value,10);
+      processScan(th, mode);
+      scanLine.classList.remove('active');
+      btnScan.disabled = false;
+      btnScan.innerHTML = '<i class="fas fa-camera"></i> Scan Ulang';
+      isScanning = false;
+    });
+
+    // ===== RADIO =====
+    modeBW.addEventListener('change', function(){
+      if (this.checked && originalColorData && !isProcessing && !isScanning) {
+        const th = parseInt(thresholdSlider.value,10);
+        processScan(th, 'bw');
+      }
+    });
+    modeColor.addEventListener('change', function(){
+      if (this.checked && originalColorData && !isProcessing && !isScanning) {
+        processScan(thresholdSlider.value, 'color');
+      }
+    });
+
+    // ===== SLIDER =====
+    thresholdSlider.addEventListener('input', function(){
+      const val = this.value;
+      thresholdValue.textContent = val;
+      if (originalColorData && !isProcessing && !isScanning && modeBW.checked) {
+        processScan(parseInt(val,10), 'bw');
+      }
+    });
+
+    // ===== DOWNLOADS =====
+    btnPNG.addEventListener('click', ()=>{
+      if (!scannedCanvas) return;
+      const link = document.createElement('a');
+      link.download = `scan_${Date.now()}.png`;
+      link.href = scannedCanvas.toDataURL('image/png');
+      link.click();
+    });
+    btnPDF.addEventListener('click', ()=>{
+      if (!scannedCanvas) return;
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p','mm','a4');
+        const pageW=210, pageH=297, margin=10;
+        const imgData = scannedCanvas.toDataURL('image/jpeg',0.95);
+        const cw=scannedCanvas.width, ch=scannedCanvas.height;
+        const maxW = pageW-2*margin, maxH = pageH-2*margin;
+        let finalW, finalH;
+        if (cw/ch > maxW/maxH) { finalW=maxW; finalH=(maxW*ch)/cw; }
+        else { finalH=maxH; finalW=(maxH*cw)/ch; }
+        const x=(pageW-finalW)/2, y=(pageH-finalH)/2;
+        doc.addImage(imgData,'JPEG',x,y,finalW,finalH);
+        doc.setFontSize(8);
+        doc.setTextColor(180,180,180);
+        doc.setFont('helvetica','italic');
+        doc.text(`CamScanner Pro • ${new Date().toLocaleDateString('id-ID')}`, pageW-margin, pageH-6, { align:'right' });
+        doc.save(`scan_${Date.now()}.pdf`);
+      } catch(err) { alert('❌ Gagal buat PDF: '+err.message); }
+    });
+
+    // =============================================
+    // INDEXEDDB - RIWAYAT
+    // =============================================
+    const DB_NAME = 'CamScannerDB';
+    const STORE_NAME = 'history';
+    let db = null;
+
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = function(e) {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+          }
+        };
+        request.onsuccess = function(e) { db = e.target.result; resolve(db); };
+        request.onerror = function(e) { reject(e.target.error); };
+      });
+    }
+
+    function saveHistoryItem(originalDataUrl, scannedDataUrl, mode) {
+      return new Promise((resolve, reject) => {
+        if (!db) { reject('DB not open'); return; }
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const item = {
+          original: originalDataUrl,
+          scanned: scannedDataUrl,
+          mode: mode,
+          timestamp: new Date().toISOString()
+        };
+        const request = store.add(item);
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function getAllHistory() {
+      return new Promise((resolve, reject) => {
+        if (!db) { reject('DB not open'); return; }
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function deleteHistoryItem(id) {
+      return new Promise((resolve, reject) => {
+        if (!db) { reject('DB not open'); return; }
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.delete(id);
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function clearAllHistory() {
+      return new Promise((resolve, reject) => {
+        if (!db) { reject('DB not open'); return; }
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.clear();
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    // =============================================
+    // RENDER RIWAYAT
+    // =============================================
+    async function renderHistory() {
+      try {
+        const items = await getAllHistory();
+        historyList.innerHTML = '';
+        if (!items || items.length === 0) {
+          historyList.innerHTML = '<div class="history-empty">Belum ada riwayat scan.</div>';
+          return;
+        }
+        items.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+        items.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'history-item';
+          const dateStr = new Date(item.timestamp).toLocaleString('id-ID');
+          div.innerHTML = `
+            <div class="thumb"><img src="${item.scanned}" alt="scan" /></div>
+            <div class="info">
+              <div class="title">${item.mode === 'color' ? 'Berwarna' : 'Hitam-Putih'}</div>
+              <div class="date">${dateStr}</div>
+            </div>
+            <div class="actions">
+              <button class="view-btn" data-id="${item.id}" title="Lihat"><i class="fas fa-eye"></i></button>
+              <button class="download-btn" data-id="${item.id}" title="Download PNG"><i class="fas fa-download"></i></button>
+              <button class="delete-btn danger" data-id="${item.id}" title="Hapus"><i class="fas fa-trash"></i></button>
+            </div>
+          `;
+          historyList.appendChild(div);
+
+          div.querySelector('.view-btn').addEventListener('click', function() {
+            const id = parseInt(this.dataset.id);
+            const found = items.find(i => i.id === id);
+            if (found) {
+              showPage('home');
+              loadImageFromDataURL(found.original);
             }
-
-            function getImageDataFromCanvas(canvas) {
-                const ctx = canvas.getContext('2d');
-                return ctx.getImageData(0, 0, canvas.width, canvas.height);
+          });
+          div.querySelector('.download-btn').addEventListener('click', function() {
+            const id = parseInt(this.dataset.id);
+            const found = items.find(i => i.id === id);
+            if (found) {
+              const link = document.createElement('a');
+              link.download = `scan_${id}.png`;
+              link.href = found.scanned;
+              link.click();
             }
-
-            // ---- Document detection & perspective correction ----
-            function detectDocumentCorners(mat) {
-                // mat: grayscale CV_8UC1
-                const gray = mat.clone();
-                // Blur
-                const blurred = new cv.Mat();
-                cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
-
-                // Canny
-                const edges = new cv.Mat();
-                cv.Canny(blurred, edges, 50, 150);
-
-                // Dilate to close gaps
-                const kernel = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(3, 3));
-                const dilated = new cv.Mat();
-                cv.dilate(edges, dilated, kernel);
-
-                // Find contours
-                const contours = new cv.MatVector();
-                const hierarchy = new cv.Mat();
-                cv.findContours(dilated, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
-
-                let bestContour = null;
-                let bestArea = 0;
-
-                for (let i = 0; i < contours.size(); i++) {
-                    const cnt = contours.get(i);
-                    const area = cv.contourArea(cnt);
-                    if (area < 100) continue;
-                    const perimeter = cv.arcLength(cnt, true);
-                    const approx = new cv.Mat();
-                    cv.approxPolyDP(cnt, approx, 0.02 * perimeter, true);
-                    if (approx.rows === 4) {
-                        if (area > bestArea) {
-                            bestArea = area;
-                            bestContour = approx.clone();
-                        }
-                    }
-                    approx.delete();
-                }
-
-                // Cleanup
-                gray.delete();
-                blurred.delete();
-                edges.delete();
-                kernel.delete();
-                dilated.delete();
-                contours.delete();
-                hierarchy.delete();
-
-                if (bestContour && bestContour.rows === 4) {
-                    const pts = [];
-                    for (let i = 0; i < 4; i++) {
-                        const x = bestContour.data32S[i * 2];
-                        const y = bestContour.data32S[i * 2 + 1];
-                        pts.push({ x, y });
-                    }
-                    bestContour.delete();
-
-                    // Sort: top-left, top-right, bottom-right, bottom-left
-                    pts.sort((a, b) => a.y - b.y);
-                    const top = pts.slice(0, 2).sort((a, b) => a.x - b.x);
-                    const bottom = pts.slice(2, 4).sort((a, b) => a.x - b.x);
-                    const ordered = [top[0], top[1], bottom[1], bottom[0]];
-
-                    return ordered;
-                }
-
-                return null;
+          });
+          div.querySelector('.delete-btn').addEventListener('click', async function() {
+            const id = parseInt(this.dataset.id);
+            if (confirm('Hapus item ini?')) {
+              await deleteHistoryItem(id);
+              renderHistory();
             }
+          });
+        });
+      } catch(err) {
+        console.error('Render history error:', err);
+      }
+    }
+
+    // =============================================
+    // SIMPAN KE RIWAYAT
+    // =============================================
+    btnSaveHistory.addEventListener('click', async function() {
+      if (!scannedCanvas || !imageDataUrl) return;
+      try {
+        const scannedDataUrl = scannedCanvas.toDataURL('image/png');
+        const mode = modeColor.checked ? 'color' : 'bw';
+        await saveHistoryItem(imageDataUrl, scannedDataUrl, mode);
+        alert('✅ Tersimpan ke riwayat!');
+        btnSaveHistory.disabled = true;
+        if (document.getElementById('pageHistory').classList.contains('active')) {
+          renderHistory();
+        }
+      } catch(err) {
+        alert('❌ Gagal menyimpan: '+err.message);
+      }
+    });
+
+    // =============================================
+    // CLEAR ALL HISTORY
+    // =============================================
+    btnClearHistory.addEventListener('click', async function() {
+      if (!confirm('Hapus semua riwayat?')) return;
+      try {
+        await clearAllHistory();
+        renderHistory();
+      } catch(err) {
+        alert('Gagal menghapus: '+err.message);
+      }
+    });
+
+    // =============================================
+    // NAVIGASI
+    // =============================================
+    function showPage(pageId) {
+      Object.keys(pageMap).forEach(key => {
+        pageMap[key].classList.toggle('active', key === pageId);
+      });
+      navButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.page === pageId);
+      });
+
+      if (pageId === 'history') {
+        renderHistory();
+      }
+
+      if (pageId === 'scan') {
+        startCamera();
+      } else {
+        stopCamera();
+      }
+    }
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        showPage(this.dataset.page);
+      });
+    });
+
+    // =============================================
+    // KAMERA - PERBAIKAN ERROR PERMISSION
+    // =============================================
+    // Cek dukungan browser
+    const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+
+    async function startCamera() {
+      if (cameraActive) return;
+      if (!hasGetUserMedia) {
+        alert('⚠️ Browser Anda tidak mendukung akses kamera. Gunakan Chrome/Edge/Firefox terbaru.');
+        showPage('home');
+        return;
+      }
+
+      try {
+        const constraints = {
+          video: { facingMode: 'environment', width: { ideal: 640 } },
+          audio: false
+        };
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = stream;
+        await video.play();
+        cameraActive = true;
+        console.log('📷 Kamera aktif');
+      } catch(err) {
+        console.error('Kamera error:', err);
+        let msg = 'Tidak dapat mengakses kamera. ';
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          msg += 'Izin kamera ditolak. Silakan berikan izin kamera di pengaturan browser dan muat ulang halaman.';
+        } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+          msg += 'Tidak ditemukan kamera pada perangkat Anda.';
+        } else {
+          msg += 'Error: ' + err.message;
+        }
+        alert('⚠️ ' + msg);
+        // Kembali ke beranda
+        showPage('home');
+      }
+    }
+
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(t => t.stop());
+        stream = null;
+        video.srcObject = null;
+        cameraActive = false;
+        console.log('📷 Kamera mati');
+      }
+    }
+
+    // Event tombol close kamera
+    btnCloseCam.addEventListener('click', function() {
+      showPage('home');
+    });
+
+    // Event tombol capture
+    btnCapture.addEventListener('click', function() {
+      if (!cameraActive || !stream) {
+        alert('Kamera belum siap. Silakan tunggu sebentar atau buka halaman Scan lagi.');
+        return;
+      }
+      // Capture frame
+      const canvas = document.createElement('canvas');
+      const vw = video.videoWidth || 640;
+      const vh = video.videoHeight || 480;
+      canvas.width = vw;
+      canvas.height = vh;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, vw, vh);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      // Bawa ke beranda
+      showPage('home');
+      loadImageFromDataURL(dataUrl);
+    });
+
+    // =============================================
+    // RESET
+    // =============================================
+    btnReset.addEventListener('click', ()=>{
+      imageDataUrl = null;
+      originalColorData = null;
+      scannedCanvas = null;
+      isScanning = false;
+      isProcessing = false;
+      previewImage.style.display = 'block';
+      previewImage.src = '';
+      const old = scanFrame.querySelector('canvas');
+      if (old) old.remove();
+      previewSection.classList.remove('active');
+      uploadZone.style.display = 'block';
+      scanLine.classList.remove('active');
+      thresholdControl.style.display = 'none';
+      modeControl.style.display = 'none';
+      btnScan.disabled = false;
+      btnScan.innerHTML = '<i class="fas fa-camera"></i> Scan';
+      btnPNG.disabled = true;
+      btnPDF.disabled = true;
+      btnSaveHistory.disabled = true;
+      fileInput.value = '';
+      modeBW.checked = true;
+    });
+
+    // =============================================
+    // INIT
+    // =============================================
+    (async function init() {
+      await openDB();
+      showPage('home');
+      console.log('📸 CamScanner Pro siap!');
+    })();
+
+  })();
+</script>
 
-            function perspectiveCorrect(srcMat, corners) {
-                // corners: [tl, tr, br, bl] (4 points)
-                const srcPts = cv.matFromArray(4, 1, cv.CV_32FC2, [
-                    corners[0].x, corners[0].y,
-                    corners[1].x, corners[1].y,
-                    corners[2].x, corners[2].y,
-                    corners[3].x, corners[3].y
-                ]);
-
-                // Compute target dimensions (max width/height from source)
-                const w1 = Math.hypot(corners[0].x - corners[1].x, corners[0].y - corners[1].y);
-                const w2 = Math.hypot(corners[3].x - corners[2].x, corners[3].y - corners[2].y);
-                const h1 = Math.hypot(corners[0].x - corners[3].x, corners[0].y - corners[3].y);
-                const h2 = Math.hypot(corners[1].x - corners[2].x, corners[1].y - corners[2].y);
-                const dstW = Math.round(Math.max(w1, w2));
-                const dstH = Math.round(Math.max(h1, h2));
-
-                // Clamp to reasonable size
-                const maxDim = 3500;
-                if (dstW > maxDim || dstH > maxDim) {
-                    const ratio = Math.min(maxDim / dstW, maxDim / dstH);
-                    const newW = Math.round(dstW * ratio);
-                    const newH = Math.round(dstH * ratio);
-                    const dstPts = cv.matFromArray(4, 1, cv.CV_32FC2, [
-                        0, 0,
-                        newW, 0,
-                        newW, newH,
-                        0, newH
-                    ]);
-                    const M = cv.getPerspectiveTransform(srcPts, dstPts);
-                    const warped = new cv.Mat();
-                    cv.warpPerspective(srcMat, warped, M, new cv.Size(newW, newH), cv.INTER_LINEAR, cv.BORDER_CONSTANT,
-                        new cv.Scalar(255, 255, 255, 255));
-                    srcPts.delete();
-                    dstPts.delete();
-                    M.delete();
-                    return warped;
-                }
-
-                const dstPts = cv.matFromArray(4, 1, cv.CV_32FC2, [
-                    0, 0,
-                    dstW, 0,
-                    dstW, dstH,
-                    0, dstH
-                ]);
-                const M = cv.getPerspectiveTransform(srcPts, dstPts);
-                const warped = new cv.Mat();
-                cv.warpPerspective(srcMat, warped, M, new cv.Size(dstW, dstH), cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv
-                    .Scalar(255, 255, 255, 255));
-                srcPts.delete();
-                dstPts.delete();
-                M.delete();
-                return warped;
-            }
-
-            // ---- Filter modes ----
-            function applyFilter(mat, mode) {
-                // mat: 3-channel or 1-channel CV_8U
-                let result = mat.clone();
-
-                switch (mode) {
-                    case 'original':
-                        // Just return as-is (already perspective corrected)
-                        break;
-
-                    case 'auto': {
-                        // Shadow removal + contrast + sharpening
-                        const lab = new cv.Mat();
-                        cv.cvtColor(result, lab, cv.COLOR_BGR2Lab);
-                        const channels = new cv.MatVector();
-                        cv.split(lab, channels);
-                        const L = channels.get(0);
-
-                        // CLAHE on L channel
-                        const clahe = new cv.CLAHE(2.0, new cv.Size(8, 8));
-                        const L_eq = new cv.Mat();
-                        clahe.apply(L, L_eq);
-                        channels.set(0, L_eq);
-                        const lab_eq = new cv.Mat();
-                        cv.merge(channels, lab_eq);
-                        const resultEq = new cv.Mat();
-                        cv.cvtColor(lab_eq, resultEq, cv.COLOR_Lab2BGR);
-
-                        // Shadow removal: estimate background with large blur, then divide
-                        const gray = new cv.Mat();
-                        cv.cvtColor(resultEq, gray, cv.COLOR_BGR2GRAY);
-                        const bg = new cv.Mat();
-                        const ksize = Math.max(31, Math.min(gray.rows, gray.cols) / 30);
-                        const ksizeInt = Math.floor(ksize / 2) * 2 + 1;
-                        cv.GaussianBlur(gray, bg, new cv.Size(ksizeInt, ksizeInt), 0);
-                        const norm = new cv.Mat();
-                        cv.divide(gray, bg, norm, 255.0 / 128.0);
-                        // Convert back to 3-channel
-                        const norm3 = new cv.Mat();
-                        cv.cvtColor(norm, norm3, cv.COLOR_GRAY2BGR);
-
-                        // Sharpening
-                        const sharp = new cv.Mat();
-                        const kernel = cv.matFromArray(3, 3, cv.CV_32F, [
-                            0, -1, 0,
-                            -1, 5, -1,
-                            0, -1, 0
-                        ]);
-                        cv.filter2D(norm3, sharp, -1, kernel);
-
-                        result = sharp;
-                        lab.delete();
-                        channels.delete();
-                        L.delete();
-                        clahe.delete();
-                        L_eq.delete();
-                        lab_eq.delete();
-                        resultEq.delete();
-                        gray.delete();
-                        bg.delete();
-                        norm.delete();
-                        norm3.delete();
-                        kernel.delete();
-                        break;
-                    }
-
-                    case 'grayscale': {
-                        const gray = new cv.Mat();
-                        cv.cvtColor(result, gray, cv.COLOR_BGR2GRAY);
-                        // Contrast stretch
-                        let minVal = 255,
-                            maxVal = 0;
-                        for (let i = 0; i < gray.data.length; i++) {
-                            const v = gray.data[i];
-                            if (v < minVal) minVal = v;
-                            if (v > maxVal) maxVal = v;
-                        }
-                        const range = maxVal - minVal;
-                        if (range > 10) {
-                            const alpha = 255.0 / range;
-                            const beta = -minVal * alpha;
-                            const dst = new cv.Mat();
-                            cv.convertScaleAbs(gray, dst, alpha, beta);
-                            result = dst;
-                            gray.delete();
-                        } else {
-                            // Convert back to 3-channel for display
-                            const gray3 = new cv.Mat();
-                            cv.cvtColor(gray, gray3, cv.COLOR_GRAY2BGR);
-                            result = gray3;
-                            gray.delete();
-                        }
-                        break;
-                    }
-
-                    case 'bw': {
-                        // Shadow removal first
-                        const gray = new cv.Mat();
-                        cv.cvtColor(result, gray, cv.COLOR_BGR2GRAY);
-                        const bg = new cv.Mat();
-                        const ksize = Math.max(31, Math.min(gray.rows, gray.cols) / 30);
-                        const ksizeInt = Math.floor(ksize / 2) * 2 + 1;
-                        cv.GaussianBlur(gray, bg, new cv.Size(ksizeInt, ksizeInt), 0);
-                        const norm = new cv.Mat();
-                        cv.divide(gray, bg, norm, 255.0 / 128.0);
-
-                        // Adaptive threshold
-                        const thresh = new cv.Mat();
-                        const blockSize = Math.floor(Math.min(norm.rows, norm.cols) / 20);
-                        const bs = blockSize % 2 === 0 ? blockSize + 1 : blockSize;
-                        const bsClamped = Math.max(3, Math.min(bs, 99));
-                        cv.adaptiveThreshold(norm, thresh, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY,
-                            bsClamped, 4);
-
-                        // Convert to 3-channel for display
-                        const bw3 = new cv.Mat();
-                        cv.cvtColor(thresh, bw3, cv.COLOR_GRAY2BGR);
-                        result = bw3;
-
-                        gray.delete();
-                        bg.delete();
-                        norm.delete();
-                        thresh.delete();
-                        break;
-                    }
-
-                    default:
-                        break;
-                }
-
-                return result;
-            }
-
-            // ---- Main processing pipeline ----
-            async function processImage(imageElement) {
-                if (!cvReady) {
-                    alert('Engine OpenCV.js belum siap. Tunggu sebentar.');
-                    return null;
-                }
-                if (processingLock) return null;
-                processingLock = true;
-                showStatus('Mendeteksi dokumen...');
-
-                try {
-                    // Load image at high resolution
-                    const img = imageElement;
-                    const srcCanvas = document.createElement('canvas');
-                    let w = img.naturalWidth || img.width;
-                    let h = img.naturalHeight || img.height;
-                    // Keep full resolution but cap for memory safety
-                    const maxDim = 4000;
-                    if (w > maxDim || h > maxDim) {
-                        const ratio = Math.min(maxDim / w, maxDim / h);
-                        w = Math.floor(w * ratio);
-                        h = Math.floor(h * ratio);
-                    }
-                    srcCanvas.width = w;
-                    srcCanvas.height = h;
-                    const ctx = srcCanvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
-
-                    // Convert to OpenCV Mat
-                    const srcMat = cv.imread(srcCanvas);
-
-                    // Create a downscaled version for detection (faster)
-                    const detectScale = Math.min(1, 1200 / Math.max(w, h));
-                    const dw = Math.floor(w * detectScale);
-                    const dh = Math.floor(h * detectScale);
-                    const detectCanvas = document.createElement('canvas');
-                    detectCanvas.width = dw;
-                    detectCanvas.height = dh;
-                    const dCtx = detectCanvas.getContext('2d');
-                    dCtx.drawImage(img, 0, 0, dw, dh);
-                    const detectMat = cv.imread(detectCanvas);
-
-                    // Grayscale for detection
-                    const grayDetect = new cv.Mat();
-                    cv.cvtColor(detectMat, grayDetect, cv.COLOR_BGR2GRAY);
-
-                    // Detect corners
-                    const corners = detectDocumentCorners(grayDetect);
-                    let warped = null;
-                    let cornerPoints = null;
-
-                    if (corners) {
-                        showStatus('Meluruskan dokumen...');
-                        // Map corners back to original coordinates
-                        const scaleX = w / dw;
-                        const scaleY = h / dh;
-                        const origCorners = corners.map(p => ({
-                            x: Math.round(p.x * scaleX),
-                            y: Math.round(p.y * scaleY)
-                        }));
-                        cornerPoints = origCorners;
-                        // Perspective correction on full-res image
-                        warped = perspectiveCorrect(srcMat, origCorners);
-                        docStatusBadge.textContent = '✓ Dokumen terdeteksi & diluruskan';
-                        docStatusBadge.style.background = '#7bed9f';
-                        docStatusBadge.style.color = '#1a5b2a';
-                    } else {
-                        // Fallback: use full image
-                        showStatus('Dokumen tidak terdeteksi, gunakan seluruh gambar');
-                        warped = srcMat.clone();
-                        cornerPoints = null;
-                        docStatusBadge.textContent = '⚠ Fallback: seluruh gambar';
-                        docStatusBadge.style.background = '#f9ca24';
-                        docStatusBadge.style.color = '#7d5d0a';
-                    }
-
-                    // Cleanup detection mats
-                    detectMat.delete();
-                    grayDetect.delete();
-                    if (srcMat && srcMat !== warped) srcMat.delete();
-
-                    if (!warped) {
-                        throw new Error('Gagal memproses gambar');
-                    }
-
-                    showStatus('Mengoptimalkan hasil...');
-
-                    // Apply filter
-                    const filtered = applyFilter(warped, currentFilter);
-                    warped.delete();
-
-                    // Convert to canvas for display
-                    const displayCanvas = matToCanvas(filtered);
-                    filtered.delete();
-
-                    // Store result
-                    currentImageData = {
-                        canvas: displayCanvas,
-                        originalWidth: w,
-                        originalHeight: h,
-                        processedCanvas: displayCanvas,
-                        corners: cornerPoints,
-                        filterUsed: currentFilter
-                    };
-
-                    // Show on result canvas (with CSS scaling)
-                    resultCanvas.width = displayCanvas.width;
-                    resultCanvas.height = displayCanvas.height;
-                    const rCtx = resultCanvas.getContext('2d');
-                    rCtx.drawImage(displayCanvas, 0, 0);
-
-                    hideStatus();
-                    processingLock = false;
-                    return displayCanvas;
-
-                } catch (err) {
-                    console.error('Process error:', err);
-                    hideStatus();
-                    processingLock = false;
-                    alert('Gagal memproses gambar: ' + err.message);
-                    return null;
-                }
-            }
-
-            // ---- UI helpers ----
-            function showStatus(msg) {
-                statusOverlay.classList.add('active');
-                statusMessage.textContent = msg;
-            }
-
-            function hideStatus() {
-                statusOverlay.classList.remove('active');
-            }
-
-            // ---- Scan & Add ----
-            async function scanAndAdd(imageElement) {
-                if (!imageElement) return false;
-                if (!cvReady) {
-                    alert('Engine OpenCV.js belum siap.');
-                    return false;
-                }
-                scanBtn.disabled = true;
-                scanBtn.innerHTML = '<span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:white;animation:spin 0.6s linear infinite;"></span> Memproses...';
-
-                try {
-                    const resultCanvas = await processImage(imageElement);
-                    if (!resultCanvas) {
-                        scanBtn.innerHTML = '<i class="fas fa-magic"></i> Scan & Tambah';
-                        scanBtn.disabled = false;
-                        return false;
-                    }
-
-                    // Add to documents
-                    const docCanvas = document.createElement('canvas');
-                    docCanvas.width = resultCanvas.width;
-                    docCanvas.height = resultCanvas.height;
-                    const ctx = docCanvas.getContext('2d');
-                    ctx.drawImage(resultCanvas, 0, 0);
-
-                    documents.push({ canvas: docCanvas, date: new Date() });
-                    updateDocumentList();
-                    exportPdfBtn.disabled = false;
-                    scanBtn.innerHTML = '<i class="fas fa-magic"></i> Scan & Tambah';
-                    scanBtn.disabled = false;
-                    return true;
-
-                } catch (err) {
-                    console.error(err);
-                    alert('Gagal memproses gambar');
-                    scanBtn.innerHTML = '<i class="fas fa-magic"></i> Scan & Tambah';
-                    scanBtn.disabled = false;
-                    return false;
-                }
-            }
-
-            // ---- Document list ----
-            function updateDocumentList() {
-                docCountSpan.innerText = documents.length;
-                if (documents.length === 0) {
-                    documentListContainer.innerHTML =
-                        '<div style="text-align:center;color:#94a3b8;padding:24px;"><i class="fas fa-file-alt" style="font-size:2rem;margin-bottom:8px;display:block;"></i>Belum ada halaman</div>';
-                    exportPdfBtn.disabled = true;
-                    return;
-                }
-                let html = '';
-                documents.forEach((doc, idx) => {
-                    html += `
-                        <div class="doc-item">
-                            <div class="doc-icon"><i class="fas fa-file-image"></i></div>
-                            <div class="doc-info">
-                                <div class="doc-title">Halaman ${idx+1}</div>
-                                <div class="doc-date">${doc.date.toLocaleTimeString()}</div>
-                            </div>
-                            <button class="doc-delete delete-doc" data-index="${idx}"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                    `;
-                });
-                documentListContainer.innerHTML = html;
-                documentListContainer.querySelectorAll('.delete-doc').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const idx = parseInt(this.dataset.index);
-                        documents.splice(idx, 1);
-                        updateDocumentList();
-                    });
-                });
-            }
-
-            // ---- PDF Export ----
-            async function exportMultiPagePdf() {
-                if (documents.length === 0) { alert('Tidak ada halaman.'); return; }
-                const fileName = prompt('Nama file PDF:', `Scan_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}`);
-                if (!fileName) return;
-
-                exportPdfBtn.innerHTML = '<span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:white;animation:spin 0.6s linear infinite;"></span> Membuat PDF...';
-                exportPdfBtn.disabled = true;
-
-                try {
-                    const { jsPDF } = window.jspdf;
-                    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-                    const pageWidth = pdf.internal.pageSize.getWidth();
-                    const pageHeight = pdf.internal.pageSize.getHeight();
-                    const margin = 10;
-                    const fitWidth = pageWidth - (margin * 2);
-
-                    for (let i = 0; i < documents.length; i++) {
-                        const canvas = documents[i].canvas;
-                        const imgRatio = canvas.height / canvas.width;
-                        let imgHeightMm = fitWidth * imgRatio;
-                        if (imgHeightMm > pageHeight - margin * 2) imgHeightMm = pageHeight - margin * 2;
-
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
-                        if (i > 0) pdf.addPage();
-                        pdf.addImage(dataUrl, 'JPEG', margin, margin, fitWidth, imgHeightMm, undefined, 'FAST');
-                    }
-
-                    pdf.save(`${fileName}.pdf`);
-                    exportPdfBtn.innerHTML = '<i class="fas fa-save"></i> Simpan PDF';
-                    exportPdfBtn.disabled = false;
-
-                } catch (err) {
-                    console.error(err);
-                    alert('Gagal membuat PDF: ' + err.message);
-                    exportPdfBtn.innerHTML = '<i class="fas fa-save"></i> Simpan PDF';
-                    exportPdfBtn.disabled = false;
-                }
-            }
-
-            // ---- Camera ----
-            async function startCamera() {
-                try {
-                    if (stream) {
-                        stream.getTracks().forEach(t => t.stop());
-                        stream = null;
-                    }
-                    const constraints = {
-                        video: {
-                            facingMode: 'environment',
-                            width: { ideal: 1920 },
-                            height: { ideal: 1080 }
-                        },
-                        audio: false
-                    };
-                    stream = await navigator.mediaDevices.getUserMedia(constraints);
-                    cameraVideo.srcObject = stream;
-                    cameraVideo.onloadedmetadata = function() {
-                        cameraVideo.play();
-                    };
-                    cameraPreview.classList.add('active');
-                    isCameraMode = true;
-                } catch (err) {
-                    alert('Tidak dapat mengakses kamera: ' + err.message);
-                }
-            }
-
-            function stopCamera() {
-                if (stream) {
-                    stream.getTracks().forEach(t => t.stop());
-                    stream = null;
-                }
-                cameraVideo.srcObject = null;
-                cameraPreview.classList.remove('active');
-                isCameraMode = false;
-            }
-
-            function captureFromCamera() {
-                if (!cameraVideo.videoWidth || !cameraVideo.videoHeight) {
-                    alert('Kamera belum siap');
-                    return;
-                }
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = cameraVideo.videoWidth;
-                tempCanvas.height = cameraVideo.videoHeight;
-                const ctx = tempCanvas.getContext('2d');
-                ctx.drawImage(cameraVideo, 0, 0);
-                const img = new Image();
-                img.onload = function() {
-                    scanAndAdd(img);
-                };
-                img.src = tempCanvas.toDataURL('image/jpeg', 0.95);
-            }
-
-            // ---- Mode switching ----
-            function setMode(mode) {
-                if (mode === 'gallery') {
-                    stopCamera();
-                    gallerySection.style.display = 'block';
-                    cameraPreview.classList.remove('active');
-                    tabGallery.classList.add('active');
-                    tabCamera.classList.remove('active');
-                    navGallery.classList.add('active');
-                    navCamera.classList.remove('active');
-                    navDocs.classList.remove('active');
-                    isCameraMode = false;
-                } else if (mode === 'camera') {
-                    gallerySection.style.display = 'none';
-                    startCamera();
-                    tabCamera.classList.add('active');
-                    tabGallery.classList.remove('active');
-                    navCamera.classList.add('active');
-                    navGallery.classList.remove('active');
-                    navDocs.classList.remove('active');
-                    isCameraMode = true;
-                } else if (mode === 'docs') {
-                    document.getElementById('documentListContainer').scrollIntoView({ behavior: 'smooth' });
-                    navDocs.classList.add('active');
-                    navGallery.classList.remove('active');
-                    navCamera.classList.remove('active');
-                }
-            }
-
-            // ---- Filter switching ----
-            function setFilter(mode) {
-                currentFilter = mode;
-                filterBtns.forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.mode === mode);
-                });
-                // If we have processed image, re-process with new filter
-                if (currentImageData && currentImageData.processedCanvas) {
-                    // Re-process from original stored data
-                    // We need the original mat or image
-                    // For simplicity, we re-process from the last loaded image
-                    // The currentImageData stores the processed canvas, but we need to re-apply filter
-                    // We stored the original image in currentImageData.originalImage
-                    if (currentImageData.originalImage) {
-                        processImage(currentImageData.originalImage).then(canvas => {
-                            if (canvas) {
-                                currentImageData.processedCanvas = canvas;
-                            }
-                        });
-                    }
-                }
-            }
-
-            // ---- Init ----
-            function init() {
-                // Load OpenCV
-                initOpenCV();
-
-                // Gallery
-                uploadTrigger.addEventListener('click', () => imageLoader.click());
-                imageLoader.addEventListener('change', async function(e) {
-                    const files = Array.from(e.target.files);
-                    for (const file of files) {
-                        if (!file.type.match('image/(jpeg|png|jpg)')) continue;
-                        const reader = new FileReader();
-                        reader.onload = function(ev) {
-                            const img = new Image();
-                            img.onload = function() {
-                                // Store original image reference
-                                currentImageData = currentImageData || {};
-                                currentImageData.originalImage = img;
-                                scanAndAdd(img);
-                            };
-                            img.src = ev.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                    imageLoader.value = '';
-                });
-
-                // Scan button
-                scanBtn.addEventListener('click', function() {
-                    if (isCameraMode && cameraVideo.videoWidth) {
-                        captureFromCamera();
-                    } else {
-                        // Try to use last loaded image
-                        if (currentImageData && currentImageData.originalImage) {
-                            scanAndAdd(currentImageData.originalImage);
-                        } else {
-                            alert('Gunakan kamera atau pilih gambar dari galeri terlebih dahulu.');
-                        }
-                    }
-                });
-
-                // Export PDF
-                exportPdfBtn.addEventListener('click', exportMultiPagePdf);
-
-                // Clear all
-                clearAllBtn.addEventListener('click', function() {
-                    if (confirm('Hapus semua halaman?')) {
-                        documents = [];
-                        updateDocumentList();
-                        exportPdfBtn.disabled = true;
-                        const ctx = resultCanvas.getContext('2d');
-                        ctx.clearRect(0, 0, resultCanvas.width, resultCanvas.height);
-                        currentImageData = null;
-                        docStatusBadge.textContent = 'Belum diproses';
-                        docStatusBadge.style.background = '#eef2ff';
-                        docStatusBadge.style.color = '#1e40af';
-                    }
-                });
-
-                // Camera controls
-                captureBtn.addEventListener('click', captureFromCamera);
-                closeCameraBtn.addEventListener('click', stopCamera);
-
-                // Tabs
-                tabGallery.addEventListener('click', () => setMode('gallery'));
-                tabCamera.addEventListener('click', () => setMode('camera'));
-                navGallery.addEventListener('click', () => setMode('gallery'));
-                navCamera.addEventListener('click', () => setMode('camera'));
-                navDocs.addEventListener('click', () => setMode('docs'));
-
-                // Filter buttons
-                filterBtns.forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const mode = this.dataset.mode;
-                        setFilter(mode);
-                    });
-                });
-
-                // Start in gallery mode
-                setMode('gallery');
-
-                // Placeholder on result canvas
-                const ctx = resultCanvas.getContext('2d');
-                resultCanvas.width = 600;
-                resultCanvas.height = 450;
-                ctx.fillStyle = '#f8fafc';
-                ctx.fillRect(0, 0, 600, 450);
-                ctx.fillStyle = '#94a3b8';
-                ctx.font = '14px Roboto, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('Pilih gambar atau gunakan kamera', 300, 220);
-                ctx.fillText('Hasil scan akan tampil di sini', 300, 245);
-
-                // Override processImage to store original
-                const origProcess = processImage;
-                processImage = async function(imageElement) {
-                    const result = await origProcess.call(this, imageElement);
-                    if (result && !currentImageData) {
-                        currentImageData = { originalImage: imageElement };
-                    } else if (result && currentImageData) {
-                        currentImageData.originalImage = imageElement;
-                    }
-                    return result;
-                };
-
-                console.log('SmartScan Pro siap');
-            }
-
-            // Override scanAndAdd to store reference
-            const origScanAndAdd = scanAndAdd;
-            scanAndAdd = async function(imageElement) {
-                // Store original for re-processing
-                if (!currentImageData) currentImageData = {};
-                currentImageData.originalImage = imageElement;
-                return await origScanAndAdd.call(this, imageElement);
-            };
-
-            // Handle filter change with re-processing
-            const origSetFilter = setFilter;
-            setFilter = function(mode) {
-                currentFilter = mode;
-                filterBtns.forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.mode === mode);
-                });
-                if (currentImageData && currentImageData.originalImage) {
-                    // Re-process with new filter
-                    const img = currentImageData.originalImage;
-                    // Use the process function directly
-                    processImage(img).then(canvas => {
-                        if (canvas) {
-                            currentImageData.processedCanvas = canvas;
-                            // Update display
-                            const rCtx = resultCanvas.getContext('2d');
-                            resultCanvas.width = canvas.width;
-                            resultCanvas.height = canvas.height;
-                            rCtx.drawImage(canvas, 0, 0);
-                        }
-                    });
-                }
-            };
-
-            // Start when DOM ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', init);
-            } else {
-                init();
-            }
-
-        })();
-    </script>
 </body>
 </html>
