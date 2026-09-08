@@ -51,7 +51,7 @@
             transition: all 0.3s ease;
         }
 
-        /* ===== FULLSCREEN CAMERA MODE ===== */
+        /* ===== FULLSCREEN CAMERA MODE (PORTRAIT) ===== */
         .app-wrapper.camera-fullscreen {
             max-height: 100vh !important;
             height: 100vh !important;
@@ -68,6 +68,7 @@
         .app-wrapper.camera-fullscreen .app-content {
             padding: 0 !important;
             background: #000 !important;
+            overflow: hidden !important;
         }
 
         .app-wrapper.camera-fullscreen .camera-container {
@@ -75,17 +76,35 @@
             min-height: 100% !important;
             height: 100% !important;
             width: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: #000 !important;
         }
 
         .app-wrapper.camera-fullscreen .camera-container video {
             border-radius: 0 !important;
-            object-fit: cover;
+            object-fit: cover !important;
             width: 100% !important;
             height: 100% !important;
+            display: block !important;
         }
 
         .app-wrapper.camera-fullscreen .camera-container .camera-overlay {
             bottom: 40px !important;
+            gap: 24px !important;
+        }
+
+        .app-wrapper.camera-fullscreen .camera-container .camera-overlay button {
+            width: 64px !important;
+            height: 64px !important;
+            font-size: 30px !important;
+        }
+
+        .app-wrapper.camera-fullscreen .camera-container .camera-overlay .btn-close-cam {
+            width: 54px !important;
+            height: 54px !important;
+            font-size: 22px !important;
         }
 
         /* ===== HEADER ===== */
