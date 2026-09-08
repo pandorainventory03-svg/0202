@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>CamScanner Pro</title>
+    <title>ScanKu Pro</title>
 
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
@@ -914,7 +914,7 @@
         <header class="app-header">
             <div class="left">
                 <div class="logo"><i class="fas fa-print"></i></div>
-                <h1>CamScanner <small>Pro Scan</small></h1>
+                <h1>ScanKu <small>Pro</small></h1>
             </div>
             <div class="right">
                 <i class="fas fa-cog"></i>
@@ -1228,7 +1228,7 @@
                             }
                             const blurred = applyKernel3x3(grayData, w, h, blurKernel, blurDivisor, 0);
                             const sharpened = applyKernel3x3(blurred, w, h, sharpenKernel, sharpenDivisor,
-                            sharpenOffset);
+                                sharpenOffset);
                             const binaryData = new Uint8ClampedArray(sharpened.length);
                             const th = threshold;
                             for (let i = 0; i < sharpened.length; i += 4) {
@@ -1413,7 +1413,7 @@
                     doc.setFontSize(8);
                     doc.setTextColor(180, 180, 180);
                     doc.setFont('helvetica', 'italic');
-                    doc.text(`CamScanner Pro • ${new Date().toLocaleDateString('id-ID')}`, pageW - margin, pageH - 6, {
+                    doc.text(`ScanKu Pro • ${new Date().toLocaleDateString('id-ID')}`, pageW - margin, pageH - 6, {
                         align: 'right'
                     });
                     doc.save(`scan_${Date.now()}.pdf`);
@@ -1423,7 +1423,7 @@
             // =============================================
             // INDEXEDDB - RIWAYAT
             // =============================================
-            const DB_NAME = 'CamScannerDB';
+            const DB_NAME = 'ScanKuDB';
             const STORE_NAME = 'history';
             let db = null;
 
@@ -1769,7 +1769,7 @@
             (async function init() {
                 await openDB();
                 showPage('home');
-                console.log('📸 CamScanner Pro siap!');
+                console.log('📸 ScanKu Pro siap!');
             })();
 
         })();
