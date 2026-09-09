@@ -10,6 +10,9 @@
     <!-- jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
     </script>
+    <!-- Tesseract.js untuk OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
+    </script>
     <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -551,6 +554,14 @@
             border-color: #c62828;
         }
 
+        .btn-warning {
+            background: #f9a825;
+            color: #fff;
+        }
+        .btn-warning:hover {
+            background: #f57f17;
+        }
+
         .btn .spinner {
             display: inline-block;
             width: 16px;
@@ -776,6 +787,44 @@
             color: #b0bec5;
         }
 
+        /* ===== OCR SECTION ===== */
+        .ocr-section {
+            display: none;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 12px;
+            border: 1px solid #e8edf4;
+        }
+        .ocr-section.active {
+            display: block;
+        }
+        .ocr-section h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0a1929;
+            margin-bottom: 8px;
+        }
+        .ocr-section textarea {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        .ocr-section .ocr-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .ocr-section .ocr-actions .btn {
+            flex: 0 1 auto;
+            min-width: 60px;
+        }
+
         /* ===== BOTTOM NAV ===== */
         .bottom-nav {
             background: #ffffff;
@@ -963,13 +1012,28 @@
 
                     <div class="action-bar">
                         <button class="btn btn-primary" id="btnScan"><i class="fas fa-camera"></i> Scan</button>
+                        <button class="btn btn-warning" id="btnDetectEdges"><i class="fas fa-crop-alt"></i> Deteksi Tepi</button>
                         <button class="btn btn-success" id="btnDownloadPNG" disabled><i class="fas fa-image"></i> PNG</button>
                         <button class="btn btn-success" id="btnDownloadPDF" disabled><i class="fas fa-file-pdf"></i> PDF</button>
                         <button class="btn btn-danger-outline" id="btnReset"><i class="fas fa-undo-alt"></i> Reset</button>
                     </div>
-                    <button class="btn btn-primary" id="btnSaveHistory" disabled style="background: #6a1b9a; box-shadow: 0 4px 12px rgba(106,27,154,0.25);">
+
+                    <button class="btn btn-primary" id="btnOCR" disabled style="background: #6a1b9a; box-shadow: 0 4px 12px rgba(106,27,154,0.25);">
+                        <i class="fas fa-font"></i> OCR & Edit Teks
+                    </button>
+                    <button class="btn btn-primary" id="btnSaveHistory" disabled style="background: #1a237e; box-shadow: 0 4px 12px rgba(26,35,126,0.25);">
                         <i class="fas fa-save"></i> Simpan ke Riwayat
                     </button>
+
+                    <!-- OCR Result -->
+                    <div class="ocr-section" id="ocrSection">
+                        <h4><i class="fas fa-pen-fancy"></i> Hasil OCR (Edit Teks)</h4>
+                        <textarea id="ocrText" rows="5" placeholder="Teks hasil OCR akan muncul di sini..."></textarea>
+                        <div class="ocr-actions">
+                            <button class="btn btn-primary" id="btnCopyOCR"><i class="fas fa-copy"></i> Salin</button>
+                            <button class="btn btn-success" id="btnSaveOCR" style="background:#2e7d32;"><i class="fas fa-save"></i> Simpan</button>
+                        </div>
+                    </div>
                 </section>
             </div>
 
@@ -1041,6 +1105,8 @@
             const btnPDF = document.getElementById('btnDownloadPDF');
             const btnReset = document.getElementById('btnReset');
             const btnSaveHistory = document.getElementById('btnSaveHistory');
+            const btnOCR = document.getElementById('btnOCR');
+            const btnDetectEdges = document.getElementById('btnDetectEdges');
             const scanFrame = document.getElementById('scanFrame');
             const thresholdSlider = document.getElementById('thresholdSlider');
             const thresholdValue = document.getElementById('thresholdValue');
@@ -1048,6 +1114,12 @@
             const modeControl = document.getElementById('modeControl');
             const modeBW = document.getElementById('modeBW');
             const modeColor = document.getElementById('modeColor');
+
+            // OCR
+            const ocrSection = document.getElementById('ocrSection');
+            const ocrText = document.getElementById('ocrText');
+            const btnCopyOCR = document.getElementById('btnCopyOCR');
+            const btnSaveOCR = document.getElementById('btnSaveOCR');
 
             // Camera
             const video = document.getElementById('video');
@@ -1074,11 +1146,12 @@
             let originalColorData = null;
             let canvasWidth = 0,
                 canvasHeight = 0;
-            let scannedCanvas = null;
+            let scannedCanvas = null; // hasil scan (canvas)
             let isScanning = false;
             let isProcessing = false;
             let stream = null;
             let cameraActive = false;
+            let currentImageData = null; // untuk deteksi tepi / OCR
 
             // =============================================
             // KERNEL
@@ -1096,6 +1169,18 @@
             ];
             const sharpenDivisor = 1;
             const sharpenOffset = 0;
+
+            // Sobel kernels
+            const sobelX = [
+                [-1, 0, 1],
+                [-2, 0, 2],
+                [-1, 0, 1]
+            ];
+            const sobelY = [
+                [-1, -2, -1],
+                [0, 0, 0],
+                [1, 2, 1]
+            ];
 
             // =============================================
             // HELPERS
@@ -1254,9 +1339,12 @@
                         canvas.style.maxHeight = '340px';
                         canvas.style.borderRadius = '12px';
                         scannedCanvas = canvas;
+                        currentImageData = canvas; // simpan untuk deteksi tepi/OCR
                         btnPNG.disabled = false;
                         btnPDF.disabled = false;
                         btnSaveHistory.disabled = false;
+                        btnOCR.disabled = false;
+                        ocrSection.classList.remove('active');
                         isProcessing = false;
                     } catch (err) {
                         console.error(err);
@@ -1277,10 +1365,13 @@
                 if (old) old.remove();
                 previewSection.classList.add('active');
                 scannedCanvas = null;
+                currentImageData = null;
                 originalColorData = null;
                 btnPNG.disabled = true;
                 btnPDF.disabled = true;
                 btnSaveHistory.disabled = true;
+                btnOCR.disabled = true;
+                ocrSection.classList.remove('active');
                 scanLine.classList.remove('active');
                 uploadZone.style.display = 'none';
                 thresholdControl.style.display = 'none';
@@ -1382,7 +1473,220 @@
                 }
             });
 
-            // ===== DOWNLOADS =====
+            // =============================================
+            // DETEKSI TEPI (Auto Crop)
+            // =============================================
+            function detectEdgesAndCrop() {
+                if (!currentImageData && !scannedCanvas) {
+                    alert('Tidak ada gambar untuk diproses. Lakukan scan terlebih dahulu.');
+                    return;
+                }
+                // Gunakan scannedCanvas jika ada, atau ambil dari originalColorData
+                let sourceCanvas = scannedCanvas;
+                if (!sourceCanvas) {
+                    // buat canvas dari originalColorData
+                    const c = document.createElement('canvas');
+                    c.width = canvasWidth;
+                    c.height = canvasHeight;
+                    const ctx = c.getContext('2d');
+                    const imageData = new ImageData(originalColorData.data, canvasWidth, canvasHeight);
+                    ctx.putImageData(imageData, 0, 0);
+                    sourceCanvas = c;
+                }
+
+                const w = sourceCanvas.width,
+                    h = sourceCanvas.height;
+                const ctx = sourceCanvas.getContext('2d');
+                const imageData = ctx.getImageData(0, 0, w, h);
+                const data = imageData.data;
+
+                // 1. Grayscale
+                const gray = new Uint8ClampedArray(w * h);
+                for (let i = 0; i < data.length; i += 4) {
+                    const g = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+                    gray[i / 4] = g;
+                }
+
+                // 2. Blur (3x3)
+                const blurred = new Float32Array(w * h);
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        let sum = 0;
+                        for (let ky = -1; ky <= 1; ky++) {
+                            for (let kx = -1; kx <= 1; kx++) {
+                                const idx = (y + ky) * w + (x + kx);
+                                sum += gray[idx] * blurKernel[ky + 1][kx + 1];
+                            }
+                        }
+                        blurred[y * w + x] = sum / blurDivisor;
+                    }
+                }
+
+                // 3. Sobel edge detection
+                const mag = new Float32Array(w * h);
+                let maxMag = 0;
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        let gx = 0,
+                            gy = 0;
+                        for (let ky = -1; ky <= 1; ky++) {
+                            for (let kx = -1; kx <= 1; kx++) {
+                                const idx = (y + ky) * w + (x + kx);
+                                const val = blurred[idx];
+                                gx += val * sobelX[ky + 1][kx + 1];
+                                gy += val * sobelY[ky + 1][kx + 1];
+                            }
+                        }
+                        const m = Math.sqrt(gx * gx + gy * gy);
+                        mag[y * w + x] = m;
+                        if (m > maxMag) maxMag = m;
+                    }
+                }
+
+                // 4. Threshold untuk mendapatkan tepi biner
+                const edgeThreshold = 30; // bisa disesuaikan
+                const edgePixels = [];
+                for (let i = 0; i < mag.length; i++) {
+                    if (mag[i] > edgeThreshold) {
+                        const x = i % w;
+                        const y = Math.floor(i / w);
+                        edgePixels.push({ x, y });
+                    }
+                }
+
+                if (edgePixels.length < 10) {
+                    alert('Tidak dapat mendeteksi tepi dokumen. Coba gambar dengan kontras lebih jelas.');
+                    return;
+                }
+
+                // Cari bounding box dari edge pixels
+                let minX = w,
+                    maxX = 0,
+                    minY = h,
+                    maxY = 0;
+                for (const p of edgePixels) {
+                    if (p.x < minX) minX = p.x;
+                    if (p.x > maxX) maxX = p.x;
+                    if (p.y < minY) minY = p.y;
+                    if (p.y > maxY) maxY = p.y;
+                }
+
+                // Tambahkan margin kecil (5%)
+                const margin = 0.05;
+                const padX = (maxX - minX) * margin;
+                const padY = (maxY - minY) * margin;
+                minX = Math.max(0, Math.floor(minX - padX));
+                maxX = Math.min(w, Math.ceil(maxX + padX));
+                minY = Math.max(0, Math.floor(minY - padY));
+                maxY = Math.min(h, Math.ceil(maxY + padY));
+
+                if (maxX - minX < 20 || maxY - minY < 20) {
+                    alert('Area deteksi terlalu kecil. Coba lagi.');
+                    return;
+                }
+
+                // Crop gambar dari sourceCanvas
+                const cropCanvas = document.createElement('canvas');
+                const cropCtx = cropCanvas.getContext('2d');
+                const cropW = maxX - minX;
+                const cropH = maxY - minY;
+                cropCanvas.width = cropW;
+                cropCanvas.height = cropH;
+                cropCtx.drawImage(sourceCanvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
+
+                // Tampilkan hasil crop di scanFrame
+                const existing = scanFrame.querySelector('canvas');
+                if (existing) existing.remove();
+                previewImage.style.display = 'none';
+                scanFrame.appendChild(cropCanvas);
+                cropCanvas.style.maxWidth = '100%';
+                cropCanvas.style.maxHeight = '340px';
+                cropCanvas.style.borderRadius = '12px';
+                scannedCanvas = cropCanvas;
+                currentImageData = cropCanvas;
+                btnPNG.disabled = false;
+                btnPDF.disabled = false;
+                btnSaveHistory.disabled = false;
+                btnOCR.disabled = false;
+                ocrSection.classList.remove('active');
+                alert('✅ Deteksi tepi berhasil! Gambar telah dipotong.');
+            }
+
+            btnDetectEdges.addEventListener('click', detectEdgesAndCrop);
+
+            // =============================================
+            // OCR dengan Tesseract.js
+            // =============================================
+            async function performOCR() {
+                if (!currentImageData && !scannedCanvas) {
+                    alert('Tidak ada gambar untuk OCR. Lakukan scan atau deteksi tepi terlebih dahulu.');
+                    return;
+                }
+
+                let canvas = scannedCanvas;
+                if (!canvas) {
+                    // buat canvas sementara dari originalColorData
+                    const c = document.createElement('canvas');
+                    c.width = canvasWidth;
+                    c.height = canvasHeight;
+                    const ctx = c.getContext('2d');
+                    const imageData = new ImageData(originalColorData.data, canvasWidth, canvasHeight);
+                    ctx.putImageData(imageData, 0, 0);
+                    canvas = c;
+                }
+
+                // Tampilkan loading
+                btnOCR.disabled = true;
+                btnOCR.innerHTML = '<span class="spinner"></span> OCR...';
+                ocrSection.classList.remove('active');
+
+                try {
+                    // Konversi canvas ke data URL
+                    const imageDataUrl = canvas.toDataURL('image/png');
+                    const result = await Tesseract.recognize(imageDataUrl, 'ind', {
+                        logger: m => console.log(m)
+                    });
+                    const text = result.data.text;
+                    ocrText.value = text;
+                    ocrSection.classList.add('active');
+                    btnOCR.innerHTML = '<i class="fas fa-font"></i> OCR & Edit Teks';
+                    btnOCR.disabled = false;
+                } catch (err) {
+                    console.error(err);
+                    alert('❌ Gagal OCR: ' + err.message);
+                    btnOCR.innerHTML = '<i class="fas fa-font"></i> OCR & Edit Teks';
+                    btnOCR.disabled = false;
+                }
+            }
+
+            btnOCR.addEventListener('click', performOCR);
+
+            // Copy OCR
+            btnCopyOCR.addEventListener('click', function() {
+                ocrText.select();
+                document.execCommand('copy');
+                alert('✅ Teks disalin ke clipboard!');
+            });
+
+            // Simpan OCR (misal simpan ke riwayat? bisa juga simpan ke file)
+            btnSaveOCR.addEventListener('click', function() {
+                const text = ocrText.value.trim();
+                if (!text) {
+                    alert('Tidak ada teks untuk disimpan.');
+                    return;
+                }
+                // Simpan sebagai file .txt
+                const blob = new Blob([text], { type: 'text/plain' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `ocr_${Date.now()}.txt`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            });
+
+            // =============================================
+            // DOWNLOADS
+            // =============================================
             btnPNG.addEventListener('click', () => {
                 if (!scannedCanvas) return;
                 const link = document.createElement('a');
@@ -1493,14 +1797,12 @@
             }
 
             // =============================================
-            // RENDER RIWAYAT — UI RAPIH
+            // RENDER RIWAYAT
             // =============================================
             async function renderHistory() {
                 try {
                     const items = await getAllHistory();
                     historyList.innerHTML = '';
-
-                    // Update badge
                     historyCount.textContent = items.length;
 
                     if (!items || items.length === 0) {
@@ -1563,7 +1865,6 @@
 
                         historyList.appendChild(div);
 
-                        // View
                         div.querySelector('.view-btn').addEventListener('click', function() {
                             const id = parseInt(this.dataset.id);
                             const found = items.find(i => i.id === id);
@@ -1573,7 +1874,6 @@
                             }
                         });
 
-                        // Download
                         div.querySelector('.download-btn').addEventListener('click', function() {
                             const id = parseInt(this.dataset.id);
                             const found = items.find(i => i.id === id);
@@ -1585,7 +1885,6 @@
                             }
                         });
 
-                        // Delete
                         div.querySelector('.actions .danger').addEventListener('click', async function() {
                             const id = parseInt(this.dataset.id);
                             if (confirm('Hapus item ini dari riwayat?')) {
@@ -1610,7 +1909,6 @@
                     await saveHistoryItem(imageDataUrl, scannedDataUrl, mode);
                     alert('✅ Tersimpan ke riwayat!');
                     btnSaveHistory.disabled = true;
-                    // Jika halaman riwayat aktif, refresh
                     if (document.getElementById('pageHistory').classList.contains('active')) {
                         renderHistory();
                     }
@@ -1636,7 +1934,6 @@
             // NAVIGASI + FULLSCREEN CAMERA
             // =============================================
             function showPage(pageId) {
-                // Toggle fullscreen class pada wrapper
                 if (pageId === 'scan') {
                     appWrapper.classList.add('camera-fullscreen');
                 } else {
@@ -1743,6 +2040,7 @@
                 imageDataUrl = null;
                 originalColorData = null;
                 scannedCanvas = null;
+                currentImageData = null;
                 isScanning = false;
                 isProcessing = false;
                 previewImage.style.display = 'block';
@@ -1759,6 +2057,9 @@
                 btnPNG.disabled = true;
                 btnPDF.disabled = true;
                 btnSaveHistory.disabled = true;
+                btnOCR.disabled = true;
+                ocrSection.classList.remove('active');
+                ocrText.value = '';
                 fileInput.value = '';
                 modeBW.checked = true;
             });
