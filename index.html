@@ -13,6 +13,9 @@
     <!-- Tesseract.js untuk OCR -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
     </script>
+    <!-- JScanify untuk deteksi & warp dokumen -->
+    <script src="https://cdn.jsdelivr.net/npm/jscanify@1.1.3/dist/jscanify.min.js">
+    </script>
     <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1012,7 +1015,7 @@
 
                     <div class="action-bar">
                         <button class="btn btn-primary" id="btnScan"><i class="fas fa-camera"></i> Scan</button>
-                        <button class="btn btn-warning" id="btnDetectEdges"><i class="fas fa-crop-alt"></i> Deteksi Tepi</button>
+                        <button class="btn btn-warning" id="btnDetectEdges"><i class="fas fa-crop-alt"></i> Deteksi Tepi (JScanify)</button>
                         <button class="btn btn-success" id="btnDownloadPNG" disabled><i class="fas fa-image"></i> PNG</button>
                         <button class="btn btn-success" id="btnDownloadPDF" disabled><i class="fas fa-file-pdf"></i> PDF</button>
                         <button class="btn btn-danger-outline" id="btnReset"><i class="fas fa-undo-alt"></i> Reset</button>
@@ -1169,18 +1172,6 @@
             ];
             const sharpenDivisor = 1;
             const sharpenOffset = 0;
-
-            // Sobel kernels
-            const sobelX = [
-                [-1, 0, 1],
-                [-2, 0, 2],
-                [-1, 0, 1]
-            ];
-            const sobelY = [
-                [-1, -2, -1],
-                [0, 0, 0],
-                [1, 2, 1]
-            ];
 
             // =============================================
             // HELPERS
@@ -1474,17 +1465,12 @@
             });
 
             // =============================================
-            // DETEKSI TEPI (Auto Crop)
+            // DETEKSI TEPI DENGAN JScanify
             // =============================================
-            function detectEdgesAndCrop() {
-                if (!currentImageData && !scannedCanvas) {
-                    alert('Tidak ada gambar untuk diproses. Lakukan scan terlebih dahulu.');
-                    return;
-                }
-                // Gunakan scannedCanvas jika ada, atau ambil dari originalColorData
+            function detectEdgesWithJScanify() {
+                // Pastikan ada gambar
                 let sourceCanvas = scannedCanvas;
-                if (!sourceCanvas) {
-                    // buat canvas dari originalColorData
+                if (!sourceCanvas && originalColorData) {
                     const c = document.createElement('canvas');
                     c.width = canvasWidth;
                     c.height = canvasHeight;
@@ -1494,125 +1480,48 @@
                     sourceCanvas = c;
                 }
 
-                const w = sourceCanvas.width,
-                    h = sourceCanvas.height;
-                const ctx = sourceCanvas.getContext('2d');
-                const imageData = ctx.getImageData(0, 0, w, h);
-                const data = imageData.data;
-
-                // 1. Grayscale
-                const gray = new Uint8ClampedArray(w * h);
-                for (let i = 0; i < data.length; i += 4) {
-                    const g = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-                    gray[i / 4] = g;
-                }
-
-                // 2. Blur (3x3)
-                const blurred = new Float32Array(w * h);
-                for (let y = 1; y < h - 1; y++) {
-                    for (let x = 1; x < w - 1; x++) {
-                        let sum = 0;
-                        for (let ky = -1; ky <= 1; ky++) {
-                            for (let kx = -1; kx <= 1; kx++) {
-                                const idx = (y + ky) * w + (x + kx);
-                                sum += gray[idx] * blurKernel[ky + 1][kx + 1];
-                            }
-                        }
-                        blurred[y * w + x] = sum / blurDivisor;
-                    }
-                }
-
-                // 3. Sobel edge detection
-                const mag = new Float32Array(w * h);
-                let maxMag = 0;
-                for (let y = 1; y < h - 1; y++) {
-                    for (let x = 1; x < w - 1; x++) {
-                        let gx = 0,
-                            gy = 0;
-                        for (let ky = -1; ky <= 1; ky++) {
-                            for (let kx = -1; kx <= 1; kx++) {
-                                const idx = (y + ky) * w + (x + kx);
-                                const val = blurred[idx];
-                                gx += val * sobelX[ky + 1][kx + 1];
-                                gy += val * sobelY[ky + 1][kx + 1];
-                            }
-                        }
-                        const m = Math.sqrt(gx * gx + gy * gy);
-                        mag[y * w + x] = m;
-                        if (m > maxMag) maxMag = m;
-                    }
-                }
-
-                // 4. Threshold untuk mendapatkan tepi biner
-                const edgeThreshold = 30; // bisa disesuaikan
-                const edgePixels = [];
-                for (let i = 0; i < mag.length; i++) {
-                    if (mag[i] > edgeThreshold) {
-                        const x = i % w;
-                        const y = Math.floor(i / w);
-                        edgePixels.push({ x, y });
-                    }
-                }
-
-                if (edgePixels.length < 10) {
-                    alert('Tidak dapat mendeteksi tepi dokumen. Coba gambar dengan kontras lebih jelas.');
+                if (!sourceCanvas) {
+                    alert('Tidak ada gambar untuk diproses. Unggah atau ambil foto terlebih dahulu.');
                     return;
                 }
 
-                // Cari bounding box dari edge pixels
-                let minX = w,
-                    maxX = 0,
-                    minY = h,
-                    maxY = 0;
-                for (const p of edgePixels) {
-                    if (p.x < minX) minX = p.x;
-                    if (p.x > maxX) maxX = p.x;
-                    if (p.y < minY) minY = p.y;
-                    if (p.y > maxY) maxY = p.y;
+                try {
+                    // Inisialisasi JScanify
+                    const jscanify = new JScanify();
+                    // Ekstrak dokumen (deteksi + warp)
+                    const resultCanvas = jscanify.extractPaper(sourceCanvas, {
+                        // Opsi default sudah cukup baik
+                        // Bisa ditambahkan parameter seperti `targetWidth`, `targetHeight`
+                    });
+
+                    if (!resultCanvas) {
+                        alert('Gagal mendeteksi dokumen. Pastikan kertas terlihat jelas dengan latar belakang kontras.');
+                        return;
+                    }
+
+                    // Tampilkan hasil di scanFrame
+                    const existing = scanFrame.querySelector('canvas');
+                    if (existing) existing.remove();
+                    previewImage.style.display = 'none';
+                    scanFrame.appendChild(resultCanvas);
+                    resultCanvas.style.maxWidth = '100%';
+                    resultCanvas.style.maxHeight = '340px';
+                    resultCanvas.style.borderRadius = '12px';
+                    scannedCanvas = resultCanvas;
+                    currentImageData = resultCanvas;
+                    btnPNG.disabled = false;
+                    btnPDF.disabled = false;
+                    btnSaveHistory.disabled = false;
+                    btnOCR.disabled = false;
+                    ocrSection.classList.remove('active');
+                    alert('✅ Deteksi tepi berhasil! Dokumen telah diluruskan dan dipotong.');
+                } catch (err) {
+                    console.error(err);
+                    alert('❌ Error saat deteksi tepi: ' + err.message);
                 }
-
-                // Tambahkan margin kecil (5%)
-                const margin = 0.05;
-                const padX = (maxX - minX) * margin;
-                const padY = (maxY - minY) * margin;
-                minX = Math.max(0, Math.floor(minX - padX));
-                maxX = Math.min(w, Math.ceil(maxX + padX));
-                minY = Math.max(0, Math.floor(minY - padY));
-                maxY = Math.min(h, Math.ceil(maxY + padY));
-
-                if (maxX - minX < 20 || maxY - minY < 20) {
-                    alert('Area deteksi terlalu kecil. Coba lagi.');
-                    return;
-                }
-
-                // Crop gambar dari sourceCanvas
-                const cropCanvas = document.createElement('canvas');
-                const cropCtx = cropCanvas.getContext('2d');
-                const cropW = maxX - minX;
-                const cropH = maxY - minY;
-                cropCanvas.width = cropW;
-                cropCanvas.height = cropH;
-                cropCtx.drawImage(sourceCanvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
-
-                // Tampilkan hasil crop di scanFrame
-                const existing = scanFrame.querySelector('canvas');
-                if (existing) existing.remove();
-                previewImage.style.display = 'none';
-                scanFrame.appendChild(cropCanvas);
-                cropCanvas.style.maxWidth = '100%';
-                cropCanvas.style.maxHeight = '340px';
-                cropCanvas.style.borderRadius = '12px';
-                scannedCanvas = cropCanvas;
-                currentImageData = cropCanvas;
-                btnPNG.disabled = false;
-                btnPDF.disabled = false;
-                btnSaveHistory.disabled = false;
-                btnOCR.disabled = false;
-                ocrSection.classList.remove('active');
-                alert('✅ Deteksi tepi berhasil! Gambar telah dipotong.');
             }
 
-            btnDetectEdges.addEventListener('click', detectEdgesAndCrop);
+            btnDetectEdges.addEventListener('click', detectEdgesWithJScanify);
 
             // =============================================
             // OCR dengan Tesseract.js
@@ -1668,14 +1577,13 @@
                 alert('✅ Teks disalin ke clipboard!');
             });
 
-            // Simpan OCR (misal simpan ke riwayat? bisa juga simpan ke file)
+            // Simpan OCR
             btnSaveOCR.addEventListener('click', function() {
                 const text = ocrText.value.trim();
                 if (!text) {
                     alert('Tidak ada teks untuk disimpan.');
                     return;
                 }
-                // Simpan sebagai file .txt
                 const blob = new Blob([text], { type: 'text/plain' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
