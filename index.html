@@ -1125,43 +1125,24 @@
                 if (!imageDataUrl) { alert('Unggah gambar dulu.'); return; }
                 if (!checkPuter()) return;
 
-                setAILoading(btnAIEnhance, 'AI menganalisis...');
+                setAILoading(btnAIEnhance, 'AI memperbaiki dokumen...');
                 try {
-                    const smallImg = await prepareImageForAI(imageDataUrl, 1024, 0.8);
+                    // Kirim gambar ASLI dokumen (bukan deskripsi teksnya) supaya AI meng-edit
+                    // gambar yang sama, bukan membuat gambar baru dari nol.
+                    const smallImg = await prepareImageForAI(imageDataUrl, 1600, 0.9);
+                    const base64Payload = smallImg.split(',')[1];
 
-                    // Step 1: deskripsi singkat dokumen (tanpa isi teks!)
-                    const descResp = await puter.ai.chat(
-                        [
-                            {
-                                role: 'user',
-                                content: [
-                                    {
-                                        type: 'text',
-                                        text: 'Describe this document image in ONE short English sentence for an AI image generator. Focus ONLY on visual style: type of paper, color, layout, and general appearance. Do NOT include any text content or personal information. Example output: "a white A4 paper with black printed text and a signature at the bottom".'
-                                    },
-                                    {
-                                        type: 'image_url',
-                                        image_url: { url: smallImg }
-                                    }
-                                ]
-                            }
-                        ],
-                        { model: 'openai/gpt-4o-mini' }
-                    );
-
-                    let description = extractAIText(descResp).trim();
-                    // Batasi panjang & bersihkan newline
-                    description = description.replace(/\s+/g, ' ').slice(0, 180);
-                    if (!description) description = 'a clean white paper document';
-
-                    // Step 2: txt2img dengan prompt yang aman
-                    btnAIEnhance.innerHTML = '<span class="spinner"></span> AI menggambar...';
                     const prompt =
-                        `A professional top-down flat-lay photograph of ${description}, ` +
-                        `clean white background, sharp focus, high resolution, ` +
-                        `studio lighting, minimalist composition, scanner quality`;
+                        'Enhance this exact scanned document photo. Straighten it if it is skewed or at an angle, ' +
+                        'remove shadows, stains, and background clutter, boost contrast so the text is crisp black on a clean white background, ' +
+                        'and sharpen the text edges. Do NOT change, add, remove, translate, or reword any text, numbers, logos, or layout — ' +
+                        'keep every detail exactly as in the original. Output the same document, just cleaned up like a professional scan.';
 
-                    const imgElement = await puter.ai.txt2img(prompt, { model: 'openai/gpt-image-1-mini' });
+                    const imgElement = await puter.ai.txt2img(prompt, {
+                        model: 'openai/gpt-image-1-mini',
+                        input_image: base64Payload,
+                        input_image_mime_type: 'image/jpeg'
+                    });
                     if (!imgElement || !imgElement.src) throw new Error('AI tidak mengembalikan gambar.');
 
                     showAIImage(imgElement.src);
