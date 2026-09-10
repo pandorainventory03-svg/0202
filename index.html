@@ -8,14 +8,9 @@
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <!-- jsPDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
-    </script>
-    <!-- Tesseract.js untuk OCR -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
-    </script>
-    <!-- JScanify untuk deteksi & warp dokumen -->
-    <script src="https://cdn.jsdelivr.net/npm/jscanify@1.1.3/dist/jscanify.min.js">
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Puter.js (AI) -->
+    <script src="https://js.puter.com/v2/"></script>
     <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,11 +18,7 @@
 
     <style>
         /* ===== RESET & BASE ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -40,7 +31,6 @@
             margin: 0;
         }
 
-        /* ===== WRAPPER ===== */
         .app-wrapper {
             max-width: 480px;
             width: 100%;
@@ -57,7 +47,6 @@
             transition: all 0.3s ease;
         }
 
-        /* ===== FULLSCREEN CAMERA MODE (PORTRAIT) ===== */
         .app-wrapper.camera-fullscreen {
             max-height: 100vh !important;
             height: 100vh !important;
@@ -67,9 +56,7 @@
         }
 
         .app-wrapper.camera-fullscreen .app-header,
-        .app-wrapper.camera-fullscreen .bottom-nav {
-            display: none !important;
-        }
+        .app-wrapper.camera-fullscreen .bottom-nav { display: none !important; }
 
         .app-wrapper.camera-fullscreen .app-content {
             padding: 0 !important;
@@ -102,15 +89,11 @@
         }
 
         .app-wrapper.camera-fullscreen .camera-container .camera-overlay button {
-            width: 64px !important;
-            height: 64px !important;
-            font-size: 30px !important;
+            width: 64px !important; height: 64px !important; font-size: 30px !important;
         }
 
         .app-wrapper.camera-fullscreen .camera-container .camera-overlay .btn-close-cam {
-            width: 54px !important;
-            height: 54px !important;
-            font-size: 22px !important;
+            width: 54px !important; height: 54px !important; font-size: 22px !important;
         }
 
         /* ===== HEADER ===== */
@@ -123,77 +106,37 @@
             border-bottom: 1px solid #f0f2f6;
             flex-shrink: 0;
         }
-        .app-header .left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .app-header .left { display: flex; align-items: center; gap: 12px; }
         .app-header .logo {
             background: linear-gradient(145deg, #1a237e, #0d47a1);
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 20px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 20px;
             box-shadow: 0 4px 10px rgba(13, 71, 161, 0.25);
         }
-        .app-header h1 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #0a1929;
-            letter-spacing: -0.3px;
-        }
-        .app-header h1 small {
-            font-size: 11px;
-            font-weight: 400;
-            color: #546e7a;
-            display: block;
-            margin-top: -2px;
-        }
+        .app-header h1 { font-size: 18px; font-weight: 700; color: #0a1929; letter-spacing: -0.3px; }
+        .app-header h1 small { font-size: 11px; font-weight: 400; color: #546e7a; display: block; margin-top: -2px; }
         .app-header .right i {
-            font-size: 20px;
-            color: #1a237e;
-            background: #e8edf5;
-            padding: 8px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: 0.2s;
+            font-size: 20px; color: #1a237e; background: #e8edf5; padding: 8px;
+            border-radius: 50%; cursor: pointer; transition: 0.2s;
         }
-        .app-header .right i:hover {
-            background: #d0d9e8;
-        }
+        .app-header .right i:hover { background: #d0d9e8; }
 
         /* ===== CONTENT ===== */
         .app-content {
-            flex: 1;
-            overflow-y: auto;
+            flex: 1; overflow-y: auto;
             padding: 16px 20px 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
+            display: flex; flex-direction: column; gap: 18px;
             background: #f8faff;
             transition: padding 0.3s, background 0.3s;
         }
-        .app-content::-webkit-scrollbar {
-            width: 4px;
-        }
-        .app-content::-webkit-scrollbar-thumb {
-            background: #c5cae9;
-            border-radius: 8px;
-        }
+        .app-content::-webkit-scrollbar { width: 4px; }
+        .app-content::-webkit-scrollbar-thumb { background: #c5cae9; border-radius: 8px; }
 
         /* ===== PAGE ===== */
-        .page {
-            display: none;
-            flex-direction: column;
-            gap: 18px;
-        }
-        .page.active {
-            display: flex;
-        }
+        .page { display: none; flex-direction: column; gap: 18px; }
+        .page.active { display: flex; }
 
         /* ===== UPLOAD ZONE ===== */
         .upload-zone {
@@ -206,450 +149,331 @@
             background: #ffffff;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
         }
-        .upload-zone:hover {
-            border-color: #42a5f5;
-            background: #f5faff;
-        }
-        .upload-zone.dragover {
-            border-color: #1a237e;
-            background: #e8eaf6;
-            transform: scale(1.005);
-        }
-        .upload-zone .icon-upload {
-            font-size: 48px;
-            color: #78909c;
-            margin-bottom: 6px;
-            display: block;
-        }
-        .upload-zone h3 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1a237e;
-        }
-        .upload-zone p {
-            color: #78909c;
-            font-size: 13px;
-            margin-top: 2px;
-        }
-        .upload-zone .sub-text {
-            font-size: 11px;
-            color: #b0bec5;
-            margin-top: 6px;
-        }
-        #fileInput {
-            display: none;
-        }
+        .upload-zone:hover { border-color: #42a5f5; background: #f5faff; }
+        .upload-zone.dragover { border-color: #1a237e; background: #e8eaf6; transform: scale(1.005); }
+        .upload-zone .icon-upload { font-size: 48px; color: #78909c; margin-bottom: 6px; display: block; }
+        .upload-zone h3 { font-size: 16px; font-weight: 600; color: #1a237e; }
+        .upload-zone p { color: #78909c; font-size: 13px; margin-top: 2px; }
+        .upload-zone .sub-text { font-size: 11px; color: #b0bec5; margin-top: 6px; }
+        #fileInput { display: none; }
 
         /* ===== PREVIEW SECTION ===== */
         .preview-section {
-            display: none;
-            flex-direction: column;
-            gap: 14px;
+            display: none; flex-direction: column; gap: 14px;
             animation: fadeUp 0.3s ease;
         }
-        .preview-section.active {
-            display: flex;
-        }
+        .preview-section.active { display: flex; }
         @keyframes fadeUp {
-            0% {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         .scan-frame-wrapper {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 12px;
+            background: #ffffff; border-radius: 20px; padding: 12px;
             border: 1px solid #e8edf4;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
         }
         .scan-frame {
-            position: relative;
-            border-radius: 16px;
-            overflow: hidden;
+            position: relative; border-radius: 16px; overflow: hidden;
             background: #eef2f7;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 200px;
-            max-height: 340px;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 200px; max-height: 340px;
         }
-        .scan-frame img,
-        .scan-frame canvas {
-            max-width: 100%;
-            max-height: 340px;
-            width: auto;
-            height: auto;
-            display: block;
-            border-radius: 12px;
-            object-fit: contain;
+        .scan-frame img, .scan-frame canvas {
+            max-width: 100%; max-height: 340px;
+            width: auto; height: auto;
+            display: block; border-radius: 12px; object-fit: contain;
         }
-        .scan-frame canvas {
-            background: #fff;
-        }
+        .scan-frame canvas { background: #fff; }
         .scan-frame .corner {
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            border-color: #1a237e;
-            border-style: solid;
-            border-width: 0;
-            opacity: 0.6;
-            pointer-events: none;
+            position: absolute; width: 22px; height: 22px;
+            border-color: #1a237e; border-style: solid; border-width: 0;
+            opacity: 0.6; pointer-events: none;
         }
-        .scan-frame .corner.tl {
-            top: 10px;
-            left: 10px;
-            border-top-width: 3px;
-            border-left-width: 3px;
-            border-radius: 3px 0 0 0;
-        }
-        .scan-frame .corner.tr {
-            top: 10px;
-            right: 10px;
-            border-top-width: 3px;
-            border-right-width: 3px;
-            border-radius: 0 3px 0 0;
-        }
-        .scan-frame .corner.bl {
-            bottom: 10px;
-            left: 10px;
-            border-bottom-width: 3px;
-            border-left-width: 3px;
-            border-radius: 0 0 0 3px;
-        }
-        .scan-frame .corner.br {
-            bottom: 10px;
-            right: 10px;
-            border-bottom-width: 3px;
-            border-right-width: 3px;
-            border-radius: 0 0 3px 0;
-        }
+        .scan-frame .corner.tl { top: 10px; left: 10px; border-top-width: 3px; border-left-width: 3px; border-radius: 3px 0 0 0; }
+        .scan-frame .corner.tr { top: 10px; right: 10px; border-top-width: 3px; border-right-width: 3px; border-radius: 0 3px 0 0; }
+        .scan-frame .corner.bl { bottom: 10px; left: 10px; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 3px; }
+        .scan-frame .corner.br { bottom: 10px; right: 10px; border-bottom-width: 3px; border-right-width: 3px; border-radius: 0 0 3px 0; }
 
         .scan-line {
-            position: absolute;
-            left: 0;
-            width: 100%;
-            height: 3px;
+            position: absolute; left: 0; width: 100%; height: 3px;
             background: linear-gradient(90deg, transparent, #42a5f5, #1a237e, #42a5f5, transparent);
             box-shadow: 0 0 16px rgba(26, 35, 126, 0.25);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s;
-            top: 0;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.4s; top: 0;
         }
-        .scan-line.active {
-            opacity: 1;
-            animation: scanMove 2.0s ease-in-out infinite;
-        }
+        .scan-line.active { opacity: 1; animation: scanMove 2.0s ease-in-out infinite; }
         @keyframes scanMove {
-            0% {
-                top: 5%;
-            }
-            50% {
-                top: 90%;
-            }
-            100% {
-                top: 5%;
-            }
+            0% { top: 5%; }
+            50% { top: 90%; }
+            100% { top: 5%; }
         }
 
         /* ===== CAMERA VIEW ===== */
         .camera-container {
-            position: relative;
-            background: #000;
-            border-radius: 16px;
-            overflow: hidden;
+            position: relative; background: #000;
+            border-radius: 16px; overflow: hidden;
             min-height: 260px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             flex: 1;
             transition: border-radius 0.3s, min-height 0.3s;
         }
         .camera-container video {
-            width: 100%;
-            border-radius: 16px;
-            display: block;
-            background: #111;
-            object-fit: contain;
+            width: 100%; border-radius: 16px; display: block;
+            background: #111; object-fit: contain;
             transition: border-radius 0.3s;
         }
         .camera-container .camera-overlay {
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            z-index: 10;
+            position: absolute; bottom: 20px; left: 0; right: 0;
+            display: flex; justify-content: center; gap: 20px; z-index: 10;
         }
         .camera-container .camera-overlay button {
             background: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 28px;
-            color: #1a237e;
+            border: none; border-radius: 50%;
+            width: 60px; height: 60px; font-size: 28px; color: #1a237e;
             cursor: pointer;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
             transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
-        .camera-container .camera-overlay button:hover {
-            transform: scale(1.05);
-        }
-        .camera-container .camera-overlay button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .camera-container .camera-overlay button:hover { transform: scale(1.05); }
+        .camera-container .camera-overlay button:disabled { opacity: 0.5; cursor: not-allowed; }
         .camera-container .camera-overlay .btn-close-cam {
-            background: rgba(255, 80, 80, 0.9);
-            color: #fff;
-            width: 50px;
-            height: 50px;
-            font-size: 20px;
+            background: rgba(255, 80, 80, 0.9); color: #fff;
+            width: 50px; height: 50px; font-size: 20px;
         }
 
         /* ===== MODE & SLIDER ===== */
         .mode-control {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px 16px;
-            background: #f5f8fc;
-            padding: 10px 16px;
-            border-radius: 16px;
+            display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+            background: #f5f8fc; padding: 10px 16px; border-radius: 16px;
             border: 1px solid #e2e8f0;
         }
-        .mode-control span.label {
-            font-weight: 600;
-            font-size: 13px;
-            color: #1a237e;
-        }
+        .mode-control span.label { font-weight: 600; font-size: 13px; color: #1a237e; }
         .mode-control label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            font-size: 13px;
-            color: #1a237e;
+            display: flex; align-items: center; gap: 5px;
+            cursor: pointer; font-size: 13px; color: #1a237e;
         }
-        .mode-control input[type="radio"] {
-            accent-color: #1a237e;
-            width: 15px;
-            height: 15px;
-            cursor: pointer;
-        }
+        .mode-control input[type="radio"] { accent-color: #1a237e; width: 15px; height: 15px; cursor: pointer; }
 
         .threshold-control {
-            background: #f5f8fc;
-            border-radius: 16px;
-            padding: 10px 16px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px 16px;
+            background: #f5f8fc; border-radius: 16px; padding: 10px 16px;
+            display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
             border: 1px solid #e2e8f0;
         }
         .threshold-control label {
-            font-weight: 600;
-            font-size: 13px;
-            color: #1a237e;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            font-weight: 600; font-size: 13px; color: #1a237e;
+            display: flex; align-items: center; gap: 4px;
         }
         .threshold-control input[type="range"] {
-            flex: 1;
-            min-width: 100px;
-            accent-color: #1a237e;
-            height: 5px;
-            border-radius: 4px;
-            background: #d0d9e8;
+            flex: 1; min-width: 100px; accent-color: #1a237e;
+            height: 5px; border-radius: 4px; background: #d0d9e8;
         }
         .threshold-control .value-display {
-            background: #1a237e;
-            color: #fff;
-            font-weight: 700;
-            font-size: 13px;
-            padding: 2px 12px;
-            border-radius: 30px;
-            min-width: 40px;
-            text-align: center;
+            background: #1a237e; color: #fff; font-weight: 700; font-size: 13px;
+            padding: 2px 12px; border-radius: 30px; min-width: 40px; text-align: center;
         }
-        .threshold-control .hint {
-            font-size: 11px;
-            color: #78909c;
-            margin-left: auto;
-        }
+        .threshold-control .hint { font-size: 11px; color: #78909c; margin-left: auto; }
 
         /* ===== ACTION BUTTONS ===== */
-        .action-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+        .action-bar { display: flex; flex-wrap: wrap; gap: 10px; }
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 10px 18px;
-            border: none;
-            border-radius: 40px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex: 1 1 auto;
-            min-width: 80px;
-            background: #e8edf5;
-            color: #1a237e;
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 6px; padding: 10px 18px; border: none; border-radius: 40px;
+            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px;
+            cursor: pointer; transition: all 0.2s;
+            flex: 1 1 auto; min-width: 80px;
+            background: #e8edf5; color: #1a237e;
         }
         .btn-primary {
             background: linear-gradient(145deg, #1a237e, #0d47a1);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(13, 71, 161, 0.25);
+            color: #fff; box-shadow: 0 4px 12px rgba(13, 71, 161, 0.25);
         }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(13, 71, 161, 0.35);
-        }
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13, 71, 161, 0.35); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
 
         .btn-success {
             background: linear-gradient(145deg, #1b5e20, #2e7d32);
+            color: #fff; box-shadow: 0 4px 12px rgba(27, 94, 32, 0.20);
+        }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(27, 94, 32, 0.30); }
+        .btn-success:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+        .btn-danger-outline {
+            background: transparent; color: #b71c1c;
+            border: 2px solid #ffcdd2;
+        }
+        .btn-danger-outline:hover { background: #ffebee; border-color: #c62828; }
+
+        /* ===== AI BUTTONS ===== */
+        .btn-ai {
+            background: linear-gradient(145deg, #6a1b9a, #8e24aa);
             color: #fff;
-            box-shadow: 0 4px 12px rgba(27, 94, 32, 0.20);
+            box-shadow: 0 4px 12px rgba(106, 27, 154, 0.30);
         }
-        .btn-success:hover {
+        .btn-ai:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(27, 94, 32, 0.30);
+            box-shadow: 0 8px 20px rgba(106, 27, 154, 0.45);
         }
-        .btn-success:disabled {
-            opacity: 0.5;
+        .btn-ai:disabled {
+            opacity: 0.55;
             cursor: not-allowed;
             transform: none !important;
         }
-
-        .btn-danger-outline {
-            background: transparent;
-            color: #b71c1c;
-            border: 2px solid #ffcdd2;
-        }
-        .btn-danger-outline:hover {
-            background: #ffebee;
-            border-color: #c62828;
-        }
-
-        .btn-warning {
-            background: #f9a825;
+        .btn-ai-alt {
+            background: linear-gradient(145deg, #ad1457, #d81b60);
             color: #fff;
+            box-shadow: 0 4px 12px rgba(173, 20, 87, 0.30);
         }
-        .btn-warning:hover {
-            background: #f57f17;
+        .btn-ai-alt:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(173, 20, 87, 0.45);
         }
 
         .btn .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
+            display: inline-block; width: 16px; height: 16px;
             border: 2.5px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
+            border-top-color: #fff; border-radius: 50%;
             animation: spin 0.7s linear infinite;
         }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== AI RESULT CARD ===== */
+        .ai-result {
+            display: none;
+            background: linear-gradient(135deg, #f3e5f5 0%, #ede7f6 100%);
+            border: 1px solid #ce93d8;
+            border-radius: 18px;
+            padding: 14px 16px;
+            animation: fadeUp 0.3s ease;
+        }
+        .ai-result.active { display: block; }
+        .ai-result .ai-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .ai-result .ai-header .ai-title {
+            font-weight: 700; font-size: 13px; color: #4a148c;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .ai-result .ai-header .ai-close {
+            background: transparent; border: none;
+            color: #6a1b9a; font-size: 14px; cursor: pointer;
+            width: 26px; height: 26px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .ai-result .ai-header .ai-close:hover { background: rgba(106, 27, 154, 0.1); }
+        .ai-result .ai-body {
+            font-size: 12.5px; line-height: 1.55; color: #311b92;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 220px;
+            overflow-y: auto;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 10px 12px;
+            border: 1px solid #e1bee7;
+        }
+        .ai-result .ai-body::-webkit-scrollbar { width: 4px; }
+        .ai-result .ai-body::-webkit-scrollbar-thumb { background: #ce93d8; border-radius: 8px; }
+        .ai-result .ai-actions {
+            display: flex; gap: 8px; margin-top: 10px;
+        }
+        .ai-result .ai-actions button {
+            flex: 1;
+            background: #fff;
+            border: 1px solid #ce93d8;
+            color: #6a1b9a;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 7px 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 5px;
+        }
+        .ai-result .ai-actions button:hover {
+            background: #6a1b9a; color: #fff; border-color: #6a1b9a;
+        }
+
+        /* Preview result generated by AI */
+        .ai-image-result {
+            margin-top: 10px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #ce93d8;
+            background: #fff;
+            display: none;
+        }
+        .ai-image-result.active { display: block; }
+        .ai-image-result img {
+            width: 100%; display: block; border-radius: 12px;
+        }
+        .ai-image-result .ai-img-actions {
+            display: flex; gap: 6px; padding: 8px;
+            background: #faf5ff;
+            border-top: 1px solid #e1bee7;
+        }
+        .ai-image-result .ai-img-actions button {
+            flex: 1;
+            background: #6a1b9a;
+            border: none;
+            color: #fff;
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 7px 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+            transition: 0.2s;
+        }
+        .ai-image-result .ai-img-actions button:hover { background: #4a148c; }
+        .ai-image-result .ai-img-actions button.secondary {
+            background: #fff; color: #6a1b9a; border: 1px solid #ce93d8;
+        }
+        .ai-image-result .ai-img-actions button.secondary:hover {
+            background: #f3e5f5;
         }
 
         /* ============================================================
                    RIWAYAT — UI RAPIH
                    ============================================================ */
-
         .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
             padding: 0 0 8px 0;
             border-bottom: 1px solid #eef2f7;
         }
         .history-header h3 {
-            font-size: 16px;
-            font-weight: 700;
-            color: #0a1929;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 16px; font-weight: 700; color: #0a1929;
+            display: flex; align-items: center; gap: 8px;
         }
-        .history-header h3 i {
-            color: #1a237e;
-        }
+        .history-header h3 i { color: #1a237e; }
         .history-header .badge-count {
-            background: #e8edf5;
-            color: #1a237e;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 10px;
-            border-radius: 30px;
-            margin-left: 4px;
+            background: #e8edf5; color: #1a237e;
+            font-size: 11px; font-weight: 700;
+            padding: 2px 10px; border-radius: 30px; margin-left: 4px;
         }
         .btn-clear-all {
-            background: transparent;
-            border: none;
-            color: #b0bec5;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            padding: 4px 12px;
-            border-radius: 30px;
+            background: transparent; border: none;
+            color: #b0bec5; font-size: 13px; font-weight: 500;
+            cursor: pointer; padding: 4px 12px; border-radius: 30px;
             transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            display: flex; align-items: center; gap: 4px;
         }
-        .btn-clear-all:hover {
-            background: #ffebee;
-            color: #c62828;
-        }
-        .btn-clear-all i {
-            font-size: 14px;
-        }
+        .btn-clear-all:hover { background: #ffebee; color: #c62828; }
+        .btn-clear-all i { font-size: 14px; }
 
-        /* ——— List riwayat ——— */
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: 4px 0 12px 0;
-        }
+        .history-list { display: flex; flex-direction: column; gap: 12px; padding: 4px 0 12px 0; }
 
-        /* ——— Card item ——— */
         .history-item {
-            background: #ffffff;
-            border-radius: 18px;
+            background: #ffffff; border-radius: 18px;
             padding: 12px 14px 12px 12px;
             border: 1px solid #eef2f7;
-            display: flex;
-            align-items: center;
-            gap: 14px;
+            display: flex; align-items: center; gap: 14px;
             transition: all 0.2s;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
             position: relative;
@@ -660,301 +484,103 @@
             transform: translateY(-1px);
         }
 
-        /* ——— Thumbnail ——— */
         .history-item .thumb {
-            width: 64px;
-            height: 64px;
-            border-radius: 14px;
-            overflow: hidden;
-            flex-shrink: 0;
-            background: #f0f2f6;
-            border: 1px solid #eef2f7;
+            width: 64px; height: 64px; border-radius: 14px;
+            overflow: hidden; flex-shrink: 0;
+            background: #f0f2f6; border: 1px solid #eef2f7;
             position: relative;
         }
-        .history-item .thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
+        .history-item .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .history-item .thumb .mode-tag {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            position: absolute; bottom: 0; left: 0; right: 0;
             background: rgba(0, 0, 0, 0.55);
             backdrop-filter: blur(4px);
-            color: #fff;
-            font-size: 8px;
-            font-weight: 600;
-            text-align: center;
-            padding: 2px 0;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
+            color: #fff; font-size: 8px; font-weight: 600;
+            text-align: center; padding: 2px 0;
+            letter-spacing: 0.3px; text-transform: uppercase;
         }
 
-        /* ——— Info ——— */
-        .history-item .info {
-            flex: 1;
-            min-width: 0;
-        }
+        .history-item .info { flex: 1; min-width: 0; }
         .history-item .info .title {
-            font-weight: 600;
-            font-size: 14px;
-            color: #0a1929;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
+            font-weight: 600; font-size: 14px; color: #0a1929;
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
         }
         .history-item .info .title .dot {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #1a237e;
-            flex-shrink: 0;
+            display: inline-block; width: 6px; height: 6px;
+            border-radius: 50%; background: #1a237e; flex-shrink: 0;
         }
-        .history-item .info .title .dot.color {
-            background: #e53935;
-        }
+        .history-item .info .title .dot.color { background: #e53935; }
         .history-item .info .date {
-            font-size: 11px;
-            color: #90a4ae;
-            margin-top: 2px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 11px; color: #90a4ae; margin-top: 2px;
+            display: flex; align-items: center; gap: 6px;
         }
-        .history-item .info .date i {
-            font-size: 11px;
-            color: #b0bec5;
-        }
+        .history-item .info .date i { font-size: 11px; color: #b0bec5; }
 
-        /* ——— Actions ——— */
-        .history-item .actions {
-            display: flex;
-            gap: 2px;
-            flex-shrink: 0;
-        }
+        .history-item .actions { display: flex; gap: 2px; flex-shrink: 0; }
         .history-item .actions button {
-            background: transparent;
-            border: none;
-            width: 34px;
-            height: 34px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            color: #90a4ae;
-            cursor: pointer;
+            background: transparent; border: none;
+            width: 34px; height: 34px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: #90a4ae; cursor: pointer;
             transition: 0.2s;
         }
-        .history-item .actions button:hover {
-            background: #f0f2f6;
-            color: #1a237e;
-        }
-        .history-item .actions button.danger:hover {
-            background: #ffebee;
-            color: #c62828;
-        }
-        .history-item .actions button.view-btn:hover {
-            color: #0d47a1;
-        }
-        .history-item .actions button.download-btn:hover {
-            color: #2e7d32;
-        }
+        .history-item .actions button:hover { background: #f0f2f6; color: #1a237e; }
+        .history-item .actions button.danger:hover { background: #ffebee; color: #c62828; }
+        .history-item .actions button.view-btn:hover { color: #0d47a1; }
+        .history-item .actions button.download-btn:hover { color: #2e7d32; }
 
-        /* ——— Empty state ——— */
         .history-empty {
-            text-align: center;
-            padding: 56px 20px 48px;
-            color: #90a4ae;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
+            text-align: center; padding: 56px 20px 48px; color: #90a4ae;
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
         }
-        .history-empty i {
-            font-size: 48px;
-            color: #d0d9e8;
-        }
-        .history-empty .empty-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #546e7a;
-        }
-        .history-empty .empty-sub {
-            font-size: 13px;
-            color: #b0bec5;
-        }
-
-        /* ===== OCR SECTION ===== */
-        .ocr-section {
-            display: none;
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 12px;
-            border: 1px solid #e8edf4;
-        }
-        .ocr-section.active {
-            display: block;
-        }
-        .ocr-section h4 {
-            font-size: 14px;
-            font-weight: 600;
-            color: #0a1929;
-            margin-bottom: 8px;
-        }
-        .ocr-section textarea {
-            width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 8px;
-            font-family: inherit;
-            font-size: 14px;
-            resize: vertical;
-            min-height: 80px;
-        }
-        .ocr-section .ocr-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-        }
-        .ocr-section .ocr-actions .btn {
-            flex: 0 1 auto;
-            min-width: 60px;
-        }
+        .history-empty i { font-size: 48px; color: #d0d9e8; }
+        .history-empty .empty-title { font-size: 16px; font-weight: 600; color: #546e7a; }
+        .history-empty .empty-sub { font-size: 13px; color: #b0bec5; }
 
         /* ===== BOTTOM NAV ===== */
         .bottom-nav {
-            background: #ffffff;
-            border-top: 1px solid #e8edf4;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 6px 0 10px;
-            flex-shrink: 0;
+            background: #ffffff; border-top: 1px solid #e8edf4;
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 6px 0 10px; flex-shrink: 0;
         }
         .bottom-nav .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            font-size: 10px;
-            color: #90a4ae;
-            cursor: pointer;
-            transition: 0.2s;
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: none;
-            background: transparent;
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            font-size: 10px; color: #90a4ae; cursor: pointer;
+            transition: 0.2s; padding: 4px 12px; border-radius: 20px;
+            border: none; background: transparent;
             font-family: 'Inter', sans-serif;
         }
-        .bottom-nav .nav-item i {
-            font-size: 20px;
-        }
-        .bottom-nav .nav-item.active {
-            color: #1a237e;
-            font-weight: 600;
-        }
-        .bottom-nav .nav-item.active i {
-            color: #1a237e;
-        }
-        .bottom-nav .nav-item:hover {
-            color: #546e7a;
-        }
+        .bottom-nav .nav-item i { font-size: 20px; }
+        .bottom-nav .nav-item.active { color: #1a237e; font-weight: 600; }
+        .bottom-nav .nav-item.active i { color: #1a237e; }
+        .bottom-nav .nav-item:hover { color: #546e7a; }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 500px) {
-            .app-wrapper {
-                border-radius: 0;
-                margin: 0;
-                max-height: 100vh;
-                height: 100vh;
-            }
-            .app-content {
-                padding: 12px 14px 4px;
-            }
-            .app-header {
-                padding: 12px 14px 10px;
-            }
-            .app-header h1 {
-                font-size: 16px;
-            }
-            .upload-zone {
-                padding: 20px 12px;
-            }
-            .upload-zone .icon-upload {
-                font-size: 38px;
-            }
-            .btn {
-                padding: 8px 14px;
-                font-size: 12px;
-                min-width: 60px;
-            }
-            .scan-frame {
-                min-height: 160px;
-                max-height: 260px;
-            }
-            .scan-frame img,
-            .scan-frame canvas {
-                max-height: 260px;
-            }
-            .threshold-control,
-            .mode-control {
-                padding: 8px 12px;
-            }
-            .threshold-control .hint {
-                display: none;
-            }
-            .camera-container {
-                min-height: 200px;
-            }
-            .camera-container .camera-overlay button {
-                width: 50px;
-                height: 50px;
-                font-size: 22px;
-            }
-
-            /* History responsive */
-            .history-item {
-                padding: 10px 12px 10px 10px;
-                gap: 10px;
-            }
-            .history-item .thumb {
-                width: 54px;
-                height: 54px;
-            }
-            .history-item .info .title {
-                font-size: 13px;
-            }
-            .history-item .actions button {
-                width: 30px;
-                height: 30px;
-                font-size: 14px;
-            }
-            .history-header h3 {
-                font-size: 15px;
-            }
+            .app-wrapper { border-radius: 0; margin: 0; max-height: 100vh; height: 100vh; }
+            .app-content { padding: 12px 14px 4px; }
+            .app-header { padding: 12px 14px 10px; }
+            .app-header h1 { font-size: 16px; }
+            .upload-zone { padding: 20px 12px; }
+            .upload-zone .icon-upload { font-size: 38px; }
+            .btn { padding: 8px 14px; font-size: 12px; min-width: 60px; }
+            .scan-frame { min-height: 160px; max-height: 260px; }
+            .scan-frame img, .scan-frame canvas { max-height: 260px; }
+            .threshold-control, .mode-control { padding: 8px 12px; }
+            .threshold-control .hint { display: none; }
+            .camera-container { min-height: 200px; }
+            .camera-container .camera-overlay button { width: 50px; height: 50px; font-size: 22px; }
+            .history-item { padding: 10px 12px 10px 10px; gap: 10px; }
+            .history-item .thumb { width: 54px; height: 54px; }
+            .history-item .info .title { font-size: 13px; }
+            .history-item .actions button { width: 30px; height: 30px; font-size: 14px; }
+            .history-header h3 { font-size: 15px; }
         }
         @media (max-width: 400px) {
-            .bottom-nav .nav-item {
-                font-size: 9px;
-                padding: 2px 8px;
-            }
-            .bottom-nav .nav-item i {
-                font-size: 18px;
-            }
-            .history-item .thumb {
-                width: 46px;
-                height: 46px;
-            }
-            .history-item .info .title {
-                font-size: 12px;
-            }
+            .bottom-nav .nav-item { font-size: 9px; padding: 2px 8px; }
+            .bottom-nav .nav-item i { font-size: 18px; }
+            .history-item .thumb { width: 46px; height: 46px; }
+            .history-item .info .title { font-size: 12px; }
         }
     </style>
 </head>
@@ -1015,28 +641,42 @@
 
                     <div class="action-bar">
                         <button class="btn btn-primary" id="btnScan"><i class="fas fa-camera"></i> Scan</button>
-                        <button class="btn btn-warning" id="btnDetectEdges"><i class="fas fa-crop-alt"></i> Deteksi Tepi (JScanify)</button>
                         <button class="btn btn-success" id="btnDownloadPNG" disabled><i class="fas fa-image"></i> PNG</button>
                         <button class="btn btn-success" id="btnDownloadPDF" disabled><i class="fas fa-file-pdf"></i> PDF</button>
                         <button class="btn btn-danger-outline" id="btnReset"><i class="fas fa-undo-alt"></i> Reset</button>
                     </div>
 
-                    <button class="btn btn-primary" id="btnOCR" disabled style="background: #6a1b9a; box-shadow: 0 4px 12px rgba(106,27,154,0.25);">
-                        <i class="fas fa-font"></i> OCR & Edit Teks
-                    </button>
-                    <button class="btn btn-primary" id="btnSaveHistory" disabled style="background: #1a237e; box-shadow: 0 4px 12px rgba(26,35,126,0.25);">
-                        <i class="fas fa-save"></i> Simpan ke Riwayat
-                    </button>
+                    <!-- ===== AI ACTION BAR ===== -->
+                    <div class="action-bar">
+                        <button class="btn btn-ai" id="btnAIEnhance"><i class="fas fa-wand-magic-sparkles"></i> AI Enhance</button>
+                        <button class="btn btn-ai-alt" id="btnAIOCR"><i class="fas fa-font"></i> AI OCR</button>
+                    </div>
 
-                    <!-- OCR Result -->
-                    <div class="ocr-section" id="ocrSection">
-                        <h4><i class="fas fa-pen-fancy"></i> Hasil OCR (Edit Teks)</h4>
-                        <textarea id="ocrText" rows="5" placeholder="Teks hasil OCR akan muncul di sini..."></textarea>
-                        <div class="ocr-actions">
-                            <button class="btn btn-primary" id="btnCopyOCR"><i class="fas fa-copy"></i> Salin</button>
-                            <button class="btn btn-success" id="btnSaveOCR" style="background:#2e7d32;"><i class="fas fa-save"></i> Simpan</button>
+                    <!-- ===== AI RESULT (teks OCR) ===== -->
+                    <div class="ai-result" id="aiResult">
+                        <div class="ai-header">
+                            <div class="ai-title"><i class="fas fa-robot"></i> <span id="aiResultTitle">Hasil AI</span></div>
+                            <button class="ai-close" id="btnCloseAIResult" title="Tutup"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="ai-body" id="aiResultBody"></div>
+                        <div class="ai-actions">
+                            <button id="btnCopyAIResult"><i class="fas fa-copy"></i> Salin</button>
+                            <button id="btnDownloadAITxt"><i class="fas fa-download"></i> .txt</button>
                         </div>
                     </div>
+
+                    <!-- ===== AI IMAGE RESULT (gambar hasil generate) ===== -->
+                    <div class="ai-image-result" id="aiImageResult">
+                        <img id="aiGeneratedImg" src="" alt="AI Generated Scan" />
+                        <div class="ai-img-actions">
+                            <button id="btnUseAIImage"><i class="fas fa-check"></i> Pakai Gambar Ini</button>
+                            <button class="secondary" id="btnDownloadAIImage"><i class="fas fa-download"></i> Unduh</button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="btnSaveHistory" disabled style="background: #6a1b9a; box-shadow: 0 4px 12px rgba(106,27,154,0.25);">
+                        <i class="fas fa-save"></i> Simpan ke Riwayat
+                    </button>
                 </section>
             </div>
 
@@ -1049,14 +689,11 @@
                         <button id="btnCapture"><i class="fas fa-camera"></i></button>
                     </div>
                 </div>
-                <!-- instruksi disembunyikan saat fullscreen -->
                 <p style="font-size:12px; color:#78909c; text-align:center; margin-top:-8px; display:none;" id="camInstruction">Arahkan ke dokumen, lalu tekan tombol kamera</p>
             </div>
 
             <!-- ===== PAGE RIWAYAT ===== -->
             <div class="page" id="pageHistory">
-
-                <!-- HEADER -->
                 <div class="history-header">
                     <h3>
                         <i class="fas fa-history"></i> Riwayat Scan
@@ -1067,7 +704,6 @@
                     </button>
                 </div>
 
-                <!-- LIST -->
                 <div class="history-list" id="historyList">
                     <div class="history-empty">
                         <i class="fas fa-inbox"></i>
@@ -1108,8 +744,6 @@
             const btnPDF = document.getElementById('btnDownloadPDF');
             const btnReset = document.getElementById('btnReset');
             const btnSaveHistory = document.getElementById('btnSaveHistory');
-            const btnOCR = document.getElementById('btnOCR');
-            const btnDetectEdges = document.getElementById('btnDetectEdges');
             const scanFrame = document.getElementById('scanFrame');
             const thresholdSlider = document.getElementById('thresholdSlider');
             const thresholdValue = document.getElementById('thresholdValue');
@@ -1118,11 +752,19 @@
             const modeBW = document.getElementById('modeBW');
             const modeColor = document.getElementById('modeColor');
 
-            // OCR
-            const ocrSection = document.getElementById('ocrSection');
-            const ocrText = document.getElementById('ocrText');
-            const btnCopyOCR = document.getElementById('btnCopyOCR');
-            const btnSaveOCR = document.getElementById('btnSaveOCR');
+            // AI elements
+            const btnAIEnhance = document.getElementById('btnAIEnhance');
+            const btnAIOCR = document.getElementById('btnAIOCR');
+            const aiResult = document.getElementById('aiResult');
+            const aiResultTitle = document.getElementById('aiResultTitle');
+            const aiResultBody = document.getElementById('aiResultBody');
+            const btnCloseAIResult = document.getElementById('btnCloseAIResult');
+            const btnCopyAIResult = document.getElementById('btnCopyAIResult');
+            const btnDownloadAITxt = document.getElementById('btnDownloadAITxt');
+            const aiImageResult = document.getElementById('aiImageResult');
+            const aiGeneratedImg = document.getElementById('aiGeneratedImg');
+            const btnUseAIImage = document.getElementById('btnUseAIImage');
+            const btnDownloadAIImage = document.getElementById('btnDownloadAIImage');
 
             // Camera
             const video = document.getElementById('video');
@@ -1147,29 +789,20 @@
             // =============================================
             let imageDataUrl = null;
             let originalColorData = null;
-            let canvasWidth = 0,
-                canvasHeight = 0;
-            let scannedCanvas = null; // hasil scan (canvas)
+            let canvasWidth = 0, canvasHeight = 0;
+            let scannedCanvas = null;
             let isScanning = false;
             let isProcessing = false;
             let stream = null;
             let cameraActive = false;
-            let currentImageData = null; // untuk deteksi tepi / OCR
+            let aiGeneratedSrc = null;
 
             // =============================================
             // KERNEL
             // =============================================
-            const blurKernel = [
-                [1, 2, 1],
-                [2, 4, 2],
-                [1, 2, 1]
-            ];
+            const blurKernel = [[1, 2, 1], [2, 4, 2], [1, 2, 1]];
             const blurDivisor = 16;
-            const sharpenKernel = [
-                [0, -1, 0],
-                [-1, 5, -1],
-                [0, -1, 0]
-            ];
+            const sharpenKernel = [[0, -1, 0], [-1, 5, -1], [0, -1, 0]];
             const sharpenDivisor = 1;
             const sharpenOffset = 0;
 
@@ -1191,9 +824,7 @@
                         const idx = (y * w + x) * 4;
                         let val = sum / divisor + offset;
                         val = Math.min(255, Math.max(0, Math.round(val)));
-                        result[idx] = val;
-                        result[idx + 1] = val;
-                        result[idx + 2] = val;
+                        result[idx] = val; result[idx + 1] = val; result[idx + 2] = val;
                     }
                 }
                 return result;
@@ -1204,9 +835,7 @@
                 for (let i = 0; i < srcData.length; i++) result[i] = srcData[i];
                 for (let y = 1; y < h - 1; y++) {
                     for (let x = 1; x < w - 1; x++) {
-                        let r = 0,
-                            g = 0,
-                            b = 0;
+                        let r = 0, g = 0, b = 0;
                         for (let ky = -1; ky <= 1; ky++) {
                             for (let kx = -1; kx <= 1; kx++) {
                                 const idx = ((y + ky) * w + (x + kx)) * 4;
@@ -1243,9 +872,7 @@
                         let newVal = center;
                         if (center < 128 && black <= 2) newVal = 255;
                         else if (center >= 128 && black >= 7) newVal = 0;
-                        result[idx] = newVal;
-                        result[idx + 1] = newVal;
-                        result[idx + 2] = newVal;
+                        result[idx] = newVal; result[idx + 1] = newVal; result[idx + 2] = newVal;
                     }
                 }
                 return result;
@@ -1254,9 +881,7 @@
             function processColorMode(srcData, w, h) {
                 const data = new Uint8ClampedArray(srcData);
                 for (let i = 0; i < data.length; i += 4) {
-                    let r = data[i],
-                        g = data[i + 1],
-                        b = data[i + 2];
+                    let r = data[i], g = data[i + 1], b = data[i + 2];
                     r = ((r - 128) * 1.3 + 128) + 20;
                     g = ((g - 128) * 1.3 + 128) + 20;
                     b = ((b - 128) * 1.3 + 128) + 20;
@@ -1264,8 +889,7 @@
                     data[i + 1] = Math.min(255, Math.max(0, g));
                     data[i + 2] = Math.min(255, Math.max(0, b));
                 }
-                const bgTh = 180,
-                    whiten = 0.7;
+                const bgTh = 180, whiten = 0.7;
                 for (let i = 0; i < data.length; i += 4) {
                     const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
                     if (avg > bgTh) {
@@ -1287,8 +911,7 @@
                 isProcessing = true;
                 requestAnimationFrame(() => {
                     try {
-                        const w = canvasWidth,
-                            h = canvasHeight;
+                        const w = canvasWidth, h = canvasHeight;
                         const srcData = new Uint8ClampedArray(originalColorData.data);
                         let finalData;
                         if (mode === 'color') {
@@ -1297,29 +920,23 @@
                             const grayData = new Uint8ClampedArray(srcData.length);
                             for (let i = 0; i < srcData.length; i += 4) {
                                 const gray = 0.299 * srcData[i] + 0.587 * srcData[i + 1] + 0.114 * srcData[i + 2];
-                                grayData[i] = gray;
-                                grayData[i + 1] = gray;
-                                grayData[i + 2] = gray;
+                                grayData[i] = gray; grayData[i + 1] = gray; grayData[i + 2] = gray;
                                 grayData[i + 3] = 255;
                             }
                             const blurred = applyKernel3x3(grayData, w, h, blurKernel, blurDivisor, 0);
-                            const sharpened = applyKernel3x3(blurred, w, h, sharpenKernel, sharpenDivisor,
-                                sharpenOffset);
+                            const sharpened = applyKernel3x3(blurred, w, h, sharpenKernel, sharpenDivisor, sharpenOffset);
                             const binaryData = new Uint8ClampedArray(sharpened.length);
                             const th = threshold;
                             for (let i = 0; i < sharpened.length; i += 4) {
                                 const val = sharpened[i] >= th ? 255 : 0;
-                                binaryData[i] = val;
-                                binaryData[i + 1] = val;
-                                binaryData[i + 2] = val;
+                                binaryData[i] = val; binaryData[i + 1] = val; binaryData[i + 2] = val;
                                 binaryData[i + 3] = 255;
                             }
                             finalData = cleanupBinary(binaryData, w, h);
                         }
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-                        canvas.width = w;
-                        canvas.height = h;
+                        canvas.width = w; canvas.height = h;
                         const imageData = new ImageData(finalData, w, h);
                         ctx.putImageData(imageData, 0, 0);
                         const existing = scanFrame.querySelector('canvas');
@@ -1330,12 +947,9 @@
                         canvas.style.maxHeight = '340px';
                         canvas.style.borderRadius = '12px';
                         scannedCanvas = canvas;
-                        currentImageData = canvas; // simpan untuk deteksi tepi/OCR
                         btnPNG.disabled = false;
                         btnPDF.disabled = false;
                         btnSaveHistory.disabled = false;
-                        btnOCR.disabled = false;
-                        ocrSection.classList.remove('active');
                         isProcessing = false;
                     } catch (err) {
                         console.error(err);
@@ -1346,7 +960,7 @@
             }
 
             // =============================================
-            // UPLOAD (dari file atau hasil capture)
+            // UPLOAD
             // =============================================
             function loadImageFromDataURL(dataUrl) {
                 imageDataUrl = dataUrl;
@@ -1356,39 +970,37 @@
                 if (old) old.remove();
                 previewSection.classList.add('active');
                 scannedCanvas = null;
-                currentImageData = null;
                 originalColorData = null;
                 btnPNG.disabled = true;
                 btnPDF.disabled = true;
                 btnSaveHistory.disabled = true;
-                btnOCR.disabled = true;
-                ocrSection.classList.remove('active');
                 scanLine.classList.remove('active');
                 uploadZone.style.display = 'none';
                 thresholdControl.style.display = 'none';
                 modeControl.style.display = 'none';
                 btnScan.disabled = false;
                 btnScan.innerHTML = '<i class="fas fa-camera"></i> Scan';
-                // Siapkan data asli
+
+                // Reset AI panels
+                hideAIResult();
+                hideAIImage();
+
                 const img = new Image();
                 img.onload = function() {
                     const tempCanvas = document.createElement('canvas');
                     const ctx = tempCanvas.getContext('2d');
-                    let w = img.width,
-                        h = img.height;
+                    let w = img.width, h = img.height;
                     const maxDim = 1400;
                     if (w > maxDim || h > maxDim) {
                         const ratio = Math.min(maxDim / w, maxDim / h);
                         w = Math.round(w * ratio);
                         h = Math.round(h * ratio);
                     }
-                    tempCanvas.width = w;
-                    tempCanvas.height = h;
+                    tempCanvas.width = w; tempCanvas.height = h;
                     ctx.drawImage(img, 0, 0, w, h);
                     const imageData = ctx.getImageData(0, 0, w, h);
                     originalColorData = new ImageData(new Uint8ClampedArray(imageData.data), w, h);
-                    canvasWidth = w;
-                    canvasHeight = h;
+                    canvasWidth = w; canvasHeight = h;
                     modeControl.style.display = 'flex';
                     thresholdControl.style.display = 'flex';
                     const mode = modeColor.checked ? 'color' : 'bw';
@@ -1405,15 +1017,12 @@
                 if (!valid.includes(file.type)) { alert('Format tidak didukung.'); return; }
                 if (file.size > 10 * 1024 * 1024) { alert('Maksimal 10 MB.'); return; }
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    loadImageFromDataURL(e.target.result);
-                };
+                reader.onload = function(e) { loadImageFromDataURL(e.target.result); };
                 reader.readAsDataURL(file);
             }
 
             // ===== EVENT UPLOAD =====
-            uploadZone.addEventListener('dragover', e => { e.preventDefault();
-                uploadZone.classList.add('dragover'); });
+            uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
             uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
             uploadZone.addEventListener('drop', e => {
                 e.preventDefault();
@@ -1426,7 +1035,7 @@
                 fileInput.value = '';
             });
 
-            // ===== SCAN (proses ulang) =====
+            // ===== SCAN =====
             btnScan.addEventListener('click', () => {
                 if (!originalColorData || isScanning || isProcessing) return;
                 isScanning = true;
@@ -1445,8 +1054,7 @@
             // ===== RADIO =====
             modeBW.addEventListener('change', function() {
                 if (this.checked && originalColorData && !isProcessing && !isScanning) {
-                    const th = parseInt(thresholdSlider.value, 10);
-                    processScan(th, 'bw');
+                    processScan(parseInt(thresholdSlider.value, 10), 'bw');
                 }
             });
             modeColor.addEventListener('change', function() {
@@ -1464,137 +1072,7 @@
                 }
             });
 
-            // =============================================
-            // DETEKSI TEPI DENGAN JScanify
-            // =============================================
-            function detectEdgesWithJScanify() {
-                // Pastikan ada gambar
-                let sourceCanvas = scannedCanvas;
-                if (!sourceCanvas && originalColorData) {
-                    const c = document.createElement('canvas');
-                    c.width = canvasWidth;
-                    c.height = canvasHeight;
-                    const ctx = c.getContext('2d');
-                    const imageData = new ImageData(originalColorData.data, canvasWidth, canvasHeight);
-                    ctx.putImageData(imageData, 0, 0);
-                    sourceCanvas = c;
-                }
-
-                if (!sourceCanvas) {
-                    alert('Tidak ada gambar untuk diproses. Unggah atau ambil foto terlebih dahulu.');
-                    return;
-                }
-
-                try {
-                    // Inisialisasi JScanify
-                    const jscanify = new JScanify();
-                    // Ekstrak dokumen (deteksi + warp)
-                    const resultCanvas = jscanify.extractPaper(sourceCanvas, {
-                        // Opsi default sudah cukup baik
-                        // Bisa ditambahkan parameter seperti `targetWidth`, `targetHeight`
-                    });
-
-                    if (!resultCanvas) {
-                        alert('Gagal mendeteksi dokumen. Pastikan kertas terlihat jelas dengan latar belakang kontras.');
-                        return;
-                    }
-
-                    // Tampilkan hasil di scanFrame
-                    const existing = scanFrame.querySelector('canvas');
-                    if (existing) existing.remove();
-                    previewImage.style.display = 'none';
-                    scanFrame.appendChild(resultCanvas);
-                    resultCanvas.style.maxWidth = '100%';
-                    resultCanvas.style.maxHeight = '340px';
-                    resultCanvas.style.borderRadius = '12px';
-                    scannedCanvas = resultCanvas;
-                    currentImageData = resultCanvas;
-                    btnPNG.disabled = false;
-                    btnPDF.disabled = false;
-                    btnSaveHistory.disabled = false;
-                    btnOCR.disabled = false;
-                    ocrSection.classList.remove('active');
-                    alert('✅ Deteksi tepi berhasil! Dokumen telah diluruskan dan dipotong.');
-                } catch (err) {
-                    console.error(err);
-                    alert('❌ Error saat deteksi tepi: ' + err.message);
-                }
-            }
-
-            btnDetectEdges.addEventListener('click', detectEdgesWithJScanify);
-
-            // =============================================
-            // OCR dengan Tesseract.js
-            // =============================================
-            async function performOCR() {
-                if (!currentImageData && !scannedCanvas) {
-                    alert('Tidak ada gambar untuk OCR. Lakukan scan atau deteksi tepi terlebih dahulu.');
-                    return;
-                }
-
-                let canvas = scannedCanvas;
-                if (!canvas) {
-                    // buat canvas sementara dari originalColorData
-                    const c = document.createElement('canvas');
-                    c.width = canvasWidth;
-                    c.height = canvasHeight;
-                    const ctx = c.getContext('2d');
-                    const imageData = new ImageData(originalColorData.data, canvasWidth, canvasHeight);
-                    ctx.putImageData(imageData, 0, 0);
-                    canvas = c;
-                }
-
-                // Tampilkan loading
-                btnOCR.disabled = true;
-                btnOCR.innerHTML = '<span class="spinner"></span> OCR...';
-                ocrSection.classList.remove('active');
-
-                try {
-                    // Konversi canvas ke data URL
-                    const imageDataUrl = canvas.toDataURL('image/png');
-                    const result = await Tesseract.recognize(imageDataUrl, 'ind', {
-                        logger: m => console.log(m)
-                    });
-                    const text = result.data.text;
-                    ocrText.value = text;
-                    ocrSection.classList.add('active');
-                    btnOCR.innerHTML = '<i class="fas fa-font"></i> OCR & Edit Teks';
-                    btnOCR.disabled = false;
-                } catch (err) {
-                    console.error(err);
-                    alert('❌ Gagal OCR: ' + err.message);
-                    btnOCR.innerHTML = '<i class="fas fa-font"></i> OCR & Edit Teks';
-                    btnOCR.disabled = false;
-                }
-            }
-
-            btnOCR.addEventListener('click', performOCR);
-
-            // Copy OCR
-            btnCopyOCR.addEventListener('click', function() {
-                ocrText.select();
-                document.execCommand('copy');
-                alert('✅ Teks disalin ke clipboard!');
-            });
-
-            // Simpan OCR
-            btnSaveOCR.addEventListener('click', function() {
-                const text = ocrText.value.trim();
-                if (!text) {
-                    alert('Tidak ada teks untuk disimpan.');
-                    return;
-                }
-                const blob = new Blob([text], { type: 'text/plain' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `ocr_${Date.now()}.txt`;
-                link.click();
-                URL.revokeObjectURL(link.href);
-            });
-
-            // =============================================
-            // DOWNLOADS
-            // =============================================
+            // ===== DOWNLOADS =====
             btnPNG.addEventListener('click', () => {
                 if (!scannedCanvas) return;
                 const link = document.createElement('a');
@@ -1607,29 +1085,197 @@
                 try {
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF('p', 'mm', 'a4');
-                    const pageW = 210,
-                        pageH = 297,
-                        margin = 10;
+                    const pageW = 210, pageH = 297, margin = 10;
                     const imgData = scannedCanvas.toDataURL('image/jpeg', 0.95);
-                    const cw = scannedCanvas.width,
-                        ch = scannedCanvas.height;
-                    const maxW = pageW - 2 * margin,
-                        maxH = pageH - 2 * margin;
+                    const cw = scannedCanvas.width, ch = scannedCanvas.height;
+                    const maxW = pageW - 2 * margin, maxH = pageH - 2 * margin;
                     let finalW, finalH;
-                    if (cw / ch > maxW / maxH) { finalW = maxW;
-                        finalH = (maxW * ch) / cw; } else { finalH = maxH;
-                        finalW = (maxH * cw) / ch; }
-                    const x = (pageW - finalW) / 2,
-                        y = (pageH - finalH) / 2;
+                    if (cw / ch > maxW / maxH) { finalW = maxW; finalH = (maxW * ch) / cw; }
+                    else { finalH = maxH; finalW = (maxH * cw) / ch; }
+                    const x = (pageW - finalW) / 2, y = (pageH - finalH) / 2;
                     doc.addImage(imgData, 'JPEG', x, y, finalW, finalH);
                     doc.setFontSize(8);
                     doc.setTextColor(180, 180, 180);
                     doc.setFont('helvetica', 'italic');
-                    doc.text(`ScanKu Pro • ${new Date().toLocaleDateString('id-ID')}`, pageW - margin, pageH - 6, {
-                        align: 'right'
-                    });
+                    doc.text(`ScanKu Pro • ${new Date().toLocaleDateString('id-ID')}`, pageW - margin, pageH - 6, { align: 'right' });
                     doc.save(`scan_${Date.now()}.pdf`);
                 } catch (err) { alert('❌ Gagal buat PDF: ' + err.message); }
+            });
+
+            // =============================================
+            // PUTER.JS — AI FEATURES
+            // =============================================
+
+            function setAILoading(btn, loadingText) {
+                btn.disabled = true;
+                btn.dataset.origHtml = btn.innerHTML;
+                btn.innerHTML = `<span class="spinner"></span> ${loadingText}`;
+            }
+            function resetAILoading(btn) {
+                btn.disabled = false;
+                if (btn.dataset.origHtml) {
+                    btn.innerHTML = btn.dataset.origHtml;
+                    delete btn.dataset.origHtml;
+                }
+            }
+
+            function showAIResult(title, text) {
+                aiResultTitle.textContent = title;
+                aiResultBody.textContent = text;
+                aiResult.classList.add('active');
+            }
+            function hideAIResult() {
+                aiResult.classList.remove('active');
+                aiResultBody.textContent = '';
+            }
+            function showAIImage(src) {
+                aiGeneratedSrc = src;
+                aiGeneratedImg.src = src;
+                aiImageResult.classList.add('active');
+            }
+            function hideAIImage() {
+                aiImageResult.classList.remove('active');
+                aiGeneratedImg.src = '';
+                aiGeneratedSrc = null;
+            }
+
+            function checkPuter() {
+                if (typeof puter === 'undefined' || !puter.ai) {
+                    alert('⚠️ Puter.js belum siap. Periksa koneksi internet Anda dan coba lagi.');
+                    return false;
+                }
+                return true;
+            }
+
+            function extractAIText(response) {
+                if (!response) return '';
+                if (typeof response === 'string') return response;
+                if (response.message) {
+                    if (typeof response.message === 'string') return response.message;
+                    if (response.message.content) {
+                        if (typeof response.message.content === 'string') return response.message.content;
+                        if (Array.isArray(response.message.content)) {
+                            return response.message.content
+                                .map(c => (typeof c === 'string' ? c : c.text || ''))
+                                .join('\n');
+                        }
+                    }
+                }
+                if (response.text) return response.text;
+                try { return JSON.stringify(response); } catch { return String(response); }
+            }
+
+            // ===== AI OCR =====
+            btnAIOCR.addEventListener('click', async () => {
+                if (!imageDataUrl) { alert('Unggah gambar dulu.'); return; }
+                if (!checkPuter()) return;
+
+                setAILoading(btnAIOCR, 'AI membaca...');
+                try {
+                    const response = await puter.ai.chat(
+                        "Ekstrak SEMUA teks yang terlihat pada gambar dokumen ini. " +
+                        "Pertahankan urutan baris, struktur paragraf, dan tata letak semirip mungkin. " +
+                        "Jangan tambahkan komentar atau penjelasan apapun — keluarkan hanya teks hasil ekstraksi.",
+                        imageDataUrl
+                    );
+                    const text = extractAIText(response).trim();
+                    if (!text) {
+                        showAIResult('Hasil OCR', '(Tidak ada teks yang terdeteksi)');
+                    } else {
+                        showAIResult('Hasil OCR', text);
+                    }
+                } catch (err) {
+                    console.error('AI OCR error:', err);
+                    alert('❌ AI OCR gagal: ' + (err.message || err));
+                } finally {
+                    resetAILoading(btnAIOCR);
+                }
+            });
+
+            // ===== AI Enhance (Generate clean scan) =====
+            btnAIEnhance.addEventListener('click', async () => {
+                if (!imageDataUrl) { alert('Unggah gambar dulu.'); return; }
+                if (!checkPuter()) return;
+
+                setAILoading(btnAIEnhance, 'AI menganalisis...');
+                try {
+                    // Step 1: deskripsikan dokumen dengan vision AI
+                    const descResp = await puter.ai.chat(
+                        "Describe this document concisely in English for an AI image generator. " +
+                        "Mention the type of document, visible text content (headings, key lines), " +
+                        "layout (columns, tables, signature areas), and any important visual elements. " +
+                        "Do NOT include any personal/sensitive data — summarize instead. Keep it 2-3 sentences.",
+                        imageDataUrl
+                    );
+                    const description = extractAIText(descResp).trim();
+
+                    if (!description) throw new Error('Gagal mendapatkan deskripsi dokumen.');
+
+                    // Step 2: generate gambar scan bersih via txt2img
+                    btnAIEnhance.innerHTML = '<span class="spinner"></span> AI menggambar...';
+                    const prompt =
+                        `A clean professional scanned document image, white background, ` +
+                        `sharp crisp black text, high contrast, straight edges, no shadows, no noise, ` +
+                        `scanner quality, flat lay top-down view, sharp focus, high resolution. ` +
+                        `Document content: ${description}`;
+
+                    const imgElement = await puter.ai.txt2img(prompt);
+                    if (!imgElement || !imgElement.src) throw new Error('AI tidak mengembalikan gambar.');
+
+                    showAIImage(imgElement.src);
+                } catch (err) {
+                    console.error('AI Enhance error:', err);
+                    alert('❌ AI Enhance gagal: ' + (err.message || err));
+                } finally {
+                    resetAILoading(btnAIEnhance);
+                }
+            });
+
+            // ===== AI Result — Close / Copy / Download =====
+            btnCloseAIResult.addEventListener('click', hideAIResult);
+
+            btnCopyAIResult.addEventListener('click', async () => {
+                const text = aiResultBody.textContent || '';
+                if (!text) return;
+                try {
+                    await navigator.clipboard.writeText(text);
+                    btnCopyAIResult.innerHTML = '<i class="fas fa-check"></i> Tersalin';
+                    setTimeout(() => {
+                        btnCopyAIResult.innerHTML = '<i class="fas fa-copy"></i> Salin';
+                    }, 1500);
+                } catch {
+                    alert('Gagal menyalin. Silakan salin manual.');
+                }
+            });
+
+            btnDownloadAITxt.addEventListener('click', () => {
+                const text = aiResultBody.textContent || '';
+                if (!text) return;
+                const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `ocr_${Date.now()}.txt`;
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            });
+
+            // ===== AI Image Result — Use / Download =====
+            btnUseAIImage.addEventListener('click', () => {
+                if (!aiGeneratedSrc) return;
+                // Pakai gambar AI sebagai gambar preview untuk diproses ulang
+                loadImageFromDataURL(aiGeneratedSrc);
+                hideAIImage();
+                // Scroll ke atas
+                document.getElementById('appContent').scrollTop = 0;
+            });
+
+            btnDownloadAIImage.addEventListener('click', () => {
+                if (!aiGeneratedSrc) return;
+                const link = document.createElement('a');
+                link.href = aiGeneratedSrc;
+                link.download = `ai_scan_${Date.now()}.png`;
+                link.click();
             });
 
             // =============================================
@@ -1648,8 +1294,7 @@
                             db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
                         }
                     };
-                    request.onsuccess = function(e) { db = e.target.result;
-                        resolve(db); };
+                    request.onsuccess = function(e) { db = e.target.result; resolve(db); };
                     request.onerror = function(e) { reject(e.target.error); };
                 });
             }
@@ -1715,12 +1360,12 @@
 
                     if (!items || items.length === 0) {
                         historyList.innerHTML = `
-                                <div class="history-empty">
-                                    <i class="fas fa-inbox"></i>
-                                    <div class="empty-title">Belum ada riwayat</div>
-                                    <div class="empty-sub">Scan dokumen pertama Anda dan simpan di sini.</div>
-                                </div>
-                            `;
+                            <div class="history-empty">
+                                <i class="fas fa-inbox"></i>
+                                <div class="empty-title">Belum ada riwayat</div>
+                                <div class="empty-sub">Scan dokumen pertama Anda dan simpan di sini.</div>
+                            </div>
+                        `;
                         return;
                     }
 
@@ -1732,44 +1377,41 @@
 
                         const dateObj = new Date(item.timestamp);
                         const dateStr = dateObj.toLocaleDateString('id-ID', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric'
+                            day: 'numeric', month: 'short', year: 'numeric'
                         });
                         const timeStr = dateObj.toLocaleTimeString('id-ID', {
-                            hour: '2-digit',
-                            minute: '2-digit'
+                            hour: '2-digit', minute: '2-digit'
                         });
 
                         const modeLabel = item.mode === 'color' ? 'Berwarna' : 'Hitam-Putih';
                         const modeDot = item.mode === 'color' ? 'color' : '';
 
                         div.innerHTML = `
-                                <div class="thumb">
-                                    <img src="${item.scanned}" alt="scan" loading="lazy" />
-                                    <span class="mode-tag">${modeLabel}</span>
+                            <div class="thumb">
+                                <img src="${item.scanned}" alt="scan" loading="lazy" />
+                                <span class="mode-tag">${modeLabel}</span>
+                            </div>
+                            <div class="info">
+                                <div class="title">
+                                    <span class="dot ${modeDot}"></span>
+                                    ${modeLabel}
                                 </div>
-                                <div class="info">
-                                    <div class="title">
-                                        <span class="dot ${modeDot}"></span>
-                                        ${modeLabel}
-                                    </div>
-                                    <div class="date">
-                                        <i class="fas fa-calendar-alt"></i> ${dateStr} · ${timeStr}
-                                    </div>
+                                <div class="date">
+                                    <i class="fas fa-calendar-alt"></i> ${dateStr} · ${timeStr}
                                 </div>
-                                <div class="actions">
-                                    <button class="view-btn" data-id="${item.id}" title="Lihat di Beranda">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="download-btn" data-id="${item.id}" title="Download PNG">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                    <button class="danger" data-id="${item.id}" title="Hapus">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            `;
+                            </div>
+                            <div class="actions">
+                                <button class="view-btn" data-id="${item.id}" title="Lihat di Beranda">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="download-btn" data-id="${item.id}" title="Download PNG">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="danger" data-id="${item.id}" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
 
                         historyList.appendChild(div);
 
@@ -1855,15 +1497,9 @@
                     btn.classList.toggle('active', btn.dataset.page === pageId);
                 });
 
-                if (pageId === 'history') {
-                    renderHistory();
-                }
-
-                if (pageId === 'scan') {
-                    startCamera();
-                } else {
-                    stopCamera();
-                }
+                if (pageId === 'history') renderHistory();
+                if (pageId === 'scan') startCamera();
+                else stopCamera();
             }
 
             navButtons.forEach(btn => {
@@ -1884,7 +1520,6 @@
                     showPage('home');
                     return;
                 }
-
                 try {
                     const constraints = {
                         video: { facingMode: 'environment', width: { ideal: 640 } },
@@ -1920,9 +1555,7 @@
                 }
             }
 
-            btnCloseCam.addEventListener('click', function() {
-                showPage('home');
-            });
+            btnCloseCam.addEventListener('click', function() { showPage('home'); });
 
             btnCapture.addEventListener('click', function() {
                 if (!cameraActive || !stream) {
@@ -1932,8 +1565,7 @@
                 const canvas = document.createElement('canvas');
                 const vw = video.videoWidth || 640;
                 const vh = video.videoHeight || 480;
-                canvas.width = vw;
-                canvas.height = vh;
+                canvas.width = vw; canvas.height = vh;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(video, 0, 0, vw, vh);
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
@@ -1948,7 +1580,6 @@
                 imageDataUrl = null;
                 originalColorData = null;
                 scannedCanvas = null;
-                currentImageData = null;
                 isScanning = false;
                 isProcessing = false;
                 previewImage.style.display = 'block';
@@ -1965,11 +1596,10 @@
                 btnPNG.disabled = true;
                 btnPDF.disabled = true;
                 btnSaveHistory.disabled = true;
-                btnOCR.disabled = true;
-                ocrSection.classList.remove('active');
-                ocrText.value = '';
                 fileInput.value = '';
                 modeBW.checked = true;
+                hideAIResult();
+                hideAIImage();
             });
 
             // =============================================
@@ -1978,7 +1608,7 @@
             (async function init() {
                 await openDB();
                 showPage('home');
-                console.log('📸 ScanKu Pro siap!');
+                console.log('📸 ScanKu Pro siap! AI features powered by Puter.js');
             })();
 
         })();
