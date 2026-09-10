@@ -5,112 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>ScanKu Pro</title>
 
-    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <!-- jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- Puter.js (AI) -->
     <script src="https://js.puter.com/v2/"></script>
-    <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
 
     <style>
-        /* ===== RESET & BASE ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: 'Inter', sans-serif;
             background: #eef2f7;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 0;
-            margin: 0;
+            display: flex; justify-content: center; align-items: center;
+            padding: 0; margin: 0;
         }
-
         .app-wrapper {
-            max-width: 480px;
-            width: 100%;
-            height: 100vh;
-            max-height: 860px;
-            background: #ffffff;
-            border-radius: 28px;
+            max-width: 480px; width: 100%;
+            height: 100vh; max-height: 860px;
+            background: #ffffff; border-radius: 28px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.20);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            margin: 12px;
+            overflow: hidden; display: flex; flex-direction: column;
+            position: relative; margin: 12px;
             transition: all 0.3s ease;
         }
-
         .app-wrapper.camera-fullscreen {
-            max-height: 100vh !important;
-            height: 100vh !important;
-            border-radius: 0 !important;
-            margin: 0 !important;
-            box-shadow: none !important;
+            max-height: 100vh !important; height: 100vh !important;
+            border-radius: 0 !important; margin: 0 !important; box-shadow: none !important;
         }
-
         .app-wrapper.camera-fullscreen .app-header,
         .app-wrapper.camera-fullscreen .bottom-nav { display: none !important; }
-
         .app-wrapper.camera-fullscreen .app-content {
-            padding: 0 !important;
-            background: #000 !important;
-            overflow: hidden !important;
+            padding: 0 !important; background: #000 !important; overflow: hidden !important;
         }
-
         .app-wrapper.camera-fullscreen .camera-container {
             border-radius: 0 !important;
-            min-height: 100% !important;
-            height: 100% !important;
+            min-height: 100% !important; height: 100% !important;
             width: 100% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
+            display: flex !important; align-items: center !important; justify-content: center !important;
             background: #000 !important;
         }
-
         .app-wrapper.camera-fullscreen .camera-container video {
-            border-radius: 0 !important;
-            object-fit: cover !important;
-            width: 100% !important;
-            height: 100% !important;
-            display: block !important;
+            border-radius: 0 !important; object-fit: cover !important;
+            width: 100% !important; height: 100% !important; display: block !important;
         }
-
         .app-wrapper.camera-fullscreen .camera-container .camera-overlay {
-            bottom: 40px !important;
-            gap: 24px !important;
+            bottom: 40px !important; gap: 24px !important;
         }
-
         .app-wrapper.camera-fullscreen .camera-container .camera-overlay button {
             width: 64px !important; height: 64px !important; font-size: 30px !important;
         }
-
         .app-wrapper.camera-fullscreen .camera-container .camera-overlay .btn-close-cam {
             width: 54px !important; height: 54px !important; font-size: 22px !important;
         }
 
-        /* ===== HEADER ===== */
         .app-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: flex; align-items: center; justify-content: space-between;
             padding: 16px 20px 12px;
-            background: #ffffff;
-            border-bottom: 1px solid #f0f2f6;
+            background: #ffffff; border-bottom: 1px solid #f0f2f6;
             flex-shrink: 0;
         }
         .app-header .left { display: flex; align-items: center; gap: 12px; }
         .app-header .logo {
             background: linear-gradient(145deg, #1a237e, #0d47a1);
-            width: 40px; height: 40px;
-            border-radius: 12px;
+            width: 40px; height: 40px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
             color: #fff; font-size: 20px;
             box-shadow: 0 4px 10px rgba(13, 71, 161, 0.25);
@@ -118,12 +77,11 @@
         .app-header h1 { font-size: 18px; font-weight: 700; color: #0a1929; letter-spacing: -0.3px; }
         .app-header h1 small { font-size: 11px; font-weight: 400; color: #546e7a; display: block; margin-top: -2px; }
         .app-header .right i {
-            font-size: 20px; color: #1a237e; background: #e8edf5; padding: 8px;
-            border-radius: 50%; cursor: pointer; transition: 0.2s;
+            font-size: 20px; color: #1a237e; background: #e8edf5;
+            padding: 8px; border-radius: 50%; cursor: pointer; transition: 0.2s;
         }
         .app-header .right i:hover { background: #d0d9e8; }
 
-        /* ===== CONTENT ===== */
         .app-content {
             flex: 1; overflow-y: auto;
             padding: 16px 20px 8px;
@@ -134,19 +92,13 @@
         .app-content::-webkit-scrollbar { width: 4px; }
         .app-content::-webkit-scrollbar-thumb { background: #c5cae9; border-radius: 8px; }
 
-        /* ===== PAGE ===== */
         .page { display: none; flex-direction: column; gap: 18px; }
         .page.active { display: flex; }
 
-        /* ===== UPLOAD ZONE ===== */
         .upload-zone {
-            border: 2px dashed #b0bec5;
-            border-radius: 24px;
-            padding: 28px 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.25s;
-            background: #ffffff;
+            border: 2px dashed #b0bec5; border-radius: 24px;
+            padding: 28px 16px; text-align: center; cursor: pointer;
+            transition: all 0.25s; background: #ffffff;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
         }
         .upload-zone:hover { border-color: #42a5f5; background: #f5faff; }
@@ -157,7 +109,6 @@
         .upload-zone .sub-text { font-size: 11px; color: #b0bec5; margin-top: 6px; }
         #fileInput { display: none; }
 
-        /* ===== PREVIEW SECTION ===== */
         .preview-section {
             display: none; flex-direction: column; gap: 14px;
             animation: fadeUp 0.3s ease;
@@ -209,7 +160,6 @@
             100% { top: 5%; }
         }
 
-        /* ===== CAMERA VIEW ===== */
         .camera-container {
             position: relative; background: #000;
             border-radius: 16px; overflow: hidden;
@@ -243,7 +193,6 @@
             width: 50px; height: 50px; font-size: 20px;
         }
 
-        /* ===== MODE & SLIDER ===== */
         .mode-control {
             display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
             background: #f5f8fc; padding: 10px 16px; border-radius: 16px;
@@ -275,7 +224,6 @@
         }
         .threshold-control .hint { font-size: 11px; color: #78909c; margin-left: auto; }
 
-        /* ===== ACTION BUTTONS ===== */
         .action-bar { display: flex; flex-wrap: wrap; gap: 10px; }
         .btn {
             display: inline-flex; align-items: center; justify-content: center;
@@ -305,30 +253,19 @@
         }
         .btn-danger-outline:hover { background: #ffebee; border-color: #c62828; }
 
-        /* ===== AI BUTTONS ===== */
         .btn-ai {
             background: linear-gradient(145deg, #6a1b9a, #8e24aa);
             color: #fff;
             box-shadow: 0 4px 12px rgba(106, 27, 154, 0.30);
         }
-        .btn-ai:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(106, 27, 154, 0.45);
-        }
-        .btn-ai:disabled {
-            opacity: 0.55;
-            cursor: not-allowed;
-            transform: none !important;
-        }
+        .btn-ai:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(106, 27, 154, 0.45); }
+        .btn-ai:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
         .btn-ai-alt {
             background: linear-gradient(145deg, #ad1457, #d81b60);
             color: #fff;
             box-shadow: 0 4px 12px rgba(173, 20, 87, 0.30);
         }
-        .btn-ai-alt:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(173, 20, 87, 0.45);
-        }
+        .btn-ai-alt:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(173, 20, 87, 0.45); }
 
         .btn .spinner {
             display: inline-block; width: 16px; height: 16px;
@@ -338,12 +275,10 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ===== AI RESULT CARD ===== */
         .ai-result {
             display: none;
             background: linear-gradient(135deg, #f3e5f5 0%, #ede7f6 100%);
-            border: 1px solid #ce93d8;
-            border-radius: 18px;
+            border: 1px solid #ce93d8; border-radius: 18px;
             padding: 14px 16px;
             animation: fadeUp 0.3s ease;
         }
@@ -366,83 +301,42 @@
         .ai-result .ai-header .ai-close:hover { background: rgba(106, 27, 154, 0.1); }
         .ai-result .ai-body {
             font-size: 12.5px; line-height: 1.55; color: #311b92;
-            white-space: pre-wrap;
-            word-break: break-word;
-            max-height: 220px;
-            overflow-y: auto;
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 10px 12px;
-            border: 1px solid #e1bee7;
+            white-space: pre-wrap; word-break: break-word;
+            max-height: 220px; overflow-y: auto;
+            background: #ffffff; border-radius: 12px;
+            padding: 10px 12px; border: 1px solid #e1bee7;
         }
         .ai-result .ai-body::-webkit-scrollbar { width: 4px; }
         .ai-result .ai-body::-webkit-scrollbar-thumb { background: #ce93d8; border-radius: 8px; }
-
-        .ai-result .ai-actions {
-            display: flex; gap: 8px; margin-top: 10px;
-            flex-wrap: wrap;
-        }
+        .ai-result .ai-actions { display: flex; gap: 8px; margin-top: 10px; }
         .ai-result .ai-actions button {
-            flex: 1 1 calc(50% - 4px);
-            min-width: 120px;
-            background: #fff;
-            border: 1px solid #ce93d8;
-            color: #6a1b9a;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 8px 10px;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: 0.2s;
+            flex: 1; background: #fff;
+            border: 1px solid #ce93d8; color: #6a1b9a;
+            font-size: 12px; font-weight: 600;
+            padding: 7px 10px; border-radius: 30px;
+            cursor: pointer; transition: 0.2s;
             font-family: 'Inter', sans-serif;
-            display: inline-flex; align-items: center; justify-content: center;
-            gap: 5px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 5px;
         }
-        .ai-result .ai-actions button:hover {
-            background: #6a1b9a; color: #fff; border-color: #6a1b9a;
-        }
-        .ai-result .ai-actions button:disabled {
-            opacity: 0.55;
-            cursor: not-allowed;
-        }
-        .ai-result .ai-actions button.primary-action {
-            background: linear-gradient(145deg, #6a1b9a, #8e24aa);
-            color: #fff;
-            border-color: transparent;
-        }
-        .ai-result .ai-actions button.primary-action:hover {
-            background: linear-gradient(145deg, #4a148c, #6a1b9a);
-        }
+        .ai-result .ai-actions button:hover { background: #6a1b9a; color: #fff; border-color: #6a1b9a; }
 
-        /* Preview result generated by AI */
         .ai-image-result {
-            margin-top: 10px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #ce93d8;
-            background: #fff;
+            margin-top: 10px; border-radius: 12px; overflow: hidden;
+            border: 1px solid #ce93d8; background: #fff;
             display: none;
         }
         .ai-image-result.active { display: block; }
-        .ai-image-result img {
-            width: 100%; display: block; border-radius: 12px;
-        }
+        .ai-image-result img { width: 100%; display: block; border-radius: 12px; }
         .ai-image-result .ai-img-actions {
             display: flex; gap: 6px; padding: 8px;
-            background: #faf5ff;
-            border-top: 1px solid #e1bee7;
+            background: #faf5ff; border-top: 1px solid #e1bee7;
         }
         .ai-image-result .ai-img-actions button {
-            flex: 1;
-            background: #6a1b9a;
-            border: none;
-            color: #fff;
-            font-size: 11.5px;
-            font-weight: 600;
-            padding: 7px 10px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
+            flex: 1; background: #6a1b9a;
+            border: none; color: #fff;
+            font-size: 11.5px; font-weight: 600;
+            padding: 7px 10px; border-radius: 30px;
+            cursor: pointer; font-family: 'Inter', sans-serif;
             display: inline-flex; align-items: center; justify-content: center; gap: 4px;
             transition: 0.2s;
         }
@@ -450,17 +344,11 @@
         .ai-image-result .ai-img-actions button.secondary {
             background: #fff; color: #6a1b9a; border: 1px solid #ce93d8;
         }
-        .ai-image-result .ai-img-actions button.secondary:hover {
-            background: #f3e5f5;
-        }
+        .ai-image-result .ai-img-actions button.secondary:hover { background: #f3e5f5; }
 
-        /* ============================================================
-                   RIWAYAT — UI RAPIH
-                   ============================================================ */
         .history-header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 0 8px 0;
-            border-bottom: 1px solid #eef2f7;
+            padding: 0 0 8px 0; border-bottom: 1px solid #eef2f7;
         }
         .history-header h3 {
             font-size: 16px; font-weight: 700; color: #0a1929;
@@ -498,7 +386,6 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
             transform: translateY(-1px);
         }
-
         .history-item .thumb {
             width: 64px; height: 64px; border-radius: 14px;
             overflow: hidden; flex-shrink: 0;
@@ -514,7 +401,6 @@
             text-align: center; padding: 2px 0;
             letter-spacing: 0.3px; text-transform: uppercase;
         }
-
         .history-item .info { flex: 1; min-width: 0; }
         .history-item .info .title {
             font-weight: 600; font-size: 14px; color: #0a1929;
@@ -530,7 +416,6 @@
             display: flex; align-items: center; gap: 6px;
         }
         .history-item .info .date i { font-size: 11px; color: #b0bec5; }
-
         .history-item .actions { display: flex; gap: 2px; flex-shrink: 0; }
         .history-item .actions button {
             background: transparent; border: none;
@@ -552,7 +437,6 @@
         .history-empty .empty-title { font-size: 16px; font-weight: 600; color: #546e7a; }
         .history-empty .empty-sub { font-size: 13px; color: #b0bec5; }
 
-        /* ===== BOTTOM NAV ===== */
         .bottom-nav {
             background: #ffffff; border-top: 1px solid #e8edf4;
             display: flex; justify-content: space-around; align-items: center;
@@ -570,7 +454,6 @@
         .bottom-nav .nav-item.active i { color: #1a237e; }
         .bottom-nav .nav-item:hover { color: #546e7a; }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 500px) {
             .app-wrapper { border-radius: 0; margin: 0; max-height: 100vh; height: 100vh; }
             .app-content { padding: 12px 14px 4px; }
@@ -603,7 +486,6 @@
 
     <div class="app-wrapper" id="appWrapper">
 
-        <!-- ===== HEADER ===== -->
         <header class="app-header">
             <div class="left">
                 <div class="logo"><i class="fas fa-print"></i></div>
@@ -614,12 +496,9 @@
             </div>
         </header>
 
-        <!-- ===== CONTENT ===== -->
         <div class="app-content" id="appContent">
 
-            <!-- ===== PAGE BERANDA ===== -->
             <div class="page active" id="pageHome">
-                <!-- UPLOAD ZONE -->
                 <div class="upload-zone" id="uploadZone">
                     <span class="icon-upload"><i class="fas fa-cloud-upload-alt"></i></span>
                     <h3>Seret atau klik untuk unggah</h3>
@@ -628,7 +507,6 @@
                     <input type="file" id="fileInput" accept="image/*" />
                 </div>
 
-                <!-- PREVIEW SECTION -->
                 <section class="preview-section" id="previewSection">
                     <div class="scan-frame-wrapper">
                         <div class="scan-frame" id="scanFrame">
@@ -661,13 +539,11 @@
                         <button class="btn btn-danger-outline" id="btnReset"><i class="fas fa-undo-alt"></i> Reset</button>
                     </div>
 
-                    <!-- ===== AI ACTION BAR ===== -->
                     <div class="action-bar">
                         <button class="btn btn-ai" id="btnAIEnhance"><i class="fas fa-wand-magic-sparkles"></i> AI Enhance</button>
                         <button class="btn btn-ai-alt" id="btnAIOCR"><i class="fas fa-font"></i> AI OCR</button>
                     </div>
 
-                    <!-- ===== AI RESULT (teks OCR) ===== -->
                     <div class="ai-result" id="aiResult">
                         <div class="ai-header">
                             <div class="ai-title"><i class="fas fa-robot"></i> <span id="aiResultTitle">Hasil AI</span></div>
@@ -675,18 +551,11 @@
                         </div>
                         <div class="ai-body" id="aiResultBody"></div>
                         <div class="ai-actions">
-                            <button id="btnAIReconstruct" class="primary-action">
-                                <i class="fas fa-wand-magic-sparkles"></i> AI Perbaiki
-                            </button>
-                            <button id="btnRenderClean" class="primary-action">
-                                <i class="fas fa-file-alt"></i> Render Bersih
-                            </button>
-                            <button id="btnCopyAIResult"><i class="fas fa-copy"></i> Salin Teks</button>
-                            <button id="btnDownloadAITxt"><i class="fas fa-download"></i> Unduh .txt</button>
+                            <button id="btnCopyAIResult"><i class="fas fa-copy"></i> Salin</button>
+                            <button id="btnDownloadAITxt"><i class="fas fa-download"></i> .txt</button>
                         </div>
                     </div>
 
-                    <!-- ===== AI IMAGE RESULT (gambar hasil generate) ===== -->
                     <div class="ai-image-result" id="aiImageResult">
                         <img id="aiGeneratedImg" src="" alt="AI Generated Scan" />
                         <div class="ai-img-actions">
@@ -701,7 +570,6 @@
                 </section>
             </div>
 
-            <!-- ===== PAGE SCAN (KAMERA) ===== -->
             <div class="page" id="pageScan">
                 <div class="camera-container" id="cameraContainer">
                     <video id="video" autoplay playsinline></video>
@@ -710,10 +578,8 @@
                         <button id="btnCapture"><i class="fas fa-camera"></i></button>
                     </div>
                 </div>
-                <p style="font-size:12px; color:#78909c; text-align:center; margin-top:-8px; display:none;" id="camInstruction">Arahkan ke dokumen, lalu tekan tombol kamera</p>
             </div>
 
-            <!-- ===== PAGE RIWAYAT ===== -->
             <div class="page" id="pageHistory">
                 <div class="history-header">
                     <h3>
@@ -734,11 +600,9 @@
                 </div>
             </div>
 
-            <!-- spacer -->
             <div style="flex:1; min-height:10px;"></div>
         </div>
 
-        <!-- ===== BOTTOM NAV ===== -->
         <div class="bottom-nav">
             <button class="nav-item active" data-page="home"><i class="fas fa-home"></i><span>Beranda</span></button>
             <button class="nav-item" data-page="scan"><i class="fas fa-camera-retro"></i><span>Scan</span></button>
@@ -751,9 +615,10 @@
         (function() {
             'use strict';
 
-            // =============================================
-            // DOM REFS
-            // =============================================
+            // Silence Puter banner
+            if (typeof puter !== 'undefined') puter.quiet = true;
+
+            // ============= DOM REFS =============
             const appWrapper = document.getElementById('appWrapper');
             const uploadZone = document.getElementById('uploadZone');
             const fileInput = document.getElementById('fileInput');
@@ -773,7 +638,6 @@
             const modeBW = document.getElementById('modeBW');
             const modeColor = document.getElementById('modeColor');
 
-            // AI elements
             const btnAIEnhance = document.getElementById('btnAIEnhance');
             const btnAIOCR = document.getElementById('btnAIOCR');
             const aiResult = document.getElementById('aiResult');
@@ -782,19 +646,15 @@
             const btnCloseAIResult = document.getElementById('btnCloseAIResult');
             const btnCopyAIResult = document.getElementById('btnCopyAIResult');
             const btnDownloadAITxt = document.getElementById('btnDownloadAITxt');
-            const btnAIReconstruct = document.getElementById('btnAIReconstruct');
-            const btnRenderClean = document.getElementById('btnRenderClean');
             const aiImageResult = document.getElementById('aiImageResult');
             const aiGeneratedImg = document.getElementById('aiGeneratedImg');
             const btnUseAIImage = document.getElementById('btnUseAIImage');
             const btnDownloadAIImage = document.getElementById('btnDownloadAIImage');
 
-            // Camera
             const video = document.getElementById('video');
             const btnCapture = document.getElementById('btnCapture');
             const btnCloseCam = document.getElementById('btnCloseCam');
 
-            // Pages
             const pageMap = {
                 home: document.getElementById('pageHome'),
                 scan: document.getElementById('pageScan'),
@@ -802,14 +662,11 @@
             };
             const navButtons = document.querySelectorAll('.nav-item[data-page]');
 
-            // History
             const historyList = document.getElementById('historyList');
             const btnClearHistory = document.getElementById('btnClearHistory');
             const historyCount = document.getElementById('historyCount');
 
-            // =============================================
-            // STATE
-            // =============================================
+            // ============= STATE =============
             let imageDataUrl = null;
             let originalColorData = null;
             let canvasWidth = 0, canvasHeight = 0;
@@ -819,20 +676,15 @@
             let stream = null;
             let cameraActive = false;
             let aiGeneratedSrc = null;
-            let lastOCRText = '';
 
-            // =============================================
-            // KERNEL
-            // =============================================
+            // ============= KERNEL =============
             const blurKernel = [[1, 2, 1], [2, 4, 2], [1, 2, 1]];
             const blurDivisor = 16;
             const sharpenKernel = [[0, -1, 0], [-1, 5, -1], [0, -1, 0]];
             const sharpenDivisor = 1;
             const sharpenOffset = 0;
 
-            // =============================================
-            // HELPERS
-            // =============================================
+            // ============= HELPERS =============
             function applyKernel3x3(srcData, w, h, kernel, divisor, offset) {
                 const result = new Uint8ClampedArray(srcData.length);
                 for (let i = 0; i < srcData.length; i++) result[i] = srcData[i];
@@ -927,9 +779,7 @@
                 return applyKernel3x3Color(data, w, h, sharpenKernel, sharpenDivisor, sharpenOffset);
             }
 
-            // =============================================
-            // PROSES SCAN UTAMA
-            // =============================================
+            // ============= PROSES SCAN =============
             function processScan(threshold, mode) {
                 if (!originalColorData) return;
                 isProcessing = true;
@@ -983,9 +833,7 @@
                 });
             }
 
-            // =============================================
-            // UPLOAD
-            // =============================================
+            // ============= UPLOAD =============
             function loadImageFromDataURL(dataUrl) {
                 imageDataUrl = dataUrl;
                 previewImage.src = dataUrl;
@@ -1004,7 +852,6 @@
                 modeControl.style.display = 'none';
                 btnScan.disabled = false;
                 btnScan.innerHTML = '<i class="fas fa-camera"></i> Scan';
-
                 hideAIResult();
                 hideAIImage();
 
@@ -1044,7 +891,6 @@
                 reader.readAsDataURL(file);
             }
 
-            // ===== EVENT UPLOAD =====
             uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
             uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
             uploadZone.addEventListener('drop', e => {
@@ -1058,7 +904,6 @@
                 fileInput.value = '';
             });
 
-            // ===== SCAN =====
             btnScan.addEventListener('click', () => {
                 if (!originalColorData || isScanning || isProcessing) return;
                 isScanning = true;
@@ -1074,7 +919,6 @@
                 isScanning = false;
             });
 
-            // ===== RADIO =====
             modeBW.addEventListener('change', function() {
                 if (this.checked && originalColorData && !isProcessing && !isScanning) {
                     processScan(parseInt(thresholdSlider.value, 10), 'bw');
@@ -1086,7 +930,6 @@
                 }
             });
 
-            // ===== SLIDER =====
             thresholdSlider.addEventListener('input', function() {
                 const val = this.value;
                 thresholdValue.textContent = val;
@@ -1095,7 +938,6 @@
                 }
             });
 
-            // ===== DOWNLOADS =====
             btnPNG.addEventListener('click', () => {
                 if (!scannedCanvas) return;
                 const link = document.createElement('a');
@@ -1126,12 +968,12 @@
             });
 
             // =============================================
-            // PUTER.JS — AI FEATURES
+            // PUTER.JS — AI FEATURES (FIXED)
             // =============================================
 
             function setAILoading(btn, loadingText) {
                 btn.disabled = true;
-                btn.dataset.origHtml = btn.innerHTML;
+                if (!btn.dataset.origHtml) btn.dataset.origHtml = btn.innerHTML;
                 btn.innerHTML = `<span class="spinner"></span> ${loadingText}`;
             }
             function resetAILoading(btn) {
@@ -1142,6 +984,76 @@
                 }
             }
 
+            // Resize data URL ke maksimal maxDim px supaya payload kecil
+            function prepareImageForAI(dataUrl, maxDim = 1024, quality = 0.82) {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let w = img.width, h = img.height;
+                        if (w > maxDim || h > maxDim) {
+                            const r = Math.min(maxDim / w, maxDim / h);
+                            w = Math.round(w * r);
+                            h = Math.round(h * r);
+                        }
+                        const c = document.createElement('canvas');
+                        c.width = w; c.height = h;
+                        const ctx = c.getContext('2d');
+                        // putih background agar JPEG transparansi tidak jadi hitam
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, w, h);
+                        ctx.drawImage(img, 0, 0, w, h);
+                        try {
+                            resolve(c.toDataURL('image/jpeg', quality));
+                        } catch (e) {
+                            resolve(dataUrl);
+                        }
+                    };
+                    img.onerror = () => resolve(dataUrl);
+                    img.src = dataUrl;
+                });
+            }
+
+            // Format error apapun jadi string yang berguna
+            function formatAIError(err) {
+                if (!err) return 'Error tidak diketahui';
+                if (typeof err === 'string') return err;
+                if (err.message) return err.message;
+                if (err.error) {
+                    if (typeof err.error === 'string') return err.error;
+                    if (err.error.message) return err.error.message;
+                    try { return JSON.stringify(err.error); } catch (e) {}
+                }
+                try { return JSON.stringify(err); } catch (e) { return String(err); }
+            }
+
+            // Ekstrak teks dari response Puter chat
+            function extractAIText(response) {
+                if (!response) return '';
+                if (typeof response === 'string') return response;
+                if (response.message) {
+                    const msg = response.message;
+                    if (typeof msg === 'string') return msg;
+                    if (msg.content) {
+                        if (typeof msg.content === 'string') return msg.content;
+                        if (Array.isArray(msg.content)) {
+                            return msg.content
+                                .map(c => (typeof c === 'string' ? c : (c && c.text) || ''))
+                                .join('\n');
+                        }
+                    }
+                }
+                if (response.text) return response.text;
+                if (response.content) {
+                    if (typeof response.content === 'string') return response.content;
+                    if (Array.isArray(response.content)) {
+                        return response.content
+                            .map(c => (typeof c === 'string' ? c : (c && c.text) || ''))
+                            .join('\n');
+                    }
+                }
+                try { return JSON.stringify(response); } catch (e) { return String(response); }
+            }
+
             function showAIResult(title, text) {
                 aiResultTitle.textContent = title;
                 aiResultBody.textContent = text;
@@ -1150,7 +1062,6 @@
             function hideAIResult() {
                 aiResult.classList.remove('active');
                 aiResultBody.textContent = '';
-                lastOCRText = '';
             }
             function showAIImage(src) {
                 aiGeneratedSrc = src;
@@ -1165,28 +1076,10 @@
 
             function checkPuter() {
                 if (typeof puter === 'undefined' || !puter.ai) {
-                    alert('⚠️ Puter.js belum siap. Periksa koneksi internet Anda dan coba lagi.');
+                    alert('⚠️ Puter.js belum siap. Periksa koneksi internet Anda dan muat ulang halaman.');
                     return false;
                 }
                 return true;
-            }
-
-            function extractAIText(response) {
-                if (!response) return '';
-                if (typeof response === 'string') return response;
-                if (response.message) {
-                    if (typeof response.message === 'string') return response.message;
-                    if (response.message.content) {
-                        if (typeof response.message.content === 'string') return response.message.content;
-                        if (Array.isArray(response.message.content)) {
-                            return response.message.content
-                                .map(c => (typeof c === 'string' ? c : c.text || ''))
-                                .join('\n');
-                        }
-                    }
-                }
-                if (response.text) return response.text;
-                try { return JSON.stringify(response); } catch { return String(response); }
             }
 
             // ===== AI OCR =====
@@ -1196,204 +1089,90 @@
 
                 setAILoading(btnAIOCR, 'AI membaca...');
                 try {
+                    const smallImg = await prepareImageForAI(imageDataUrl, 1280, 0.85);
+
                     const response = await puter.ai.chat(
-                        "Ekstrak SEMUA teks yang terlihat pada gambar dokumen ini. " +
-                        "Pertahankan urutan baris, struktur paragraf, dan tata letak semirip mungkin. " +
-                        "Perbaiki kata-kata yang jelas typo/rusak akibat scan blur. " +
-                        "Jangan tambahkan komentar atau penjelasan apapun — keluarkan hanya teks hasil ekstraksi.",
-                        imageDataUrl
+                        [
+                            {
+                                role: 'user',
+                                content: [
+                                    {
+                                        type: 'text',
+                                        text: 'Extract all visible text from this document image. Preserve line breaks and paragraph structure as much as possible. Output ONLY the extracted text without any commentary, explanation, or markdown formatting.'
+                                    },
+                                    {
+                                        type: 'image_url',
+                                        image_url: { url: smallImg }
+                                    }
+                                ]
+                            }
+                        ],
+                        { model: 'gpt-4o-mini' }
                     );
+
                     const text = extractAIText(response).trim();
-                    lastOCRText = text;
-                    if (!text) {
-                        showAIResult('Hasil OCR', '(Tidak ada teks yang terdeteksi)');
-                    } else {
-                        showAIResult('Hasil OCR', text);
-                    }
-                    // Scroll ke hasil
-                    setTimeout(() => {
-                        aiResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }, 100);
+                    showAIResult('Hasil OCR', text || '(Tidak ada teks yang terdeteksi)');
                 } catch (err) {
                     console.error('AI OCR error:', err);
-                    alert('❌ AI OCR gagal: ' + (err.message || err));
+                    alert('❌ AI OCR gagal: ' + formatAIError(err));
                 } finally {
                     resetAILoading(btnAIOCR);
                 }
             });
 
-            // ===== AI Enhance (Generate clean scan dari gambar asli) =====
+            // ===== AI Enhance (restyle jadi scan bersih) =====
             btnAIEnhance.addEventListener('click', async () => {
                 if (!imageDataUrl) { alert('Unggah gambar dulu.'); return; }
                 if (!checkPuter()) return;
 
                 setAILoading(btnAIEnhance, 'AI menganalisis...');
                 try {
+                    const smallImg = await prepareImageForAI(imageDataUrl, 1024, 0.8);
+
+                    // Step 1: deskripsi singkat dokumen (tanpa isi teks!)
                     const descResp = await puter.ai.chat(
-                        "Describe this document concisely in English for an AI image generator. " +
-                        "Mention the type of document, visible text content (headings, key lines), " +
-                        "layout (columns, tables, signature areas), and any important visual elements. " +
-                        "Do NOT include any personal/sensitive data — summarize instead. Keep it 2-3 sentences.",
-                        imageDataUrl
+                        [
+                            {
+                                role: 'user',
+                                content: [
+                                    {
+                                        type: 'text',
+                                        text: 'Describe this document image in ONE short English sentence for an AI image generator. Focus ONLY on visual style: type of paper, color, layout, and general appearance. Do NOT include any text content or personal information. Example output: "a white A4 paper with black printed text and a signature at the bottom".'
+                                    },
+                                    {
+                                        type: 'image_url',
+                                        image_url: { url: smallImg }
+                                    }
+                                ]
+                            }
+                        ],
+                        { model: 'gpt-4o-mini' }
                     );
-                    const description = extractAIText(descResp).trim();
 
-                    if (!description) throw new Error('Gagal mendapatkan deskripsi dokumen.');
+                    let description = extractAIText(descResp).trim();
+                    // Batasi panjang & bersihkan newline
+                    description = description.replace(/\s+/g, ' ').slice(0, 180);
+                    if (!description) description = 'a clean white paper document';
 
+                    // Step 2: txt2img dengan prompt yang aman
                     btnAIEnhance.innerHTML = '<span class="spinner"></span> AI menggambar...';
                     const prompt =
-                        `A clean professional scanned document image, white background, ` +
-                        `sharp crisp black text, high contrast, straight edges, no shadows, no noise, ` +
-                        `scanner quality, flat lay top-down view, sharp focus, high resolution. ` +
-                        `Document content: ${description}`;
+                        `A professional top-down flat-lay photograph of ${description}, ` +
+                        `clean white background, sharp focus, high resolution, ` +
+                        `studio lighting, minimalist composition, scanner quality`;
 
-                    const imgElement = await puter.ai.txt2img(prompt);
+                    const imgElement = await puter.ai.txt2img(prompt, { model: 'dall-e-3' });
                     if (!imgElement || !imgElement.src) throw new Error('AI tidak mengembalikan gambar.');
 
                     showAIImage(imgElement.src);
-                    setTimeout(() => {
-                        aiImageResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }, 100);
                 } catch (err) {
                     console.error('AI Enhance error:', err);
-                    alert('❌ AI Enhance gagal: ' + (err.message || err));
+                    alert('❌ AI Enhance gagal: ' + formatAIError(err));
                 } finally {
                     resetAILoading(btnAIEnhance);
                 }
             });
 
-            // ===== AI RECONSTRUCT (Perbaiki dokumen dari teks OCR) =====
-            btnAIReconstruct.addEventListener('click', async () => {
-                if (!lastOCRText || !lastOCRText.trim()) {
-                    alert('Jalankan AI OCR dulu supaya ada teks yang bisa diperbaiki.');
-                    return;
-                }
-                if (!checkPuter()) return;
-
-                setAILoading(btnAIReconstruct, 'Memperbaiki...');
-                try {
-                    const cleanText = lastOCRText.trim().slice(0, 2500);
-                    const prompt =
-                        `A perfectly clean, professional scanned document page, pure white paper background, ` +
-                        `crisp sharp black printed text, high contrast, straight edges, ` +
-                        `A4 portrait orientation, scanner quality output, flat lay top-down view, ` +
-                        `no shadows, no noise, no smudges, no rotation, no watermark, high resolution, ` +
-                        `perfectly legible and well-formatted typography. ` +
-                        `The document must contain EXACTLY the following text reproduced faithfully, ` +
-                        `preserving line breaks and paragraph structure:\n\n${cleanText}`;
-
-                    const imgElement = await puter.ai.txt2img(prompt);
-                    if (!imgElement || !imgElement.src) throw new Error('AI tidak mengembalikan gambar.');
-
-                    showAIImage(imgElement.src);
-                    setTimeout(() => {
-                        aiImageResult.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 150);
-                } catch (err) {
-                    console.error('AI Reconstruct error:', err);
-                    alert('❌ Gagal memperbaiki dokumen: ' + (err.message || err));
-                } finally {
-                    resetAILoading(btnAIReconstruct);
-                }
-            });
-
-            // ===== RENDER BERSIH (Teks OCR → Canvas A4) =====
-            btnRenderClean.addEventListener('click', () => {
-                if (!lastOCRText || !lastOCRText.trim()) {
-                    alert('Jalankan AI OCR dulu supaya ada teks yang bisa dirender.');
-                    return;
-                }
-                try {
-                    const canvas = renderCleanDocument(lastOCRText, 'bw');
-                    const dataUrl = canvas.toDataURL('image/png');
-                    showAIImage(dataUrl);
-                    setTimeout(() => {
-                        aiImageResult.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 150);
-                } catch (err) {
-                    console.error('Render clean error:', err);
-                    alert('❌ Gagal render dokumen: ' + err.message);
-                }
-            });
-
-            // Render teks ke canvas A4 putih bersih
-            function renderCleanDocument(text, mode) {
-                // A4 pada ~150 DPI: 1240 x 1754
-                const W = 1240, H = 1754;
-                const canvas = document.createElement('canvas');
-                canvas.width = W; canvas.height = H;
-                const ctx = canvas.getContext('2d');
-
-                // Background putih
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, W, H);
-
-                // Border tipis (opsional, kesan scan)
-                // ctx.strokeStyle = '#e0e0e0';
-                // ctx.lineWidth = 2;
-                // ctx.strokeRect(20, 20, W - 40, H - 40);
-
-                const margin = 90;
-                const maxWidth = W - margin * 2;
-                const fontSize = 22;
-                const lineHeight = Math.round(fontSize * 1.65);
-
-                ctx.fillStyle = '#000000';
-                ctx.font = `400 ${fontSize}px 'Inter', 'Helvetica Neue', Arial, sans-serif`;
-                ctx.textBaseline = 'top';
-                ctx.textAlign = 'left';
-
-                // Word-wrap setiap baris
-                const wrapped = [];
-                const paragraphs = text.split(/\r?\n/);
-                paragraphs.forEach(par => {
-                    if (par.trim() === '') {
-                        wrapped.push('');
-                        return;
-                    }
-                    const words = par.split(/\s+/);
-                    let line = '';
-                    words.forEach(word => {
-                        const test = line ? line + ' ' + word : word;
-                        if (ctx.measureText(test).width > maxWidth && line) {
-                            wrapped.push(line);
-                            line = word;
-                        } else {
-                            line = test;
-                        }
-                    });
-                    if (line) wrapped.push(line);
-                });
-
-                let y = margin;
-                for (let i = 0; i < wrapped.length; i++) {
-                    if (y + lineHeight > H - margin) {
-                        // Overflow → pindah halaman? sementara stop saja
-                        // Bisa ditambah fitur multi-page nanti
-                        break;
-                    }
-                    if (wrapped[i] === '') {
-                        y += lineHeight * 0.7;
-                        continue;
-                    }
-                    ctx.fillText(wrapped[i], margin, y);
-                    y += lineHeight;
-                }
-
-                // Watermark kecil di bawah
-                ctx.fillStyle = '#c0c0c0';
-                ctx.font = `italic 14px 'Inter', Arial, sans-serif`;
-                ctx.textAlign = 'right';
-                ctx.fillText(
-                    `ScanKu Pro • ${new Date().toLocaleDateString('id-ID')}`,
-                    W - margin,
-                    H - 40
-                );
-
-                return canvas;
-            }
-
-            // ===== AI Result — Close / Copy / Download =====
             btnCloseAIResult.addEventListener('click', hideAIResult);
 
             btnCopyAIResult.addEventListener('click', async () => {
@@ -1403,9 +1182,9 @@
                     await navigator.clipboard.writeText(text);
                     btnCopyAIResult.innerHTML = '<i class="fas fa-check"></i> Tersalin';
                     setTimeout(() => {
-                        btnCopyAIResult.innerHTML = '<i class="fas fa-copy"></i> Salin Teks';
+                        btnCopyAIResult.innerHTML = '<i class="fas fa-copy"></i> Salin';
                     }, 1500);
-                } catch {
+                } catch (e) {
                     alert('Gagal menyalin. Silakan salin manual.');
                 }
             });
@@ -1422,7 +1201,6 @@
                 setTimeout(() => URL.revokeObjectURL(url), 1000);
             });
 
-            // ===== AI Image Result — Use / Download =====
             btnUseAIImage.addEventListener('click', () => {
                 if (!aiGeneratedSrc) return;
                 loadImageFromDataURL(aiGeneratedSrc);
@@ -1438,9 +1216,7 @@
                 link.click();
             });
 
-            // =============================================
-            // INDEXEDDB - RIWAYAT
-            // =============================================
+            // ============= INDEXEDDB =============
             const DB_NAME = 'ScanKuDB';
             const STORE_NAME = 'history';
             let db = null;
@@ -1509,9 +1285,6 @@
                 });
             }
 
-            // =============================================
-            // RENDER RIWAYAT
-            // =============================================
             async function renderHistory() {
                 try {
                     const items = await getAllHistory();
@@ -1608,9 +1381,6 @@
                 }
             }
 
-            // =============================================
-            // SIMPAN KE RIWAYAT
-            // =============================================
             btnSaveHistory.addEventListener('click', async function() {
                 if (!scannedCanvas || !imageDataUrl) return;
                 try {
@@ -1627,9 +1397,6 @@
                 }
             });
 
-            // =============================================
-            // CLEAR ALL HISTORY
-            // =============================================
             btnClearHistory.addEventListener('click', async function() {
                 if (!confirm('Hapus semua riwayat scan?')) return;
                 try {
@@ -1640,9 +1407,7 @@
                 }
             });
 
-            // =============================================
-            // NAVIGASI + FULLSCREEN CAMERA
-            // =============================================
+            // ============= NAVIGASI =============
             function showPage(pageId) {
                 if (pageId === 'scan') {
                     appWrapper.classList.add('camera-fullscreen');
@@ -1668,15 +1433,13 @@
                 });
             });
 
-            // =============================================
-            // KAMERA
-            // =============================================
+            // ============= KAMERA =============
             const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
 
             async function startCamera() {
                 if (cameraActive) return;
                 if (!hasGetUserMedia) {
-                    alert('⚠️ Browser Anda tidak mendukung akses kamera. Gunakan Chrome/Edge/Firefox terbaru.');
+                    alert('⚠️ Browser Anda tidak mendukung akses kamera.');
                     showPage('home');
                     return;
                 }
@@ -1689,14 +1452,13 @@
                     video.srcObject = stream;
                     await video.play();
                     cameraActive = true;
-                    console.log('📷 Kamera aktif');
                 } catch (err) {
                     console.error('Kamera error:', err);
                     let msg = 'Tidak dapat mengakses kamera. ';
                     if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                        msg += 'Izin kamera ditolak. Silakan berikan izin kamera di pengaturan browser dan muat ulang halaman.';
+                        msg += 'Izin kamera ditolak.';
                     } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-                        msg += 'Tidak ditemukan kamera pada perangkat Anda.';
+                        msg += 'Tidak ditemukan kamera.';
                     } else {
                         msg += 'Error: ' + err.message;
                     }
@@ -1711,7 +1473,6 @@
                     stream = null;
                     video.srcObject = null;
                     cameraActive = false;
-                    console.log('📷 Kamera mati');
                 }
             }
 
@@ -1719,7 +1480,7 @@
 
             btnCapture.addEventListener('click', function() {
                 if (!cameraActive || !stream) {
-                    alert('Kamera belum siap. Silakan tunggu sebentar atau buka halaman Scan lagi.');
+                    alert('Kamera belum siap.');
                     return;
                 }
                 const canvas = document.createElement('canvas');
@@ -1733,16 +1494,13 @@
                 loadImageFromDataURL(dataUrl);
             });
 
-            // =============================================
-            // RESET
-            // =============================================
+            // ============= RESET =============
             btnReset.addEventListener('click', () => {
                 imageDataUrl = null;
                 originalColorData = null;
                 scannedCanvas = null;
                 isScanning = false;
                 isProcessing = false;
-                lastOCRText = '';
                 previewImage.style.display = 'block';
                 previewImage.src = '';
                 const old = scanFrame.querySelector('canvas');
@@ -1763,9 +1521,7 @@
                 hideAIImage();
             });
 
-            // =============================================
-            // INIT
-            // =============================================
+            // ============= INIT =============
             (async function init() {
                 await openDB();
                 showPage('home');
