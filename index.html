@@ -1161,7 +1161,7 @@
                         `clean white background, sharp focus, high resolution, ` +
                         `studio lighting, minimalist composition, scanner quality`;
 
-                    const imgElement = await puter.ai.txt2img(prompt, { model: 'openai/dall-e-3' });
+                    const imgElement = await puter.ai.txt2img(prompt, { model: 'openai/gpt-image-1-mini' });
                     if (!imgElement || !imgElement.src) throw new Error('AI tidak mengembalikan gambar.');
 
                     showAIImage(imgElement.src);
