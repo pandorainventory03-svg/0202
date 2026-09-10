@@ -1013,6 +1013,17 @@
                 });
             }
 
+            // Tentukan ukuran output AI (size) yang paling cocok dengan rasio
+            // gambar dokumen asli, dari daftar ukuran yang didukung gpt-image-1.
+            // Ini penting supaya AI tidak memotong/meng-crop dokumen untuk
+            // memaksakannya ke kanvas persegi.
+            function pickAIImageSize(w, h) {
+                const ratio = w / h;
+                if (ratio > 1.15) return '1536x1024';      // landscape
+                if (ratio < 0.87) return '1024x1536';      // portrait (kebanyakan dokumen)
+                return '1024x1024';                          // mendekati persegi
+            }
+
             // Format error apapun jadi string yang berguna
             function formatAIError(err) {
                 if (!err) return 'Error tidak diketahui';
@@ -1132,21 +1143,32 @@
                     const smallImg = await prepareImageForAI(imageDataUrl, 1600, 0.9);
                     const base64Payload = smallImg.split(',')[1];
 
+                    // Tentukan ukuran kanvas output berdasarkan rasio dokumen ASLI
+                    // (bukan dari imageDataUrl yang sudah dikompres), supaya AI tidak
+                    // dipaksa memotong dokumen untuk muat ke kanvas persegi default.
+                    const srcW = canvasWidth || 1024;
+                    const srcH = canvasHeight || 1024;
+                    const targetSize = pickAIImageSize(srcW, srcH);
+
                     const prompt =
                         'Enhance this exact scanned document photo. Straighten it if it is skewed or at an angle, ' +
                         'remove shadows, stains, and background clutter, boost contrast so the text is crisp black on a clean white background, ' +
                         'and sharpen the text edges. Do NOT change, add, remove, translate, or reword any text, numbers, logos, or layout — ' +
-                        'keep every detail exactly as in the original. Output the same document, just cleaned up like a professional scan.';
+                        'keep every detail exactly as in the original, and do NOT crop or cut off any part of the document. ' +
+                        'Output the same full document, edge to edge, just cleaned up like a professional scan.';
 
-                    // PENTING: 'quality' TIDAK diset sebelumnya, sehingga txt2img() diam-diam
-                    // memakai default 'low'. Pada kualitas rendah, model edit-gambar (termasuk
-                    // gpt-image-1-mini) cenderung "menggambar ulang" dokumen alih-alih benar-benar
-                    // mengeditnya secara presisi — itulah sebabnya hasilnya sering terlihat sangat
-                    // berbeda dan teksnya jadi rusak/tidak terbaca. Menyetel quality ke 'high'
-                    // membuat model jauh lebih setia pada gambar asli.
+                    // PENTING: sebelumnya 'size' tidak diset, sehingga txt2img() diam-diam
+                    // memakai kanvas persegi (1024x1024) meskipun dokumen aslinya potrait/
+                    // landscape. Karena model harus memuat seluruh isi dokumen ke kanvas
+                    // persegi itu, ia jadi memotong (crop) bagian dokumen agar "pas" —
+                    // itulah sebabnya hasilnya terlihat terpotong dan tidak menyesuaikan
+                    // rasio kertas aslinya. Dengan menyetel 'size' sesuai orientasi
+                    // dokumen asli, model punya kanvas dengan proporsi yang benar sehingga
+                    // seluruh halaman muat tanpa terpotong.
                     const imgElement = await puter.ai.txt2img(prompt, {
                         model: 'openai/gpt-image-1-mini',
                         quality: 'high',
+                        size: targetSize,
                         input_image: base64Payload,
                         input_image_mime_type: 'image/jpeg'
                     });
