@@ -1138,8 +1138,15 @@
                         'and sharpen the text edges. Do NOT change, add, remove, translate, or reword any text, numbers, logos, or layout — ' +
                         'keep every detail exactly as in the original. Output the same document, just cleaned up like a professional scan.';
 
+                    // PENTING: 'quality' TIDAK diset sebelumnya, sehingga txt2img() diam-diam
+                    // memakai default 'low'. Pada kualitas rendah, model edit-gambar (termasuk
+                    // gpt-image-1-mini) cenderung "menggambar ulang" dokumen alih-alih benar-benar
+                    // mengeditnya secara presisi — itulah sebabnya hasilnya sering terlihat sangat
+                    // berbeda dan teksnya jadi rusak/tidak terbaca. Menyetel quality ke 'high'
+                    // membuat model jauh lebih setia pada gambar asli.
                     const imgElement = await puter.ai.txt2img(prompt, {
                         model: 'openai/gpt-image-1-mini',
+                        quality: 'high',
                         input_image: base64Payload,
                         input_image_mime_type: 'image/jpeg'
                     });
