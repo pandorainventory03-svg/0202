@@ -1107,7 +1107,7 @@
                                 ]
                             }
                         ],
-                        { model: 'gpt-4o-mini' }
+                        { model: 'openai/gpt-4o-mini' }
                     );
 
                     const text = extractAIText(response).trim();
@@ -1146,7 +1146,7 @@
                                 ]
                             }
                         ],
-                        { model: 'gpt-4o-mini' }
+                        { model: 'openai/gpt-4o-mini' }
                     );
 
                     let description = extractAIText(descResp).trim();
@@ -1161,7 +1161,7 @@
                         `clean white background, sharp focus, high resolution, ` +
                         `studio lighting, minimalist composition, scanner quality`;
 
-                    const imgElement = await puter.ai.txt2img(prompt, { model: 'dall-e-3' });
+                    const imgElement = await puter.ai.txt2img(prompt, { model: 'openai/dall-e-3' });
                     if (!imgElement || !imgElement.src) throw new Error('AI tidak mengembalikan gambar.');
 
                     showAIImage(imgElement.src);
