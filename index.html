@@ -13,94 +13,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
 
     <style>
+        /* === STYLE TIDAK BERUBAH, tetap seperti aslinya === */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #eef2f7;
-            min-height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            padding: 0; margin: 0;
-        }
-        .app-wrapper {
-            max-width: 480px; width: 100%;
-            height: 100vh; max-height: 860px;
-            background: #ffffff; border-radius: 28px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.20);
-            overflow: hidden; display: flex; flex-direction: column;
-            position: relative; margin: 12px;
-            transition: all 0.3s ease;
-        }
-        .app-wrapper.camera-fullscreen {
-            max-height: 100vh !important; height: 100vh !important;
-            border-radius: 0 !important; margin: 0 !important; box-shadow: none !important;
-        }
-        .app-wrapper.camera-fullscreen .app-header,
-        .app-wrapper.camera-fullscreen .bottom-nav { display: none !important; }
-        .app-wrapper.camera-fullscreen .app-content {
-            padding: 0 !important; background: #000 !important; overflow: hidden !important;
-        }
-        .app-wrapper.camera-fullscreen .camera-container {
-            border-radius: 0 !important;
-            min-height: 100% !important; height: 100% !important;
-            width: 100% !important;
-            display: flex !important; align-items: center !important; justify-content: center !important;
-            background: #000 !important;
-        }
-        .app-wrapper.camera-fullscreen .camera-container video {
-            border-radius: 0 !important; object-fit: cover !important;
-            width: 100% !important; height: 100% !important; display: block !important;
-        }
-        .app-wrapper.camera-fullscreen .camera-container .camera-overlay {
-            bottom: 40px !important; gap: 24px !important;
-        }
-        .app-wrapper.camera-fullscreen .camera-container .camera-overlay button {
-            width: 64px !important; height: 64px !important; font-size: 30px !important;
-        }
-        .app-wrapper.camera-fullscreen .camera-container .camera-overlay .btn-close-cam {
-            width: 54px !important; height: 54px !important; font-size: 22px !important;
-        }
-
-        .app-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px 20px 12px;
-            background: #ffffff; border-bottom: 1px solid #f0f2f6;
-            flex-shrink: 0;
-        }
+        body { font-family: 'Inter', sans-serif; background: #eef2f7; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 0; margin: 0; }
+        .app-wrapper { max-width: 480px; width: 100%; height: 100vh; max-height: 860px; background: #ffffff; border-radius: 28px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.20); overflow: hidden; display: flex; flex-direction: column; position: relative; margin: 12px; transition: all 0.3s ease; }
+        .app-wrapper.camera-fullscreen { max-height: 100vh !important; height: 100vh !important; border-radius: 0 !important; margin: 0 !important; box-shadow: none !important; }
+        .app-wrapper.camera-fullscreen .app-header, .app-wrapper.camera-fullscreen .bottom-nav { display: none !important; }
+        .app-wrapper.camera-fullscreen .app-content { padding: 0 !important; background: #000 !important; overflow: hidden !important; }
+        .app-wrapper.camera-fullscreen .camera-container { border-radius: 0 !important; min-height: 100% !important; height: 100% !important; width: 100% !important; display: flex !important; align-items: center !important; justify-content: center !important; background: #000 !important; }
+        .app-wrapper.camera-fullscreen .camera-container video { border-radius: 0 !important; object-fit: cover !important; width: 100% !important; height: 100% !important; display: block !important; }
+        .app-wrapper.camera-fullscreen .camera-container .camera-overlay { bottom: 40px !important; gap: 24px !important; }
+        .app-wrapper.camera-fullscreen .camera-container .camera-overlay button { width: 64px !important; height: 64px !important; font-size: 30px !important; }
+        .app-wrapper.camera-fullscreen .camera-container .camera-overlay .btn-close-cam { width: 54px !important; height: 54px !important; font-size: 22px !important; }
+        .app-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 12px; background: #ffffff; border-bottom: 1px solid #f0f2f6; flex-shrink: 0; }
         .app-header .left { display: flex; align-items: center; gap: 12px; }
-        .app-header .logo {
-            background: linear-gradient(145deg, #1a237e, #0d47a1);
-            width: 40px; height: 40px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            color: #fff; font-size: 20px;
-            box-shadow: 0 4px 10px rgba(13, 71, 161, 0.25);
-        }
+        .app-header .logo { background: linear-gradient(145deg, #1a237e, #0d47a1); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; box-shadow: 0 4px 10px rgba(13, 71, 161, 0.25); }
         .app-header h1 { font-size: 18px; font-weight: 700; color: #0a1929; letter-spacing: -0.3px; }
         .app-header h1 small { font-size: 11px; font-weight: 400; color: #546e7a; display: block; margin-top: -2px; }
-        .app-header .right i {
-            font-size: 20px; color: #1a237e; background: #e8edf5;
-            padding: 8px; border-radius: 50%; cursor: pointer; transition: 0.2s;
-        }
+        .app-header .right i { font-size: 20px; color: #1a237e; background: #e8edf5; padding: 8px; border-radius: 50%; cursor: pointer; transition: 0.2s; }
         .app-header .right i:hover { background: #d0d9e8; }
-
-        .app-content {
-            flex: 1; overflow-y: auto;
-            padding: 16px 20px 8px;
-            display: flex; flex-direction: column; gap: 18px;
-            background: #f8faff;
-            transition: padding 0.3s, background 0.3s;
-        }
+        .app-content { flex: 1; overflow-y: auto; padding: 16px 20px 8px; display: flex; flex-direction: column; gap: 18px; background: #f8faff; transition: padding 0.3s, background 0.3s; }
         .app-content::-webkit-scrollbar { width: 4px; }
         .app-content::-webkit-scrollbar-thumb { background: #c5cae9; border-radius: 8px; }
-
         .page { display: none; flex-direction: column; gap: 18px; }
         .page.active { display: flex; }
-
-        .upload-zone {
-            border: 2px dashed #b0bec5; border-radius: 24px;
-            padding: 28px 16px; text-align: center; cursor: pointer;
-            transition: all 0.25s; background: #ffffff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-        }
+        .upload-zone { border: 2px dashed #b0bec5; border-radius: 24px; padding: 28px 16px; text-align: center; cursor: pointer; transition: all 0.25s; background: #ffffff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02); }
         .upload-zone:hover { border-color: #42a5f5; background: #f5faff; }
         .upload-zone.dragover { border-color: #1a237e; background: #e8eaf6; transform: scale(1.005); }
         .upload-zone .icon-upload { font-size: 48px; color: #78909c; margin-bottom: 6px; display: block; }
@@ -108,352 +45,109 @@
         .upload-zone p { color: #78909c; font-size: 13px; margin-top: 2px; }
         .upload-zone .sub-text { font-size: 11px; color: #b0bec5; margin-top: 6px; }
         #fileInput { display: none; }
-
-        .preview-section {
-            display: none; flex-direction: column; gap: 14px;
-            animation: fadeUp 0.3s ease;
-        }
+        .preview-section { display: none; flex-direction: column; gap: 14px; animation: fadeUp 0.3s ease; }
         .preview-section.active { display: flex; }
-        @keyframes fadeUp {
-            0% { opacity: 0; transform: translateY(10px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .scan-frame-wrapper {
-            background: #ffffff; border-radius: 20px; padding: 12px;
-            border: 1px solid #e8edf4;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-        }
-        .scan-frame {
-            position: relative; border-radius: 16px; overflow: hidden;
-            background: #eef2f7;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 200px; max-height: 340px;
-        }
-        .scan-frame img, .scan-frame canvas {
-            max-width: 100%; max-height: 340px;
-            width: auto; height: auto;
-            display: block; border-radius: 12px; object-fit: contain;
-        }
+        @keyframes fadeUp { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+        .scan-frame-wrapper { background: #ffffff; border-radius: 20px; padding: 12px; border: 1px solid #e8edf4; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); }
+        .scan-frame { position: relative; border-radius: 16px; overflow: hidden; background: #eef2f7; display: flex; justify-content: center; align-items: center; min-height: 200px; max-height: 340px; }
+        .scan-frame img, .scan-frame canvas { max-width: 100%; max-height: 340px; width: auto; height: auto; display: block; border-radius: 12px; object-fit: contain; }
         .scan-frame canvas { background: #fff; }
-        .scan-frame .corner {
-            position: absolute; width: 22px; height: 22px;
-            border-color: #1a237e; border-style: solid; border-width: 0;
-            opacity: 0.6; pointer-events: none;
-        }
+        .scan-frame .corner { position: absolute; width: 22px; height: 22px; border-color: #1a237e; border-style: solid; border-width: 0; opacity: 0.6; pointer-events: none; }
         .scan-frame .corner.tl { top: 10px; left: 10px; border-top-width: 3px; border-left-width: 3px; border-radius: 3px 0 0 0; }
         .scan-frame .corner.tr { top: 10px; right: 10px; border-top-width: 3px; border-right-width: 3px; border-radius: 0 3px 0 0; }
         .scan-frame .corner.bl { bottom: 10px; left: 10px; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 3px; }
         .scan-frame .corner.br { bottom: 10px; right: 10px; border-bottom-width: 3px; border-right-width: 3px; border-radius: 0 0 3px 0; }
-
-        .scan-line {
-            position: absolute; left: 0; width: 100%; height: 3px;
-            background: linear-gradient(90deg, transparent, #42a5f5, #1a237e, #42a5f5, transparent);
-            box-shadow: 0 0 16px rgba(26, 35, 126, 0.25);
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.4s; top: 0;
-        }
+        .scan-line { position: absolute; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, #42a5f5, #1a237e, #42a5f5, transparent); box-shadow: 0 0 16px rgba(26, 35, 126, 0.25); opacity: 0; pointer-events: none; transition: opacity 0.4s; top: 0; }
         .scan-line.active { opacity: 1; animation: scanMove 2.0s ease-in-out infinite; }
-        @keyframes scanMove {
-            0% { top: 5%; }
-            50% { top: 90%; }
-            100% { top: 5%; }
-        }
-
-        .camera-container {
-            position: relative; background: #000;
-            border-radius: 16px; overflow: hidden;
-            min-height: 260px;
-            display: flex; align-items: center; justify-content: center;
-            flex: 1;
-            transition: border-radius 0.3s, min-height 0.3s;
-        }
-        .camera-container video {
-            width: 100%; border-radius: 16px; display: block;
-            background: #111; object-fit: contain;
-            transition: border-radius 0.3s;
-        }
-        .camera-container .camera-overlay {
-            position: absolute; bottom: 20px; left: 0; right: 0;
-            display: flex; justify-content: center; gap: 20px; z-index: 10;
-        }
-        .camera-container .camera-overlay button {
-            background: rgba(255, 255, 255, 0.9);
-            border: none; border-radius: 50%;
-            width: 60px; height: 60px; font-size: 28px; color: #1a237e;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-            transition: 0.2s;
-            display: flex; align-items: center; justify-content: center;
-        }
+        @keyframes scanMove { 0% { top: 5%; } 50% { top: 90%; } 100% { top: 5%; } }
+        .camera-container { position: relative; background: #000; border-radius: 16px; overflow: hidden; min-height: 260px; display: flex; align-items: center; justify-content: center; flex: 1; transition: border-radius 0.3s, min-height 0.3s; }
+        .camera-container video { width: 100%; border-radius: 16px; display: block; background: #111; object-fit: contain; transition: border-radius 0.3s; }
+        .camera-container .camera-overlay { position: absolute; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; gap: 20px; z-index: 10; }
+        .camera-container .camera-overlay button { background: rgba(255, 255, 255, 0.9); border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 28px; color: #1a237e; cursor: pointer; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .camera-container .camera-overlay button:hover { transform: scale(1.05); }
         .camera-container .camera-overlay button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .camera-container .camera-overlay .btn-close-cam {
-            background: rgba(255, 80, 80, 0.9); color: #fff;
-            width: 50px; height: 50px; font-size: 20px;
-        }
-
-        .mode-control {
-            display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
-            background: #f5f8fc; padding: 10px 16px; border-radius: 16px;
-            border: 1px solid #e2e8f0;
-        }
+        .camera-container .camera-overlay .btn-close-cam { background: rgba(255, 80, 80, 0.9); color: #fff; width: 50px; height: 50px; font-size: 20px; }
+        .mode-control { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; background: #f5f8fc; padding: 10px 16px; border-radius: 16px; border: 1px solid #e2e8f0; }
         .mode-control span.label { font-weight: 600; font-size: 13px; color: #1a237e; }
-        .mode-control label {
-            display: flex; align-items: center; gap: 5px;
-            cursor: pointer; font-size: 13px; color: #1a237e;
-        }
+        .mode-control label { display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px; color: #1a237e; }
         .mode-control input[type="radio"] { accent-color: #1a237e; width: 15px; height: 15px; cursor: pointer; }
-
-        .threshold-control {
-            background: #f5f8fc; border-radius: 16px; padding: 10px 16px;
-            display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
-            border: 1px solid #e2e8f0;
-        }
-        .threshold-control label {
-            font-weight: 600; font-size: 13px; color: #1a237e;
-            display: flex; align-items: center; gap: 4px;
-        }
-        .threshold-control input[type="range"] {
-            flex: 1; min-width: 100px; accent-color: #1a237e;
-            height: 5px; border-radius: 4px; background: #d0d9e8;
-        }
-        .threshold-control .value-display {
-            background: #1a237e; color: #fff; font-weight: 700; font-size: 13px;
-            padding: 2px 12px; border-radius: 30px; min-width: 40px; text-align: center;
-        }
+        .threshold-control { background: #f5f8fc; border-radius: 16px; padding: 10px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; border: 1px solid #e2e8f0; }
+        .threshold-control label { font-weight: 600; font-size: 13px; color: #1a237e; display: flex; align-items: center; gap: 4px; }
+        .threshold-control input[type="range"] { flex: 1; min-width: 100px; accent-color: #1a237e; height: 5px; border-radius: 4px; background: #d0d9e8; }
+        .threshold-control .value-display { background: #1a237e; color: #fff; font-weight: 700; font-size: 13px; padding: 2px 12px; border-radius: 30px; min-width: 40px; text-align: center; }
         .threshold-control .hint { font-size: 11px; color: #78909c; margin-left: auto; }
-
         .action-bar { display: flex; flex-wrap: wrap; gap: 10px; }
-        .btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            gap: 6px; padding: 10px 18px; border: none; border-radius: 40px;
-            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px;
-            cursor: pointer; transition: all 0.2s;
-            flex: 1 1 auto; min-width: 80px;
-            background: #e8edf5; color: #1a237e;
-        }
-        .btn-primary {
-            background: linear-gradient(145deg, #1a237e, #0d47a1);
-            color: #fff; box-shadow: 0 4px 12px rgba(13, 71, 161, 0.25);
-        }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 18px; border: none; border-radius: 40px; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s; flex: 1 1 auto; min-width: 80px; background: #e8edf5; color: #1a237e; }
+        .btn-primary { background: linear-gradient(145deg, #1a237e, #0d47a1); color: #fff; box-shadow: 0 4px 12px rgba(13, 71, 161, 0.25); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13, 71, 161, 0.35); }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-
-        .btn-success {
-            background: linear-gradient(145deg, #1b5e20, #2e7d32);
-            color: #fff; box-shadow: 0 4px 12px rgba(27, 94, 32, 0.20);
-        }
+        .btn-success { background: linear-gradient(145deg, #1b5e20, #2e7d32); color: #fff; box-shadow: 0 4px 12px rgba(27, 94, 32, 0.20); }
         .btn-success:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(27, 94, 32, 0.30); }
         .btn-success:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-
-        .btn-danger-outline {
-            background: transparent; color: #b71c1c;
-            border: 2px solid #ffcdd2;
-        }
+        .btn-danger-outline { background: transparent; color: #b71c1c; border: 2px solid #ffcdd2; }
         .btn-danger-outline:hover { background: #ffebee; border-color: #c62828; }
-
-        .btn-ai {
-            background: linear-gradient(145deg, #6a1b9a, #8e24aa);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(106, 27, 154, 0.30);
-        }
+        .btn-ai { background: linear-gradient(145deg, #6a1b9a, #8e24aa); color: #fff; box-shadow: 0 4px 12px rgba(106, 27, 154, 0.30); }
         .btn-ai:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(106, 27, 154, 0.45); }
         .btn-ai:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
-        .btn-ai-alt {
-            background: linear-gradient(145deg, #ad1457, #d81b60);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(173, 20, 87, 0.30);
-        }
+        .btn-ai-alt { background: linear-gradient(145deg, #ad1457, #d81b60); color: #fff; box-shadow: 0 4px 12px rgba(173, 20, 87, 0.30); }
         .btn-ai-alt:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(173, 20, 87, 0.45); }
-
-        .btn .spinner {
-            display: inline-block; width: 16px; height: 16px;
-            border: 2.5px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #fff; border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
+        .btn .spinner { display: inline-block; width: 16px; height: 16px; border: 2.5px solid rgba(255, 255, 255, 0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        .ai-result {
-            display: none;
-            background: linear-gradient(135deg, #f3e5f5 0%, #ede7f6 100%);
-            border: 1px solid #ce93d8; border-radius: 18px;
-            padding: 14px 16px;
-            animation: fadeUp 0.3s ease;
-        }
+        .ai-result { display: none; background: linear-gradient(135deg, #f3e5f5 0%, #ede7f6 100%); border: 1px solid #ce93d8; border-radius: 18px; padding: 14px 16px; animation: fadeUp 0.3s ease; }
         .ai-result.active { display: block; }
-        .ai-result .ai-header {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        .ai-result .ai-header .ai-title {
-            font-weight: 700; font-size: 13px; color: #4a148c;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .ai-result .ai-header .ai-close {
-            background: transparent; border: none;
-            color: #6a1b9a; font-size: 14px; cursor: pointer;
-            width: 26px; height: 26px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
-        }
+        .ai-result .ai-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .ai-result .ai-header .ai-title { font-weight: 700; font-size: 13px; color: #4a148c; display: flex; align-items: center; gap: 6px; }
+        .ai-result .ai-header .ai-close { background: transparent; border: none; color: #6a1b9a; font-size: 14px; cursor: pointer; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .ai-result .ai-header .ai-close:hover { background: rgba(106, 27, 154, 0.1); }
-        .ai-result .ai-body {
-            font-size: 12.5px; line-height: 1.55; color: #311b92;
-            white-space: pre-wrap; word-break: break-word;
-            max-height: 220px; overflow-y: auto;
-            background: #ffffff; border-radius: 12px;
-            padding: 10px 12px; border: 1px solid #e1bee7;
-        }
+        .ai-result .ai-body { font-size: 12.5px; line-height: 1.55; color: #311b92; white-space: pre-wrap; word-break: break-word; max-height: 220px; overflow-y: auto; background: #ffffff; border-radius: 12px; padding: 10px 12px; border: 1px solid #e1bee7; }
         .ai-result .ai-body::-webkit-scrollbar { width: 4px; }
         .ai-result .ai-body::-webkit-scrollbar-thumb { background: #ce93d8; border-radius: 8px; }
         .ai-result .ai-actions { display: flex; gap: 8px; margin-top: 10px; }
-        .ai-result .ai-actions button {
-            flex: 1; background: #fff;
-            border: 1px solid #ce93d8; color: #6a1b9a;
-            font-size: 12px; font-weight: 600;
-            padding: 7px 10px; border-radius: 30px;
-            cursor: pointer; transition: 0.2s;
-            font-family: 'Inter', sans-serif;
-            display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-        }
+        .ai-result .ai-actions button { flex: 1; background: #fff; border: 1px solid #ce93d8; color: #6a1b9a; font-size: 12px; font-weight: 600; padding: 7px 10px; border-radius: 30px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
         .ai-result .ai-actions button:hover { background: #6a1b9a; color: #fff; border-color: #6a1b9a; }
-
-        .ai-image-result {
-            margin-top: 10px; border-radius: 12px; overflow: hidden;
-            border: 1px solid #ce93d8; background: #fff;
-            display: none;
-        }
+        .ai-image-result { margin-top: 10px; border-radius: 12px; overflow: hidden; border: 1px solid #ce93d8; background: #fff; display: none; }
         .ai-image-result.active { display: block; }
         .ai-image-result img { width: 100%; display: block; border-radius: 12px; }
-        .ai-image-result .ai-img-actions {
-            display: flex; gap: 6px; padding: 8px;
-            background: #faf5ff; border-top: 1px solid #e1bee7;
-        }
-        .ai-image-result .ai-img-actions button {
-            flex: 1; background: #6a1b9a;
-            border: none; color: #fff;
-            font-size: 11.5px; font-weight: 600;
-            padding: 7px 10px; border-radius: 30px;
-            cursor: pointer; font-family: 'Inter', sans-serif;
-            display: inline-flex; align-items: center; justify-content: center; gap: 4px;
-            transition: 0.2s;
-        }
+        .ai-image-result .ai-img-actions { display: flex; gap: 6px; padding: 8px; background: #faf5ff; border-top: 1px solid #e1bee7; }
+        .ai-image-result .ai-img-actions button { flex: 1; background: #6a1b9a; border: none; color: #fff; font-size: 11.5px; font-weight: 600; padding: 7px 10px; border-radius: 30px; cursor: pointer; font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; justify-content: center; gap: 4px; transition: 0.2s; }
         .ai-image-result .ai-img-actions button:hover { background: #4a148c; }
-        .ai-image-result .ai-img-actions button.secondary {
-            background: #fff; color: #6a1b9a; border: 1px solid #ce93d8;
-        }
+        .ai-image-result .ai-img-actions button.secondary { background: #fff; color: #6a1b9a; border: 1px solid #ce93d8; }
         .ai-image-result .ai-img-actions button.secondary:hover { background: #f3e5f5; }
-
-        .history-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 0 8px 0; border-bottom: 1px solid #eef2f7;
-        }
-        .history-header h3 {
-            font-size: 16px; font-weight: 700; color: #0a1929;
-            display: flex; align-items: center; gap: 8px;
-        }
+        .history-header { display: flex; justify-content: space-between; align-items: center; padding: 0 0 8px 0; border-bottom: 1px solid #eef2f7; }
+        .history-header h3 { font-size: 16px; font-weight: 700; color: #0a1929; display: flex; align-items: center; gap: 8px; }
         .history-header h3 i { color: #1a237e; }
-        .history-header .badge-count {
-            background: #e8edf5; color: #1a237e;
-            font-size: 11px; font-weight: 700;
-            padding: 2px 10px; border-radius: 30px; margin-left: 4px;
-        }
-        .btn-clear-all {
-            background: transparent; border: none;
-            color: #b0bec5; font-size: 13px; font-weight: 500;
-            cursor: pointer; padding: 4px 12px; border-radius: 30px;
-            transition: 0.2s;
-            display: flex; align-items: center; gap: 4px;
-        }
+        .history-header .badge-count { background: #e8edf5; color: #1a237e; font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 30px; margin-left: 4px; }
+        .btn-clear-all { background: transparent; border: none; color: #b0bec5; font-size: 13px; font-weight: 500; cursor: pointer; padding: 4px 12px; border-radius: 30px; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
         .btn-clear-all:hover { background: #ffebee; color: #c62828; }
         .btn-clear-all i { font-size: 14px; }
-
         .history-list { display: flex; flex-direction: column; gap: 12px; padding: 4px 0 12px 0; }
-
-        .history-item {
-            background: #ffffff; border-radius: 18px;
-            padding: 12px 14px 12px 12px;
-            border: 1px solid #eef2f7;
-            display: flex; align-items: center; gap: 14px;
-            transition: all 0.2s;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-            position: relative;
-        }
-        .history-item:hover {
-            border-color: #d0d9e8;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-            transform: translateY(-1px);
-        }
-        .history-item .thumb {
-            width: 64px; height: 64px; border-radius: 14px;
-            overflow: hidden; flex-shrink: 0;
-            background: #f0f2f6; border: 1px solid #eef2f7;
-            position: relative;
-        }
+        .history-item { background: #ffffff; border-radius: 18px; padding: 12px 14px 12px 12px; border: 1px solid #eef2f7; display: flex; align-items: center; gap: 14px; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02); position: relative; }
+        .history-item:hover { border-color: #d0d9e8; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04); transform: translateY(-1px); }
+        .history-item .thumb { width: 64px; height: 64px; border-radius: 14px; overflow: hidden; flex-shrink: 0; background: #f0f2f6; border: 1px solid #eef2f7; position: relative; }
         .history-item .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .history-item .thumb .mode-tag {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(4px);
-            color: #fff; font-size: 8px; font-weight: 600;
-            text-align: center; padding: 2px 0;
-            letter-spacing: 0.3px; text-transform: uppercase;
-        }
+        .history-item .thumb .mode-tag { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(4px); color: #fff; font-size: 8px; font-weight: 600; text-align: center; padding: 2px 0; letter-spacing: 0.3px; text-transform: uppercase; }
         .history-item .info { flex: 1; min-width: 0; }
-        .history-item .info .title {
-            font-weight: 600; font-size: 14px; color: #0a1929;
-            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-        }
-        .history-item .info .title .dot {
-            display: inline-block; width: 6px; height: 6px;
-            border-radius: 50%; background: #1a237e; flex-shrink: 0;
-        }
+        .history-item .info .title { font-weight: 600; font-size: 14px; color: #0a1929; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .history-item .info .title .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #1a237e; flex-shrink: 0; }
         .history-item .info .title .dot.color { background: #e53935; }
-        .history-item .info .date {
-            font-size: 11px; color: #90a4ae; margin-top: 2px;
-            display: flex; align-items: center; gap: 6px;
-        }
+        .history-item .info .date { font-size: 11px; color: #90a4ae; margin-top: 2px; display: flex; align-items: center; gap: 6px; }
         .history-item .info .date i { font-size: 11px; color: #b0bec5; }
         .history-item .actions { display: flex; gap: 2px; flex-shrink: 0; }
-        .history-item .actions button {
-            background: transparent; border: none;
-            width: 34px; height: 34px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px; color: #90a4ae; cursor: pointer;
-            transition: 0.2s;
-        }
+        .history-item .actions button { background: transparent; border: none; width: 34px; height: 34px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #90a4ae; cursor: pointer; transition: 0.2s; }
         .history-item .actions button:hover { background: #f0f2f6; color: #1a237e; }
         .history-item .actions button.danger:hover { background: #ffebee; color: #c62828; }
         .history-item .actions button.view-btn:hover { color: #0d47a1; }
         .history-item .actions button.download-btn:hover { color: #2e7d32; }
-
-        .history-empty {
-            text-align: center; padding: 56px 20px 48px; color: #90a4ae;
-            display: flex; flex-direction: column; align-items: center; gap: 12px;
-        }
+        .history-empty { text-align: center; padding: 56px 20px 48px; color: #90a4ae; display: flex; flex-direction: column; align-items: center; gap: 12px; }
         .history-empty i { font-size: 48px; color: #d0d9e8; }
         .history-empty .empty-title { font-size: 16px; font-weight: 600; color: #546e7a; }
         .history-empty .empty-sub { font-size: 13px; color: #b0bec5; }
-
-        .bottom-nav {
-            background: #ffffff; border-top: 1px solid #e8edf4;
-            display: flex; justify-content: space-around; align-items: center;
-            padding: 6px 0 10px; flex-shrink: 0;
-        }
-        .bottom-nav .nav-item {
-            display: flex; flex-direction: column; align-items: center; gap: 2px;
-            font-size: 10px; color: #90a4ae; cursor: pointer;
-            transition: 0.2s; padding: 4px 12px; border-radius: 20px;
-            border: none; background: transparent;
-            font-family: 'Inter', sans-serif;
-        }
+        .bottom-nav { background: #ffffff; border-top: 1px solid #e8edf4; display: flex; justify-content: space-around; align-items: center; padding: 6px 0 10px; flex-shrink: 0; }
+        .bottom-nav .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: #90a4ae; cursor: pointer; transition: 0.2s; padding: 4px 12px; border-radius: 20px; border: none; background: transparent; font-family: 'Inter', sans-serif; }
         .bottom-nav .nav-item i { font-size: 20px; }
         .bottom-nav .nav-item.active { color: #1a237e; font-weight: 600; }
         .bottom-nav .nav-item.active i { color: #1a237e; }
         .bottom-nav .nav-item:hover { color: #546e7a; }
-
         @media (max-width: 500px) {
             .app-wrapper { border-radius: 0; margin: 0; max-height: 100vh; height: 100vh; }
             .app-content { padding: 12px 14px 4px; }
@@ -615,7 +309,6 @@
         (function() {
             'use strict';
 
-            // Silence Puter banner
             if (typeof puter !== 'undefined') puter.quiet = true;
 
             // ============= DOM REFS =============
@@ -968,7 +661,7 @@
             });
 
             // =============================================
-            // PUTER.JS — AI FEATURES (FIXED)
+            // PUTER.JS — AI FEATURES
             // =============================================
 
             function setAILoading(btn, loadingText) {
@@ -984,7 +677,6 @@
                 }
             }
 
-            // Resize data URL ke maksimal maxDim px supaya payload kecil
             function prepareImageForAI(dataUrl, maxDim = 1024, quality = 0.82) {
                 return new Promise((resolve) => {
                     const img = new Image();
@@ -998,7 +690,6 @@
                         const c = document.createElement('canvas');
                         c.width = w; c.height = h;
                         const ctx = c.getContext('2d');
-                        // putih background agar JPEG transparansi tidak jadi hitam
                         ctx.fillStyle = '#ffffff';
                         ctx.fillRect(0, 0, w, h);
                         ctx.drawImage(img, 0, 0, w, h);
@@ -1013,7 +704,44 @@
                 });
             }
 
-            // Format error apapun jadi string yang berguna
+            // =============================================
+            // ⭐ BARU: Fit gambar ke rasio A4 (1240×1754)
+            // mode 'contain' = gambar utuh + margin putih
+            // mode 'cover'   = penuh, tapi tepi dipotong
+            // =============================================
+            function fitToA4(src, mode = 'contain') {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = () => {
+                        const A4_W = 1240;   // ≈150 DPI
+                        const A4_H = 1754;   // A4 = 210×297 → rasio 1 : 1.4142
+                        const c = document.createElement('canvas');
+                        c.width = A4_W; c.height = A4_H;
+                        const ctx = c.getContext('2d');
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, A4_W, A4_H);
+
+                        let w, h, x, y;
+                        if (mode === 'cover') {
+                            const scale = Math.max(A4_W / img.width, A4_H / img.height);
+                            w = img.width * scale;
+                            h = img.height * scale;
+                        } else {
+                            const scale = Math.min(A4_W / img.width, A4_H / img.height);
+                            w = img.width * scale;
+                            h = img.height * scale;
+                        }
+                        x = (A4_W - w) / 2;
+                        y = (A4_H - h) / 2;
+                        ctx.drawImage(img, x, y, w, h);
+                        resolve(c.toDataURL('image/png'));
+                    };
+                    img.onerror = () => resolve(src);
+                    img.src = src;
+                });
+            }
+
             function formatAIError(err) {
                 if (!err) return 'Error tidak diketahui';
                 if (typeof err === 'string') return err;
@@ -1026,7 +754,6 @@
                 try { return JSON.stringify(err); } catch (e) { return String(err); }
             }
 
-            // Ekstrak teks dari response Puter chat
             function extractAIText(response) {
                 if (!response) return '';
                 if (typeof response === 'string') return response;
@@ -1120,31 +847,25 @@
                 }
             });
 
-            // ===== AI Enhance (restyle jadi scan bersih) =====
+            // ===== AI Enhance (restyle jadi scan bersih + output A4) =====
             btnAIEnhance.addEventListener('click', async () => {
                 if (!imageDataUrl) { alert('Unggah gambar dulu.'); return; }
                 if (!checkPuter()) return;
 
                 setAILoading(btnAIEnhance, 'AI memperbaiki dokumen...');
                 try {
-                    // Kirim gambar ASLI dokumen (bukan deskripsi teksnya) supaya AI meng-edit
-                    // gambar yang sama, bukan membuat gambar baru dari nol.
                     const smallImg = await prepareImageForAI(imageDataUrl, 1600, 0.9);
                     const base64Payload = smallImg.split(',')[1];
 
-                    // Tentukan orientasi dokumen asli (pakai dimensi canvas yang sudah dianalisis
-                    // saat gambar di-load) supaya kita minta ukuran output AI dengan rasio yang
-                    // sesuai. Tanpa ini, model gpt-image-1-mini memakai ukuran default (kotak),
-                    // sehingga dokumen portrait/landscape jadi terpotong (cropped) saat dipaksa
-                    // ke rasio persegi.
+                    // ⭐ FIXED: selalu pakai 1024x1536 untuk portrait (rasio paling dekat A4).
+                    // Model gpt-image-1-mini cuma punya 3 ukuran: 1024x1024, 1024x1536, 1536x1024.
+                    // A4 = 1:1.4142 → paling dekat dengan 1024x1536 (1:1.5).
                     const aspect = canvasWidth && canvasHeight ? canvasWidth / canvasHeight : 1;
                     let outputSize;
                     if (aspect > 1.15) {
                         outputSize = '1536x1024'; // landscape
-                    } else if (aspect < 0.87) {
-                        outputSize = '1024x1536'; // portrait
                     } else {
-                        outputSize = '1024x1024'; // mendekati persegi
+                        outputSize = '1024x1536'; // portrait / square → pilih portrait
                     }
 
                     const prompt =
@@ -1155,13 +876,6 @@
                         'the entire page must remain fully visible from edge to edge, matching the original framing and aspect ratio. ' +
                         'Output the same document, just cleaned up like a professional scan.';
 
-                    // PENTING: 'quality' TIDAK diset sebelumnya, sehingga txt2img() diam-diam
-                    // memakai default 'low'. Pada kualitas rendah, model edit-gambar (termasuk
-                    // gpt-image-1-mini) cenderung "menggambar ulang" dokumen alih-alih benar-benar
-                    // mengeditnya secara presisi — itulah sebabnya hasilnya sering terlihat sangat
-                    // berbeda dan teksnya jadi rusak/tidak terbaca. Menyetel quality ke 'high'
-                    // membuat model jauh lebih setia pada gambar asli. 'size' disetel mengikuti
-                    // rasio dokumen asli supaya hasilnya tidak terpotong.
                     const imgElement = await puter.ai.txt2img(prompt, {
                         model: 'openai/gpt-image-1-mini',
                         quality: 'high',
@@ -1171,7 +885,11 @@
                     });
                     if (!imgElement || !imgElement.src) throw new Error('AI tidak mengembalikan gambar.');
 
-                    showAIImage(imgElement.src);
+                    // ⭐ BARU: render ulang ke kanvas rasio A4 supaya hasilnya pas A4.
+                    // Ganti 'contain' → 'cover' kalau mau tanpa margin putih (tepi mungkin terpotong).
+                    const a4Src = await fitToA4(imgElement.src, 'contain');
+
+                    showAIImage(a4Src);
                 } catch (err) {
                     console.error('AI Enhance error:', err);
                     alert('❌ AI Enhance gagal: ' + formatAIError(err));
