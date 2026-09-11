@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://js.puter.com/v2/"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
@@ -29,8 +29,6 @@
         .app-header .logo { background: linear-gradient(145deg, #1a237e, #0d47a1); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; box-shadow: 0 4px 10px rgba(13, 71, 161, 0.25); }
         .app-header h1 { font-size: 18px; font-weight: 700; color: #0a1929; letter-spacing: -0.3px; }
         .app-header h1 small { font-size: 11px; font-weight: 400; color: #546e7a; display: block; margin-top: -2px; }
-        .app-header .right i { font-size: 20px; color: #1a237e; background: #e8edf5; padding: 8px; border-radius: 50%; cursor: pointer; transition: 0.2s; }
-        .app-header .right i:hover { background: #d0d9e8; }
         .app-content { flex: 1; overflow-y: auto; padding: 16px 20px 8px; display: flex; flex-direction: column; gap: 18px; background: #f8faff; transition: padding 0.3s, background 0.3s; }
         .app-content::-webkit-scrollbar { width: 4px; }
         .app-content::-webkit-scrollbar-thumb { background: #c5cae9; border-radius: 8px; }
@@ -59,6 +57,11 @@
         .scan-line { position: absolute; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, #42a5f5, #1a237e, #42a5f5, transparent); box-shadow: 0 0 16px rgba(26, 35, 126, 0.25); opacity: 0; pointer-events: none; transition: opacity 0.4s; top: 0; }
         .scan-line.active { opacity: 1; animation: scanMove 2.0s ease-in-out infinite; }
         @keyframes scanMove { 0% { top: 5%; } 50% { top: 90%; } 100% { top: 5%; } }
+        .crop-overlay-actions { position: absolute; bottom: 12px; left: 12px; right: 12px; display: none; gap: 8px; z-index: 20; justify-content: center; flex-wrap: wrap; }
+        .crop-overlay-actions.active { display: flex; }
+        .crop-overlay-actions .btn { box-shadow: 0 6px 18px rgba(0,0,0,0.35); flex: 0 1 auto; min-width: 0; padding: 8px 14px; font-size: 12px; }
+        .crop-hint { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: #fff; font-size: 11px; font-weight: 600; padding: 6px 14px; border-radius: 30px; z-index: 20; display: none; white-space: nowrap; }
+        .crop-hint.active { display: block; }
         .camera-container { position: relative; background: #000; border-radius: 16px; overflow: hidden; min-height: 260px; display: flex; align-items: center; justify-content: center; flex: 1; transition: border-radius 0.3s, min-height 0.3s; }
         .camera-container video { width: 100%; border-radius: 16px; display: block; background: #111; object-fit: contain; transition: border-radius 0.3s; }
         .camera-container .camera-overlay { position: absolute; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; gap: 20px; z-index: 10; }
@@ -70,11 +73,6 @@
         .mode-control span.label { font-weight: 600; font-size: 13px; color: #1a237e; }
         .mode-control label { display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px; color: #1a237e; }
         .mode-control input[type="radio"] { accent-color: #1a237e; width: 15px; height: 15px; cursor: pointer; }
-        .threshold-control { background: #f5f8fc; border-radius: 16px; padding: 10px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; border: 1px solid #e2e8f0; }
-        .threshold-control label { font-weight: 600; font-size: 13px; color: #1a237e; display: flex; align-items: center; gap: 4px; }
-        .threshold-control input[type="range"] { flex: 1; min-width: 100px; accent-color: #1a237e; height: 5px; border-radius: 4px; background: #d0d9e8; }
-        .threshold-control .value-display { background: #1a237e; color: #fff; font-weight: 700; font-size: 13px; padding: 2px 12px; border-radius: 30px; min-width: 40px; text-align: center; }
-        .threshold-control .hint { font-size: 11px; color: #78909c; margin-left: auto; }
         .action-bar { display: flex; flex-wrap: wrap; gap: 10px; }
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 18px; border: none; border-radius: 40px; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s; flex: 1 1 auto; min-width: 80px; background: #e8edf5; color: #1a237e; }
         .btn-primary { background: linear-gradient(145deg, #1a237e, #0d47a1); color: #fff; box-shadow: 0 4px 12px rgba(13, 71, 161, 0.25); }
@@ -85,12 +83,17 @@
         .btn-success:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
         .btn-danger-outline { background: transparent; color: #b71c1c; border: 2px solid #ffcdd2; }
         .btn-danger-outline:hover { background: #ffebee; border-color: #c62828; }
-        .btn-ai { background: linear-gradient(145deg, #6a1b9a, #8e24aa); color: #fff; box-shadow: 0 4px 12px rgba(106, 27, 154, 0.30); }
-        .btn-ai:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(106, 27, 154, 0.45); }
-        .btn-ai:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
+        .btn-crop { background: linear-gradient(145deg, #00695c, #00897b); color: #fff; box-shadow: 0 4px 12px rgba(0, 105, 92, 0.30); }
+        .btn-crop:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 105, 92, 0.45); }
+        .btn-crop:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
+        .btn-auto { background: linear-gradient(145deg, #e65100, #f57c00); color: #fff; box-shadow: 0 4px 12px rgba(230, 81, 0, 0.30); }
+        .btn-auto:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(230, 81, 0, 0.45); }
+        .btn-auto:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
         .btn-ai-alt { background: linear-gradient(145deg, #ad1457, #d81b60); color: #fff; box-shadow: 0 4px 12px rgba(173, 20, 87, 0.30); }
         .btn-ai-alt:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(173, 20, 87, 0.45); }
+        .btn-ai-alt:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
         .btn .spinner { display: inline-block; width: 16px; height: 16px; border: 2.5px solid rgba(255, 255, 255, 0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .btn .spinner.dark { border-color: rgba(26, 35, 126, 0.25); border-top-color: #1a237e; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .ai-result { display: none; background: linear-gradient(135deg, #f3e5f5 0%, #ede7f6 100%); border: 1px solid #ce93d8; border-radius: 18px; padding: 14px 16px; animation: fadeUp 0.3s ease; }
         .ai-result.active { display: block; }
@@ -104,14 +107,6 @@
         .ai-result .ai-actions { display: flex; gap: 8px; margin-top: 10px; }
         .ai-result .ai-actions button { flex: 1; background: #fff; border: 1px solid #ce93d8; color: #6a1b9a; font-size: 12px; font-weight: 600; padding: 7px 10px; border-radius: 30px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
         .ai-result .ai-actions button:hover { background: #6a1b9a; color: #fff; border-color: #6a1b9a; }
-        .ai-image-result { margin-top: 10px; border-radius: 12px; overflow: hidden; border: 1px solid #ce93d8; background: #fff; display: none; }
-        .ai-image-result.active { display: block; }
-        .ai-image-result img { width: 100%; display: block; border-radius: 12px; }
-        .ai-image-result .ai-img-actions { display: flex; gap: 6px; padding: 8px; background: #faf5ff; border-top: 1px solid #e1bee7; }
-        .ai-image-result .ai-img-actions button { flex: 1; background: #6a1b9a; border: none; color: #fff; font-size: 11.5px; font-weight: 600; padding: 7px 10px; border-radius: 30px; cursor: pointer; font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; justify-content: center; gap: 4px; transition: 0.2s; }
-        .ai-image-result .ai-img-actions button:hover { background: #4a148c; }
-        .ai-image-result .ai-img-actions button.secondary { background: #fff; color: #6a1b9a; border: 1px solid #ce93d8; }
-        .ai-image-result .ai-img-actions button.secondary:hover { background: #f3e5f5; }
         .history-header { display: flex; justify-content: space-between; align-items: center; padding: 0 0 8px 0; border-bottom: 1px solid #eef2f7; }
         .history-header h3 { font-size: 16px; font-weight: 700; color: #0a1929; display: flex; align-items: center; gap: 8px; }
         .history-header h3 i { color: #1a237e; }
@@ -157,8 +152,7 @@
             .btn { padding: 8px 14px; font-size: 12px; min-width: 60px; }
             .scan-frame { min-height: 160px; max-height: 260px; }
             .scan-frame img, .scan-frame canvas { max-height: 260px; }
-            .threshold-control, .mode-control { padding: 8px 12px; }
-            .threshold-control .hint { display: none; }
+            .mode-control { padding: 8px 12px; }
             .camera-container { min-height: 200px; }
             .camera-container .camera-overlay button { width: 50px; height: 50px; font-size: 22px; }
             .history-item { padding: 10px 12px 10px 10px; gap: 10px; }
@@ -184,9 +178,6 @@
                 <div class="logo"><i class="fas fa-print"></i></div>
                 <h1>ScanKu <small>Pro</small></h1>
             </div>
-            <div class="right">
-                <i class="fas fa-cog"></i>
-            </div>
         </header>
 
         <div class="app-content" id="appContent">
@@ -204,56 +195,45 @@
                     <div class="scan-frame-wrapper">
                         <div class="scan-frame" id="scanFrame">
                             <img id="previewImage" src="" alt="Preview" />
-                            <div class="corner tl"></div>
-                            <div class="corner tr"></div>
-                            <div class="corner bl"></div>
-                            <div class="corner br"></div>
+                            <canvas id="cropCanvas" style="display:none; position:absolute; left:0; top:0; touch-action:none; cursor:crosshair;"></canvas>
+                            <div class="crop-hint" id="cropHint"><i class="fas fa-hand-pointer"></i> Geser titik sudut ke tepi dokumen</div>
+                            <div class="crop-overlay-actions" id="cropActions">
+                                <button class="btn btn-primary" id="btnCropApply"><i class="fas fa-check"></i> Terapkan</button>
+                                <button class="btn btn-auto" id="btnCropAutoInOverlay"><i class="fas fa-magic"></i> Auto</button>
+                                <button class="btn btn-danger-outline" id="btnCropCancel" style="background:#fff;"><i class="fas fa-times"></i> Batal</button>
+                            </div>
                             <div class="scan-line" id="scanLine"></div>
                         </div>
                     </div>
 
                     <div class="mode-control" id="modeControl" style="display:none;">
                         <span class="label"><i class="fas fa-palette"></i> Mode:</span>
-                        <label><input type="radio" name="scanMode" value="bw" checked id="modeBW" /> Hitam-Putih</label>
-                        <label><input type="radio" name="scanMode" value="color" id="modeColor" /> Berwarna</label>
-                    </div>
-
-                    <div class="threshold-control" id="thresholdControl" style="display:none;">
-                        <label><i class="fas fa-circle"></i> Kehitaman</label>
-                        <input type="range" id="thresholdSlider" min="50" max="220" value="150" step="1" />
-                        <span class="value-display" id="thresholdValue">150</span>
-                        <span class="hint">⬅️ terang · hitam ➡️</span>
+                        <label><input type="radio" name="scanMode" value="color" checked id="modeColor" /> Berwarna</label>
+                        <label><input type="radio" name="scanMode" value="bw" id="modeBW" /> Hitam-Putih</label>
                     </div>
 
                     <div class="action-bar">
-                        <button class="btn btn-primary" id="btnScan"><i class="fas fa-camera"></i> Scan + OCR</button>
+                        <button class="btn btn-primary" id="btnScan"><i class="fas fa-camera"></i> Scan</button>
+                        <button class="btn btn-crop" id="btnCrop"><i class="fas fa-crop-alt"></i> Crop</button>
+                        <button class="btn btn-auto" id="btnAutoCrop"><i class="fas fa-magic"></i> Auto</button>
                         <button class="btn btn-success" id="btnDownloadPNG" disabled><i class="fas fa-image"></i> PNG</button>
                         <button class="btn btn-success" id="btnDownloadPDF" disabled><i class="fas fa-file-pdf"></i> PDF</button>
                         <button class="btn btn-danger-outline" id="btnReset"><i class="fas fa-undo-alt"></i> Reset</button>
                     </div>
 
                     <div class="action-bar">
-                        <button class="btn btn-ai" id="btnAIEnhance"><i class="fas fa-wand-magic-sparkles"></i> AI Enhance</button>
-                        <button class="btn btn-ai-alt" id="btnAIOCR"><i class="fas fa-font"></i> OCR Ulang</button>
+                        <button class="btn btn-ai-alt" id="btnAIOCR"><i class="fas fa-font"></i> Ketik Ulang</button>
                     </div>
 
                     <div class="ai-result" id="aiResult">
                         <div class="ai-header">
-                            <div class="ai-title"><i class="fas fa-robot"></i> <span id="aiResultTitle">Hasil AI</span></div>
+                            <div class="ai-title"><i class="fas fa-robot"></i> <span id="aiResultTitle">Hasil OCR</span></div>
                             <button class="ai-close" id="btnCloseAIResult" title="Tutup"><i class="fas fa-times"></i></button>
                         </div>
                         <div class="ai-body" id="aiResultBody"></div>
                         <div class="ai-actions">
                             <button id="btnCopyAIResult"><i class="fas fa-copy"></i> Salin</button>
                             <button id="btnDownloadAITxt"><i class="fas fa-download"></i> .txt</button>
-                        </div>
-                    </div>
-
-                    <div class="ai-image-result" id="aiImageResult">
-                        <img id="aiGeneratedImg" src="" alt="AI Generated Scan" />
-                        <div class="ai-img-actions">
-                            <button id="btnUseAIImage"><i class="fas fa-check"></i> Pakai Gambar Ini</button>
-                            <button class="secondary" id="btnDownloadAIImage"><i class="fas fa-download"></i> Unduh</button>
                         </div>
                     </div>
 
@@ -304,13 +284,6 @@
 
     </div>
 
-    <!-- Chrome Lens OCR Library (ESM) -->
-    <script type="module">
-        import { LensCore } from 'https://esm.sh/@rxliuli/chrome-lens-ocr@4.1.1/core';
-        window.LensCore = LensCore;
-        window.dispatchEvent(new Event('lens-ready'));
-    </script>
-
     <script>
         (function() {
             'use strict';
@@ -328,14 +301,19 @@
             const btnReset = document.getElementById('btnReset');
             const btnSaveHistory = document.getElementById('btnSaveHistory');
             const scanFrame = document.getElementById('scanFrame');
-            const thresholdSlider = document.getElementById('thresholdSlider');
-            const thresholdValue = document.getElementById('thresholdValue');
-            const thresholdControl = document.getElementById('thresholdControl');
             const modeControl = document.getElementById('modeControl');
             const modeBW = document.getElementById('modeBW');
             const modeColor = document.getElementById('modeColor');
 
-            const btnAIEnhance = document.getElementById('btnAIEnhance');
+            const btnCrop = document.getElementById('btnCrop');
+            const btnAutoCrop = document.getElementById('btnAutoCrop');
+            const btnCropAutoInOverlay = document.getElementById('btnCropAutoInOverlay');
+            const cropCanvas = document.getElementById('cropCanvas');
+            const cropHint = document.getElementById('cropHint');
+            const cropActions = document.getElementById('cropActions');
+            const btnCropApply = document.getElementById('btnCropApply');
+            const btnCropCancel = document.getElementById('btnCropCancel');
+
             const btnAIOCR = document.getElementById('btnAIOCR');
             const aiResult = document.getElementById('aiResult');
             const aiResultTitle = document.getElementById('aiResultTitle');
@@ -343,10 +321,6 @@
             const btnCloseAIResult = document.getElementById('btnCloseAIResult');
             const btnCopyAIResult = document.getElementById('btnCopyAIResult');
             const btnDownloadAITxt = document.getElementById('btnDownloadAITxt');
-            const aiImageResult = document.getElementById('aiImageResult');
-            const aiGeneratedImg = document.getElementById('aiGeneratedImg');
-            const btnUseAIImage = document.getElementById('btnUseAIImage');
-            const btnDownloadAIImage = document.getElementById('btnDownloadAIImage');
 
             const video = document.getElementById('video');
             const btnCapture = document.getElementById('btnCapture');
@@ -365,222 +339,716 @@
 
             // ============= STATE =============
             let imageDataUrl = null;
-            let originalColorData = null;
-            let canvasWidth = 0, canvasHeight = 0;
             let scannedCanvas = null;
-            let isScanning = false;
             let isProcessing = false;
             let stream = null;
             let cameraActive = false;
-            let aiGeneratedSrc = null;
-            let lastOCRText = ''; // menyimpan hasil OCR terakhir
 
-            // ============= KERNEL =============
-            const blurKernel = [[1, 2, 1], [2, 4, 2], [1, 2, 1]];
-            const blurDivisor = 16;
-            const sharpenKernel = [[0, -1, 0], [-1, 5, -1], [0, -1, 0]];
-            const sharpenDivisor = 1;
-            const sharpenOffset = 0;
+            // Crop state
+            let cropActive = false;
+            let cropCorners = [];
+            let cropDraggingIdx = -1;
+            let cropDisplayScale = 1;
+            let cropCtx = cropCanvas.getContext('2d');
 
-            // ============= HELPERS =============
-            function applyKernel3x3(srcData, w, h, kernel, divisor, offset) {
-                const result = new Uint8ClampedArray(srcData.length);
-                for (let i = 0; i < srcData.length; i++) result[i] = srcData[i];
-                for (let y = 1; y < h - 1; y++) {
-                    for (let x = 1; x < w - 1; x++) {
-                        let sum = 0;
-                        for (let ky = -1; ky <= 1; ky++) {
-                            for (let kx = -1; kx <= 1; kx++) {
-                                const idx = ((y + ky) * w + (x + kx)) * 4;
-                                sum += srcData[idx] * kernel[ky + 1][kx + 1];
-                            }
-                        }
-                        const idx = (y * w + x) * 4;
-                        let val = sum / divisor + offset;
-                        val = Math.min(255, Math.max(0, Math.round(val)));
-                        result[idx] = val; result[idx + 1] = val; result[idx + 2] = val;
+            // =====================================================
+            // SCAN ENGINE — COLOR-PRESERVING
+            // =====================================================
+
+            function boxBlurChannel(channel, W, H, windowSize) {
+                const IW = W + 1;
+                const integral = new Float64Array(IW * (H + 1));
+                for (let y = 0; y < H; y++) {
+                    let rowSum = 0;
+                    for (let x = 0; x < W; x++) {
+                        rowSum += channel[y * W + x];
+                        integral[(y + 1) * IW + (x + 1)] = integral[y * IW + (x + 1)] + rowSum;
                     }
                 }
-                return result;
-            }
-
-            function applyKernel3x3Color(srcData, w, h, kernel, divisor, offset) {
-                const result = new Uint8ClampedArray(srcData.length);
-                for (let i = 0; i < srcData.length; i++) result[i] = srcData[i];
-                for (let y = 1; y < h - 1; y++) {
-                    for (let x = 1; x < w - 1; x++) {
-                        let r = 0, g = 0, b = 0;
-                        for (let ky = -1; ky <= 1; ky++) {
-                            for (let kx = -1; kx <= 1; kx++) {
-                                const idx = ((y + ky) * w + (x + kx)) * 4;
-                                const k = kernel[ky + 1][kx + 1];
-                                r += srcData[idx] * k;
-                                g += srcData[idx + 1] * k;
-                                b += srcData[idx + 2] * k;
-                            }
-                        }
-                        const idx = (y * w + x) * 4;
-                        result[idx] = Math.min(255, Math.max(0, Math.round(r / divisor + offset)));
-                        result[idx + 1] = Math.min(255, Math.max(0, Math.round(g / divisor + offset)));
-                        result[idx + 2] = Math.min(255, Math.max(0, Math.round(b / divisor + offset)));
+                const r = Math.floor(windowSize / 2);
+                const out = new Float32Array(W * H);
+                for (let y = 0; y < H; y++) {
+                    const y1 = Math.max(0, y - r);
+                    const y2 = Math.min(H - 1, y + r);
+                    for (let x = 0; x < W; x++) {
+                        const x1 = Math.max(0, x - r);
+                        const x2 = Math.min(W - 1, x + r);
+                        const count = (x2 - x1 + 1) * (y2 - y1 + 1);
+                        const sum = integral[(y2 + 1) * IW + (x2 + 1)]
+                                  - integral[y1 * IW + (x2 + 1)]
+                                  - integral[(y2 + 1) * IW + x1]
+                                  + integral[y1 * IW + x1];
+                        out[y * W + x] = sum / count;
                     }
                 }
-                return result;
+                return out;
             }
 
-            function cleanupBinary(srcData, w, h) {
-                const result = new Uint8ClampedArray(srcData.length);
-                for (let i = 0; i < srcData.length; i++) result[i] = srcData[i];
-                for (let y = 1; y < h - 1; y++) {
-                    for (let x = 1; x < w - 1; x++) {
-                        const idx = (y * w + x) * 4;
-                        const center = srcData[idx];
-                        let black = 0;
-                        for (let ky = -1; ky <= 1; ky++) {
-                            for (let kx = -1; kx <= 1; kx++) {
-                                if (ky === 0 && kx === 0) continue;
-                                const nIdx = ((y + ky) * w + (x + kx)) * 4;
-                                if (srcData[nIdx] < 128) black++;
-                            }
-                        }
-                        let newVal = center;
-                        if (center < 128 && black <= 2) newVal = 255;
-                        else if (center >= 128 && black >= 7) newVal = 0;
-                        result[idx] = newVal; result[idx + 1] = newVal; result[idx + 2] = newVal;
+            function gaussianBlur3x3(gray, W, H) {
+                const tmp = new Float32Array(W * H);
+                const out = new Float32Array(W * H);
+                for (let y = 0; y < H; y++) {
+                    for (let x = 0; x < W; x++) {
+                        const x1 = Math.max(0, x - 1);
+                        const x3 = Math.min(W - 1, x + 1);
+                        tmp[y * W + x] = (gray[y * W + x1] + 2 * gray[y * W + x] + gray[y * W + x3]) * 0.25;
                     }
                 }
-                return result;
-            }
-
-            function processColorMode(srcData, w, h) {
-                const data = new Uint8ClampedArray(srcData);
-                for (let i = 0; i < data.length; i += 4) {
-                    let r = data[i], g = data[i + 1], b = data[i + 2];
-                    r = ((r - 128) * 1.3 + 128) + 20;
-                    g = ((g - 128) * 1.3 + 128) + 20;
-                    b = ((b - 128) * 1.3 + 128) + 20;
-                    data[i] = Math.min(255, Math.max(0, r));
-                    data[i + 1] = Math.min(255, Math.max(0, g));
-                    data[i + 2] = Math.min(255, Math.max(0, b));
-                }
-                const bgTh = 180, whiten = 0.7;
-                for (let i = 0; i < data.length; i += 4) {
-                    const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                    if (avg > bgTh) {
-                        const factor = (avg - bgTh) / (255 - bgTh);
-                        const strength = factor * whiten;
-                        data[i] = Math.min(255, data[i] + (255 - data[i]) * strength);
-                        data[i + 1] = Math.min(255, data[i + 1] + (255 - data[i + 1]) * strength);
-                        data[i + 2] = Math.min(255, data[i + 2] + (255 - data[i + 2]) * strength);
+                for (let y = 0; y < H; y++) {
+                    const y1 = Math.max(0, y - 1);
+                    const y3 = Math.min(H - 1, y + 1);
+                    for (let x = 0; x < W; x++) {
+                        out[y * W + x] = (tmp[y1 * W + x] + 2 * tmp[y * W + x] + tmp[y3 * W + x]) * 0.25;
                     }
                 }
-                return applyKernel3x3Color(data, w, h, sharpenKernel, sharpenDivisor, sharpenOffset);
+                return out;
             }
 
-            // ============= PROSES SCAN (dengan callback) =============
-            function processScan(threshold, mode, callback) {
-                if (!originalColorData) { if (callback) callback(); return; }
-                isProcessing = true;
-                requestAnimationFrame(() => {
-                    try {
-                        const w = canvasWidth, h = canvasHeight;
-                        const srcData = new Uint8ClampedArray(originalColorData.data);
-                        let finalData;
-                        if (mode === 'color') {
-                            finalData = processColorMode(srcData, w, h);
-                        } else {
-                            const grayData = new Uint8ClampedArray(srcData.length);
-                            for (let i = 0; i < srcData.length; i += 4) {
-                                const gray = 0.299 * srcData[i] + 0.587 * srcData[i + 1] + 0.114 * srcData[i + 2];
-                                grayData[i] = gray; grayData[i + 1] = gray; grayData[i + 2] = gray;
-                                grayData[i + 3] = 255;
-                            }
-                            const blurred = applyKernel3x3(grayData, w, h, blurKernel, blurDivisor, 0);
-                            const sharpened = applyKernel3x3(blurred, w, h, sharpenKernel, sharpenDivisor, sharpenOffset);
-                            const binaryData = new Uint8ClampedArray(sharpened.length);
-                            const th = threshold;
-                            for (let i = 0; i < sharpened.length; i += 4) {
-                                const val = sharpened[i] >= th ? 255 : 0;
-                                binaryData[i] = val; binaryData[i + 1] = val; binaryData[i + 2] = val;
-                                binaryData[i + 3] = 255;
-                            }
-                            finalData = cleanupBinary(binaryData, w, h);
+            function autoEnhanceDocument(src, mode) {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const minTarget = 1800;
+                        let scale = 1;
+                        if (img.width < minTarget) {
+                            scale = Math.min(2, minTarget / img.width);
+                        } else if (img.width < 2400) {
+                            scale = 1.5;
                         }
+                        const W = Math.round(img.width * scale);
+                        const H = Math.round(img.height * scale);
+
                         const canvas = document.createElement('canvas');
+                        canvas.width = W; canvas.height = H;
                         const ctx = canvas.getContext('2d');
-                        canvas.width = w; canvas.height = h;
-                        const imageData = new ImageData(finalData, w, h);
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, 0, 0, W, H);
+
+                        const imageData = ctx.getImageData(0, 0, W, H);
+                        const px = imageData.data;
+
+                        const Rc = new Float32Array(W * H);
+                        const Gc = new Float32Array(W * H);
+                        const Bc = new Float32Array(W * H);
+                        for (let i = 0, p = 0; i < px.length; i += 4, p++) {
+                            Rc[p] = px[i]; Gc[p] = px[i + 1]; Bc[p] = px[i + 2];
+                        }
+
+                        const bgWin = Math.max(41, (Math.floor(Math.min(W, H) / 8) | 1));
+                        const bgR = boxBlurChannel(Rc, W, H, bgWin);
+                        const bgG = boxBlurChannel(Gc, W, H, bgWin);
+                        const bgB = boxBlurChannel(Bc, W, H, bgWin);
+
+                        const normR = new Float32Array(W * H);
+                        const normG = new Float32Array(W * H);
+                        const normB = new Float32Array(W * H);
+                        for (let i = 0; i < W * H; i++) {
+                            const br = Math.max(1, bgR[i]);
+                            const bgr = Math.max(1, bgG[i]);
+                            const bb = Math.max(1, bgB[i]);
+                            let r = (Rc[i] / br) * 255;
+                            let g = (Gc[i] / bgr) * 255;
+                            let b = (Bc[i] / bb) * 255;
+                            normR[i] = r > 255 ? 255 : r;
+                            normG[i] = g > 255 ? 255 : g;
+                            normB[i] = b > 255 ? 255 : b;
+                        }
+
+                        const lum = new Float32Array(W * H);
+                        for (let i = 0; i < W * H; i++) {
+                            lum[i] = 0.299 * normR[i] + 0.587 * normG[i] + 0.114 * normB[i];
+                        }
+                        const lumBlur = gaussianBlur3x3(lum, W, H);
+                        const AMOUNT = 1.4;
+                        const lumSharp = new Float32Array(W * H);
+                        for (let i = 0; i < W * H; i++) {
+                            let s = lum[i] + AMOUNT * (lum[i] - lumBlur[i]);
+                            s = (s - 128) * 1.15 + 128 + 6;
+                            lumSharp[i] = s < 0 ? 0 : s > 255 ? 255 : s;
+                        }
+
+                        const outR = new Float32Array(W * H);
+                        const outG = new Float32Array(W * H);
+                        const outB = new Float32Array(W * H);
+                        const SAT = 1.18;
+                        for (let i = 0; i < W * H; i++) {
+                            const dLum = lumSharp[i] - lum[i];
+                            let r = normR[i] + dLum;
+                            let g = normG[i] + dLum;
+                            let b = normB[i] + dLum;
+                            const avg = (r + g + b) / 3;
+                            r = avg + (r - avg) * SAT;
+                            g = avg + (g - avg) * SAT;
+                            b = avg + (b - avg) * SAT;
+                            outR[i] = r < 0 ? 0 : r > 255 ? 255 : r;
+                            outG[i] = g < 0 ? 0 : g > 255 ? 255 : g;
+                            outB[i] = b < 0 ? 0 : b > 255 ? 255 : b;
+                        }
+
+                        for (let i = 0, p = 0; i < px.length; i += 4, p++) {
+                            let r = outR[p], g = outG[p], b = outB[p];
+                            if (mode === 'bw') {
+                                const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                                const gc = Math.min(255, Math.max(0, (gray - 128) * 1.25 + 128 + 5));
+                                r = g = b = gc;
+                            }
+                            px[i] = r;
+                            px[i + 1] = g;
+                            px[i + 2] = b;
+                            px[i + 3] = 255;
+                        }
+
                         ctx.putImageData(imageData, 0, 0);
-                        const existing = scanFrame.querySelector('canvas');
-                        if (existing) existing.remove();
-                        previewImage.style.display = 'none';
-                        scanFrame.appendChild(canvas);
+                        try { resolve(canvas.toDataURL('image/png')); }
+                        catch (e) { resolve(null); }
+                    };
+                    img.onerror = () => resolve(null);
+                    img.src = src;
+                });
+            }
+
+            function processScan() {
+                if (!imageDataUrl || isProcessing) return;
+                isProcessing = true;
+
+                const mode = modeColor.checked ? 'color' : 'bw';
+
+                btnScan.disabled = true;
+                btnScan.innerHTML = '<span class="spinner"></span> Memproses...';
+                scanLine.classList.add('active');
+
+                previewImage.style.display = 'none';
+                const oldCanvas = scanFrame.querySelector('canvas:not(#cropCanvas)');
+                if (oldCanvas) oldCanvas.remove();
+
+                autoEnhanceDocument(imageDataUrl, mode).then(result => {
+                    if (!result) {
+                        alert('❌ Gagal memproses gambar');
+                        btnScan.disabled = false;
+                        btnScan.innerHTML = '<i class="fas fa-camera"></i> Scan Ulang';
+                        scanLine.classList.remove('active');
+                        isProcessing = false;
+                        return;
+                    }
+
+                    const outImg = new Image();
+                    outImg.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = outImg.width;
+                        canvas.height = outImg.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(outImg, 0, 0);
                         canvas.style.maxWidth = '100%';
                         canvas.style.maxHeight = '340px';
                         canvas.style.borderRadius = '12px';
+                        canvas.style.position = 'relative';
+                        scanFrame.insertBefore(canvas, cropCanvas);
                         scannedCanvas = canvas;
                         btnPNG.disabled = false;
                         btnPDF.disabled = false;
                         btnSaveHistory.disabled = false;
+                        btnScan.disabled = false;
+                        btnScan.innerHTML = '<i class="fas fa-camera"></i> Scan Ulang';
+                        scanLine.classList.remove('active');
                         isProcessing = false;
-                        if (callback) callback();
-                    } catch (err) {
-                        console.error(err);
-                        alert('❌ Gagal memproses: ' + err.message);
-                        isProcessing = false;
-                        if (callback) callback();
-                    }
+                    };
+                    outImg.src = result;
                 });
             }
+
+            // ============================================================
+            // AUTO CROP DETECTION — Extreme-point method on Sobel edge map
+            // ============================================================
+
+            function detectDocumentCorners(img, targetW, targetH) {
+                // Downscale for speed
+                const maxDim = 500;
+                let w = img.naturalWidth, h = img.naturalHeight;
+                const scale = Math.min(maxDim / w, maxDim / h, 1);
+                w = Math.round(w * scale);
+                h = Math.round(h * scale);
+
+                const c = document.createElement('canvas');
+                c.width = w; c.height = h;
+                const ctx = c.getContext('2d');
+                ctx.drawImage(img, 0, 0, w, h);
+
+                const imageData = ctx.getImageData(0, 0, w, h);
+                const px = imageData.data;
+
+                // Grayscale
+                const gray = new Float32Array(w * h);
+                for (let i = 0, p = 0; i < px.length; i += 4, p++) {
+                    gray[p] = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+                }
+
+                // Blur 2x for stable edges
+                let blurred = gaussianBlur3x3(gray, w, h);
+                blurred = gaussianBlur3x3(blurred, w, h);
+
+                // Sobel edge magnitude
+                const edge = new Float32Array(w * h);
+                let maxEdge = 0;
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        const i = y * w + x;
+                        const gx = -blurred[i - w - 1] - 2 * blurred[i - 1] - blurred[i + w - 1]
+                                 + blurred[i - w + 1] + 2 * blurred[i + 1] + blurred[i + w + 1];
+                        const gy = -blurred[i - w - 1] - 2 * blurred[i - w] - blurred[i - w + 1]
+                                 + blurred[i + w - 1] + 2 * blurred[i + w] + blurred[i + w + 1];
+                        const m = Math.sqrt(gx * gx + gy * gy);
+                        edge[i] = m;
+                        if (m > maxEdge) maxEdge = m;
+                    }
+                }
+
+                if (maxEdge < 1) return null;
+
+                // Threshold: 25% of max — robust enough to catch document borders
+                const thresh = maxEdge * 0.25;
+
+                // Find extreme points of edge map (ignore 1% margin at image border)
+                const margin = Math.max(2, Math.round(Math.min(w, h) * 0.01));
+                let tl = null, tr = null, br = null, bl = null;
+                let minSum = Infinity, maxDiff = -Infinity, maxSum = -Infinity, minDiff = Infinity;
+
+                for (let y = margin; y < h - margin; y++) {
+                    for (let x = margin; x < w - margin; x++) {
+                        if (edge[y * w + x] < thresh) continue;
+                        const s = x + y;
+                        const d = x - y;
+                        if (s < minSum) { minSum = s; tl = { x, y }; }
+                        if (d > maxDiff) { maxDiff = d; tr = { x, y }; }
+                        if (s > maxSum) { maxSum = s; br = { x, y }; }
+                        if (d < minDiff) { minDiff = d; bl = { x, y }; }
+                    }
+                }
+
+                if (!tl || !tr || !br || !bl) return null;
+
+                // Sanity check: quad should have reasonable area
+                const quadArea = Math.abs(
+                    (tl.x * tr.y - tr.x * tl.y) +
+                    (tr.x * br.y - br.x * tr.y) +
+                    (br.x * bl.y - bl.x * br.y) +
+                    (bl.x * tl.y - tl.x * bl.y)
+                ) / 2;
+                if (quadArea < w * h * 0.15) return null;
+
+                // Scale back to display coordinate system (targetW, targetH)
+                const scaleX = targetW / w;
+                const scaleY = targetH / h;
+                return [
+                    { x: tl.x * scaleX, y: tl.y * scaleY },
+                    { x: tr.x * scaleX, y: tr.y * scaleY },
+                    { x: br.x * scaleX, y: br.y * scaleY },
+                    { x: bl.x * scaleX, y: bl.y * scaleY }
+                ];
+            }
+
+            // ============================================================
+            // CROP MANUAL + PERSPECTIVE CORRECTION
+            // ============================================================
+
+            function activateCropMode(prefillCorners) {
+                if (!imageDataUrl || cropActive) return;
+
+                const scanned = scanFrame.querySelector('canvas:not(#cropCanvas)');
+                if (scanned) scanned.style.visibility = 'hidden';
+                previewImage.style.visibility = 'hidden';
+
+                const imgW = previewImage.naturalWidth;
+                const imgH = previewImage.naturalHeight;
+                if (!imgW || !imgH) return;
+
+                const frameW = scanFrame.clientWidth;
+                const frameH = Math.min(340, scanFrame.clientHeight || 340);
+                const ratio = Math.min(frameW / imgW, frameH / imgH);
+                const displayW = Math.round(imgW * ratio);
+                const displayH = Math.round(imgH * ratio);
+
+                cropCanvas.width = displayW;
+                cropCanvas.height = displayH;
+                cropCanvas.style.width = displayW + 'px';
+                cropCanvas.style.height = displayH + 'px';
+                cropCanvas.style.display = 'block';
+
+                cropCtx = cropCanvas.getContext('2d');
+                cropCtx.drawImage(previewImage, 0, 0, displayW, displayH);
+
+                cropDisplayScale = imgW / displayW;
+
+                if (prefillCorners && prefillCorners.length === 4) {
+                    // Prefill dengan hasil auto-detect (dalam display coords)
+                    cropCorners = prefillCorners.map(c => ({
+                        x: Math.max(0, Math.min(displayW, c.x)),
+                        y: Math.max(0, Math.min(displayH, c.y))
+                    }));
+                } else {
+                    // Default: 8% inset
+                    const pad = 0.08;
+                    cropCorners = [
+                        { x: displayW * pad,         y: displayH * pad },
+                        { x: displayW * (1 - pad),   y: displayH * pad },
+                        { x: displayW * (1 - pad),   y: displayH * (1 - pad) },
+                        { x: displayW * pad,         y: displayH * (1 - pad) }
+                    ];
+                }
+
+                cropActive = true;
+                cropHint.classList.add('active');
+                cropActions.classList.add('active');
+                btnCrop.disabled = true;
+                btnAutoCrop.disabled = true;
+
+                drawCropOverlay();
+            }
+
+            function deactivateCropMode(restore) {
+                cropActive = false;
+                cropCanvas.style.display = 'none';
+                cropHint.classList.remove('active');
+                cropActions.classList.remove('active');
+                btnCrop.disabled = false;
+                btnAutoCrop.disabled = false;
+
+                if (restore) {
+                    const scanned = scanFrame.querySelector('canvas:not(#cropCanvas)');
+                    if (scanned) scanned.style.visibility = 'visible';
+                    previewImage.style.visibility = 'visible';
+                }
+            }
+
+            function drawCropOverlay() {
+                const W = cropCanvas.width;
+                const H = cropCanvas.height;
+
+                cropCtx.clearRect(0, 0, W, H);
+                cropCtx.drawImage(previewImage, 0, 0, W, H);
+
+                cropCtx.save();
+                cropCtx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+                cropCtx.fillRect(0, 0, W, H);
+                cropCtx.globalCompositeOperation = 'destination-out';
+                cropCtx.beginPath();
+                cropCtx.moveTo(cropCorners[0].x, cropCorners[0].y);
+                cropCtx.lineTo(cropCorners[1].x, cropCorners[1].y);
+                cropCtx.lineTo(cropCorners[2].x, cropCorners[2].y);
+                cropCtx.lineTo(cropCorners[3].x, cropCorners[3].y);
+                cropCtx.closePath();
+                cropCtx.fill();
+                cropCtx.restore();
+
+                cropCtx.strokeStyle = '#42a5f5';
+                cropCtx.lineWidth = 2.5;
+                cropCtx.beginPath();
+                cropCtx.moveTo(cropCorners[0].x, cropCorners[0].y);
+                cropCtx.lineTo(cropCorners[1].x, cropCorners[1].y);
+                cropCtx.lineTo(cropCorners[2].x, cropCorners[2].y);
+                cropCtx.lineTo(cropCorners[3].x, cropCorners[3].y);
+                cropCtx.closePath();
+                cropCtx.stroke();
+
+                cropCtx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                cropCtx.lineWidth = 1.2;
+                for (let i = 1; i <= 2; i++) {
+                    const t = i / 3;
+                    const lt = { x: cropCorners[0].x + (cropCorners[1].x - cropCorners[0].x) * t,
+                                 y: cropCorners[0].y + (cropCorners[1].y - cropCorners[0].y) * t };
+                    const lb = { x: cropCorners[3].x + (cropCorners[2].x - cropCorners[3].x) * t,
+                                 y: cropCorners[3].y + (cropCorners[2].y - cropCorners[3].y) * t };
+                    cropCtx.beginPath();
+                    cropCtx.moveTo(lt.x, lt.y);
+                    cropCtx.lineTo(lb.x, lb.y);
+                    cropCtx.stroke();
+
+                    const lt2 = { x: cropCorners[0].x + (cropCorners[3].x - cropCorners[0].x) * t,
+                                  y: cropCorners[0].y + (cropCorners[3].y - cropCorners[0].y) * t };
+                    const rt = { x: cropCorners[1].x + (cropCorners[2].x - cropCorners[1].x) * t,
+                                 y: cropCorners[1].y + (cropCorners[2].y - cropCorners[1].y) * t };
+                    cropCtx.beginPath();
+                    cropCtx.moveTo(lt2.x, lt2.y);
+                    cropCtx.lineTo(rt.x, rt.y);
+                    cropCtx.stroke();
+                }
+
+                for (let i = 0; i < 4; i++) {
+                    const c = cropCorners[i];
+                    cropCtx.beginPath();
+                    cropCtx.arc(c.x, c.y, 16, 0, Math.PI * 2);
+                    cropCtx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                    cropCtx.fill();
+                    cropCtx.lineWidth = 3;
+                    cropCtx.strokeStyle = '#1a237e';
+                    cropCtx.stroke();
+
+                    cropCtx.beginPath();
+                    cropCtx.arc(c.x, c.y, 5, 0, Math.PI * 2);
+                    cropCtx.fillStyle = '#42a5f5';
+                    cropCtx.fill();
+                }
+            }
+
+            function getCanvasPointer(e) {
+                const rect = cropCanvas.getBoundingClientRect();
+                let clientX, clientY;
+                if (e.touches && e.touches.length) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else if (e.changedTouches && e.changedTouches.length) {
+                    clientX = e.changedTouches[0].clientX;
+                    clientY = e.changedTouches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+
+            function onPointerDown(e) {
+                if (!cropActive) return;
+                e.preventDefault();
+                const p = getCanvasPointer(e);
+                for (let i = 0; i < 4; i++) {
+                    const c = cropCorners[i];
+                    if (Math.hypot(c.x - p.x, c.y - p.y) < 28) {
+                        cropDraggingIdx = i;
+                        return;
+                    }
+                }
+            }
+
+            function onPointerMove(e) {
+                if (!cropActive || cropDraggingIdx < 0) return;
+                e.preventDefault();
+                const p = getCanvasPointer(e);
+                const W = cropCanvas.width, H = cropCanvas.height;
+                cropCorners[cropDraggingIdx].x = Math.max(0, Math.min(W, p.x));
+                cropCorners[cropDraggingIdx].y = Math.max(0, Math.min(H, p.y));
+                drawCropOverlay();
+            }
+
+            function onPointerUp() {
+                if (cropDraggingIdx >= 0) cropDraggingIdx = -1;
+            }
+
+            cropCanvas.addEventListener('mousedown', onPointerDown);
+            document.addEventListener('mousemove', onPointerMove);
+            document.addEventListener('mouseup', onPointerUp);
+            cropCanvas.addEventListener('touchstart', onPointerDown, { passive: false });
+            document.addEventListener('touchmove', onPointerMove, { passive: false });
+            document.addEventListener('touchend', onPointerUp);
+
+            function perspectiveTransform(srcImg, corners) {
+                const [tl, tr, br, bl] = corners;
+                const wTop = Math.hypot(tr.x - tl.x, tr.y - tl.y);
+                const wBot = Math.hypot(br.x - bl.x, br.y - bl.y);
+                const hLeft = Math.hypot(bl.x - tl.x, bl.y - tl.y);
+                const hRight = Math.hypot(br.x - tr.x, br.y - tr.y);
+                const outW = Math.round(Math.max(wTop, wBot));
+                const outH = Math.round(Math.max(hLeft, hRight));
+
+                const srcCanvas = document.createElement('canvas');
+                srcCanvas.width = srcImg.naturalWidth;
+                srcCanvas.height = srcImg.naturalHeight;
+                const srcCtx = srcCanvas.getContext('2d');
+                srcCtx.drawImage(srcImg, 0, 0);
+                const srcData = srcCtx.getImageData(0, 0, srcCanvas.width, srcCanvas.height).data;
+                const sw = srcCanvas.width, sh = srcCanvas.height;
+
+                const dx1 = tr.x - br.x;
+                const dx2 = bl.x - br.x;
+                const dx3 = tl.x - tr.x + br.x - bl.x;
+                const dy1 = tr.y - br.y;
+                const dy2 = bl.y - br.y;
+                const dy3 = tl.y - tr.y + br.y - bl.y;
+
+                let h11, h12, h13, h21, h22, h23, h31, h32;
+                if (Math.abs(dx3) < 1e-6 && Math.abs(dy3) < 1e-6) {
+                    h11 = tr.x - tl.x;  h12 = bl.x - tl.x;  h13 = tl.x;
+                    h21 = tr.y - tl.y;  h22 = bl.y - tl.y;  h23 = tl.y;
+                    h31 = 0;            h32 = 0;
+                } else {
+                    const denom = dx1 * dy2 - dx2 * dy1;
+                    h31 = (dx3 * dy2 - dx2 * dy3) / denom;
+                    h32 = (dx1 * dy3 - dx3 * dy1) / denom;
+                    h11 = tr.x - tl.x + h31 * tr.x;
+                    h12 = bl.x - tl.x + h32 * bl.x;
+                    h13 = tl.x;
+                    h21 = tr.y - tl.y + h31 * tr.y;
+                    h22 = bl.y - tl.y + h32 * bl.y;
+                    h23 = tl.y;
+                }
+
+                const outCanvas = document.createElement('canvas');
+                outCanvas.width = outW;
+                outCanvas.height = outH;
+                const outCtx = outCanvas.getContext('2d');
+                const outImg = outCtx.createImageData(outW, outH);
+                const outPx = outImg.data;
+
+                for (let oy = 0; oy < outH; oy++) {
+                    const v = oy / (outH - 1 || 1);
+                    for (let ox = 0; ox < outW; ox++) {
+                        const u = ox / (outW - 1 || 1);
+                        const w = h31 * u + h32 * v + 1;
+                        const sx = (h11 * u + h12 * v + h13) / w;
+                        const sy = (h21 * u + h22 * v + h23) / w;
+
+                        const oi = (oy * outW + ox) * 4;
+                        if (sx >= 0 && sx < sw - 1 && sy >= 0 && sy < sh - 1) {
+                            const x0 = Math.floor(sx);
+                            const y0 = Math.floor(sy);
+                            const fx = sx - x0;
+                            const fy = sy - y0;
+                            const i00 = (y0 * sw + x0) * 4;
+                            const i10 = (y0 * sw + x0 + 1) * 4;
+                            const i01 = ((y0 + 1) * sw + x0) * 4;
+                            const i11 = ((y0 + 1) * sw + x0 + 1) * 4;
+                            for (let c = 0; c < 3; c++) {
+                                const v00 = srcData[i00 + c];
+                                const v10 = srcData[i10 + c];
+                                const v01 = srcData[i01 + c];
+                                const v11 = srcData[i11 + c];
+                                const top = v00 + (v10 - v00) * fx;
+                                const bot = v01 + (v11 - v01) * fx;
+                                outPx[oi + c] = top + (bot - top) * fy;
+                            }
+                            outPx[oi + 3] = 255;
+                        } else {
+                            outPx[oi] = 255;
+                            outPx[oi + 1] = 255;
+                            outPx[oi + 2] = 255;
+                            outPx[oi + 3] = 255;
+                        }
+                    }
+                }
+                outCtx.putImageData(outImg, 0, 0);
+                return outCanvas;
+            }
+
+            // ===== TOMBOL CROP (manual) =====
+            btnCrop.addEventListener('click', () => {
+                if (!imageDataUrl) { alert('Unggah gambar dulu.'); return; }
+                activateCropMode(null);
+            });
+
+            // ===== TOMBOL AUTO CROP (auto-detect + crop overlay) =====
+            btnAutoCrop.addEventListener('click', () => {
+                if (!imageDataUrl) { alert('Unggah gambar dulu.'); return; }
+
+                // Tampilkan loading
+                const origHtml = btnAutoCrop.innerHTML;
+                btnAutoCrop.disabled = true;
+                btnAutoCrop.innerHTML = '<span class="spinner"></span> Deteksi...';
+
+                // Pastikan previewImage sudah loaded
+                const run = () => {
+                    const imgW = previewImage.naturalWidth;
+                    const imgH = previewImage.naturalHeight;
+                    if (!imgW || !imgH) {
+                        btnAutoCrop.disabled = false;
+                        btnAutoCrop.innerHTML = origHtml;
+                        alert('⚠️ Gambar belum siap. Tunggu sebentar lalu coba lagi.');
+                        return;
+                    }
+
+                    // Hitung display size (sama seperti di activateCropMode)
+                    const frameW = scanFrame.clientWidth;
+                    const frameH = Math.min(340, scanFrame.clientHeight || 340);
+                    const ratio = Math.min(frameW / imgW, frameH / imgH);
+                    const displayW = Math.round(imgW * ratio);
+                    const displayH = Math.round(imgH * ratio);
+
+                    // Jalankan deteksi
+                    const detected = detectDocumentCorners(previewImage, displayW, displayH);
+
+                    btnAutoCrop.disabled = false;
+                    btnAutoCrop.innerHTML = origHtml;
+
+                    if (!detected) {
+                        // Fallback: buka crop mode dengan default corners
+                        alert('ℹ️ Tepi dokumen tidak terdeteksi otomatis. Silakan geser titik sudut secara manual.');
+                        activateCropMode(null);
+                    } else {
+                        activateCropMode(detected);
+                    }
+                };
+
+                // Tunggu frame berikutnya untuk memastikan layout sudah settle
+                requestAnimationFrame(() => setTimeout(run, 20));
+            });
+
+            // ===== TOMBOL AUTO DI DALAM OVERLAY CROP =====
+            btnCropAutoInOverlay.addEventListener('click', () => {
+                if (!cropActive) return;
+                const origHtml = btnCropAutoInOverlay.innerHTML;
+                btnCropAutoInOverlay.disabled = true;
+                btnCropAutoInOverlay.innerHTML = '<span class="spinner"></span>';
+
+                setTimeout(() => {
+                    const W = cropCanvas.width, H = cropCanvas.height;
+                    const detected = detectDocumentCorners(previewImage, W, H);
+                    btnCropAutoInOverlay.disabled = false;
+                    btnCropAutoInOverlay.innerHTML = origHtml;
+
+                    if (detected) {
+                        cropCorners = detected.map(c => ({
+                            x: Math.max(0, Math.min(W, c.x)),
+                            y: Math.max(0, Math.min(H, c.y))
+                        }));
+                        drawCropOverlay();
+                    } else {
+                        alert('ℹ️ Tepi dokumen tidak terdeteksi. Geser titik sudut secara manual.');
+                    }
+                }, 20);
+            });
+
+            btnCropCancel.addEventListener('click', () => {
+                deactivateCropMode(true);
+            });
+
+            btnCropApply.addEventListener('click', () => {
+                if (!cropActive) return;
+                const s = cropDisplayScale;
+                const srcCorners = cropCorners.map(c => ({ x: c.x * s, y: c.y * s }));
+                const resultCanvas = perspectiveTransform(previewImage, srcCorners);
+                const newDataUrl = resultCanvas.toDataURL('image/png');
+                deactivateCropMode(false);
+                setTimeout(() => {
+                    loadImageFromDataURL(newDataUrl);
+                }, 50);
+            });
 
             // ============= UPLOAD =============
             function loadImageFromDataURL(dataUrl) {
                 imageDataUrl = dataUrl;
+                cropActive = false;
+                cropCanvas.style.display = 'none';
+                cropHint.classList.remove('active');
+                cropActions.classList.remove('active');
+                btnCrop.disabled = false;
+                btnAutoCrop.disabled = false;
+
                 previewImage.src = dataUrl;
+                previewImage.style.visibility = 'visible';
                 previewImage.style.display = 'block';
-                const old = scanFrame.querySelector('canvas');
+                const old = scanFrame.querySelector('canvas:not(#cropCanvas)');
                 if (old) old.remove();
                 previewSection.classList.add('active');
                 scannedCanvas = null;
-                originalColorData = null;
                 btnPNG.disabled = true;
                 btnPDF.disabled = true;
                 btnSaveHistory.disabled = true;
                 scanLine.classList.remove('active');
                 uploadZone.style.display = 'none';
-                thresholdControl.style.display = 'none';
-                modeControl.style.display = 'none';
+                modeControl.style.display = 'flex';
                 btnScan.disabled = false;
-                btnScan.innerHTML = '<i class="fas fa-camera"></i> Scan + OCR';
-                lastOCRText = '';
+                btnScan.innerHTML = '<i class="fas fa-camera"></i> Scan';
                 hideAIResult();
-                hideAIImage();
 
-                const img = new Image();
-                img.onload = function() {
-                    const tempCanvas = document.createElement('canvas');
-                    const ctx = tempCanvas.getContext('2d');
-                    let w = img.width, h = img.height;
-                    const maxDim = 1400;
-                    if (w > maxDim || h > maxDim) {
-                        const ratio = Math.min(maxDim / w, maxDim / h);
-                        w = Math.round(w * ratio);
-                        h = Math.round(h * ratio);
-                    }
-                    tempCanvas.width = w; tempCanvas.height = h;
-                    ctx.drawImage(img, 0, 0, w, h);
-                    const imageData = ctx.getImageData(0, 0, w, h);
-                    originalColorData = new ImageData(new Uint8ClampedArray(imageData.data), w, h);
-                    canvasWidth = w; canvasHeight = h;
-                    modeControl.style.display = 'flex';
-                    thresholdControl.style.display = 'flex';
-                    const mode = modeColor.checked ? 'color' : 'bw';
-                    const th = parseInt(thresholdSlider.value, 10);
-                    thresholdValue.textContent = th;
-                    // Preview awal (tanpa OCR)
-                    processScan(th, mode);
-                };
-                img.src = dataUrl;
+                processScan();
             }
 
             function handleFile(file) {
@@ -606,57 +1074,13 @@
                 fileInput.value = '';
             });
 
-            // =============================================
-            // TOMBOL SCAN — sekarang otomatis OCR
-            // =============================================
-            btnScan.addEventListener('click', async () => {
-                if (!originalColorData || isScanning || isProcessing) return;
-                isScanning = true;
-                btnScan.disabled = true;
-                btnScan.innerHTML = '<span class="spinner"></span> Memproses...';
-                scanLine.classList.add('active');
+            btnScan.addEventListener('click', processScan);
 
-                const mode = modeColor.checked ? 'color' : 'bw';
-                const th = parseInt(thresholdSlider.value, 10);
-
-                // 1. Proses scan (tunggu sampai selesai)
-                await new Promise(resolve => processScan(th, mode, resolve));
-
-                scanLine.classList.remove('active');
-
-                // 2. Lanjut OCR otomatis
-                if (typeof window.LensCore === 'undefined') {
-                    btnScan.innerHTML = '<i class="fas fa-camera"></i> Scan Ulang';
-                    btnScan.disabled = false;
-                    isScanning = false;
-                    return;
-                }
-
-                btnScan.innerHTML = '<span class="spinner"></span> OCR...';
-                await runOCR(true);
-
-                btnScan.disabled = false;
-                btnScan.innerHTML = '<i class="fas fa-camera"></i> Scan Ulang';
-                isScanning = false;
-            });
-
-            // Mode/threshold berubah — hanya scan ulang tanpa OCR
-            modeBW.addEventListener('change', function() {
-                if (this.checked && originalColorData && !isProcessing && !isScanning) {
-                    processScan(parseInt(thresholdSlider.value, 10), 'bw');
-                }
-            });
             modeColor.addEventListener('change', function() {
-                if (this.checked && originalColorData && !isProcessing && !isScanning) {
-                    processScan(thresholdSlider.value, 'color');
-                }
+                if (this.checked && imageDataUrl && !isProcessing) processScan();
             });
-            thresholdSlider.addEventListener('input', function() {
-                const val = this.value;
-                thresholdValue.textContent = val;
-                if (originalColorData && !isProcessing && !isScanning && modeBW.checked) {
-                    processScan(parseInt(val, 10), 'bw');
-                }
+            modeBW.addEventListener('change', function() {
+                if (this.checked && imageDataUrl && !isProcessing) processScan();
             });
 
             btnPNG.addEventListener('click', () => {
@@ -689,9 +1113,8 @@
             });
 
             // =============================================
-            // AI FEATURES
+            // OCR + KETIK ULANG DOKUMEN (Tesseract.js)
             // =============================================
-
             function setAILoading(btn, loadingText) {
                 btn.disabled = true;
                 if (!btn.dataset.origHtml) btn.dataset.origHtml = btn.innerHTML;
@@ -705,145 +1128,10 @@
                 }
             }
 
-            function prepareImageForAI(dataUrl, maxDim = 1024, quality = 0.82) {
-                return new Promise((resolve) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        let w = img.width, h = img.height;
-                        if (w > maxDim || h > maxDim) {
-                            const r = Math.min(maxDim / w, maxDim / h);
-                            w = Math.round(w * r);
-                            h = Math.round(h * r);
-                        }
-                        const c = document.createElement('canvas');
-                        c.width = w; c.height = h;
-                        const ctx = c.getContext('2d');
-                        ctx.fillStyle = '#ffffff';
-                        ctx.fillRect(0, 0, w, h);
-                        ctx.drawImage(img, 0, 0, w, h);
-                        try { resolve(c.toDataURL('image/jpeg', quality)); }
-                        catch (e) { resolve(dataUrl); }
-                    };
-                    img.onerror = () => resolve(dataUrl);
-                    img.src = dataUrl;
-                });
-            }
-
-            function padImageWhite(dataUrl, padPercent = 0.25, quality = 0.9) {
-                return new Promise((resolve) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const padX = Math.round(img.width * padPercent);
-                        const padY = Math.round(img.height * padPercent);
-                        const c = document.createElement('canvas');
-                        c.width = img.width + padX * 2;
-                        c.height = img.height + padY * 2;
-                        const ctx = c.getContext('2d');
-                        ctx.fillStyle = '#ffffff';
-                        ctx.fillRect(0, 0, c.width, c.height);
-                        ctx.drawImage(img, padX, padY);
-                        try { resolve(c.toDataURL('image/jpeg', quality)); }
-                        catch (e) { resolve(dataUrl); }
-                    };
-                    img.onerror = () => resolve(dataUrl);
-                    img.src = dataUrl;
-                });
-            }
-
-            function autoTrimWhiteBorder(src, tolerance = 0.03) {
-                return new Promise((resolve) => {
-                    const img = new Image();
-                    img.crossOrigin = 'anonymous';
-                    img.onload = () => {
-                        const c = document.createElement('canvas');
-                        c.width = img.width; c.height = img.height;
-                        const ctx = c.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        let data;
-                        try { data = ctx.getImageData(0, 0, c.width, c.height).data; }
-                        catch (e) { resolve(src); return; }
-
-                        const isWhite = (x, y) => {
-                            const i = (y * c.width + x) * 4;
-                            return data[i] > 240 && data[i + 1] > 240 && data[i + 2] > 240;
-                        };
-
-                        let top = 0, bottom = c.height - 1, left = 0, right = c.width - 1;
-                        outer1: for (; top < c.height; top++) {
-                            for (let x = 0; x < c.width; x++) if (!isWhite(x, top)) break outer1;
-                        }
-                        outer2: for (; bottom > top; bottom--) {
-                            for (let x = 0; x < c.width; x++) if (!isWhite(x, bottom)) break outer2;
-                        }
-                        outer3: for (; left < c.width; left++) {
-                            for (let y = top; y <= bottom; y++) if (!isWhite(left, y)) break outer3;
-                        }
-                        outer4: for (; right > left; right--) {
-                            for (let y = top; y <= bottom; y++) if (!isWhite(right, y)) break outer4;
-                        }
-
-                        const pad = Math.round(Math.min(c.width, c.height) * tolerance);
-                        top = Math.max(0, top - pad);
-                        bottom = Math.min(c.height - 1, bottom + pad);
-                        left = Math.max(0, left - pad);
-                        right = Math.min(c.width - 1, right + pad);
-
-                        const w = right - left + 1;
-                        const h = bottom - top + 1;
-                        if (w < 10 || h < 10) { resolve(src); return; }
-
-                        const out = document.createElement('canvas');
-                        out.width = w; out.height = h;
-                        out.getContext('2d').drawImage(c, left, top, w, h, 0, 0, w, h);
-                        resolve(out.toDataURL('image/png'));
-                    };
-                    img.onerror = () => resolve(src);
-                    img.src = src;
-                });
-            }
-
-            function fitToA4(src, mode = 'contain') {
-                return new Promise((resolve) => {
-                    const img = new Image();
-                    img.crossOrigin = 'anonymous';
-                    img.onload = () => {
-                        const A4_W = 1240;
-                        const A4_H = 1754;
-                        const c = document.createElement('canvas');
-                        c.width = A4_W; c.height = A4_H;
-                        const ctx = c.getContext('2d');
-                        ctx.fillStyle = '#ffffff';
-                        ctx.fillRect(0, 0, A4_W, A4_H);
-
-                        let w, h, x, y;
-                        if (mode === 'cover') {
-                            const scale = Math.max(A4_W / img.width, A4_H / img.height);
-                            w = img.width * scale;
-                            h = img.height * scale;
-                        } else {
-                            const scale = Math.min(A4_W / img.width, A4_H / img.height);
-                            w = img.width * scale;
-                            h = img.height * scale;
-                        }
-                        x = (A4_W - w) / 2;
-                        y = (A4_H - h) / 2;
-                        ctx.drawImage(img, x, y, w, h);
-                        resolve(c.toDataURL('image/png'));
-                    };
-                    img.onerror = () => resolve(src);
-                    img.src = src;
-                });
-            }
-
             function formatAIError(err) {
                 if (!err) return 'Error tidak diketahui';
                 if (typeof err === 'string') return err;
                 if (err.message) return err.message;
-                if (err.error) {
-                    if (typeof err.error === 'string') return err.error;
-                    if (err.error.message) return err.error.message;
-                    try { return JSON.stringify(err.error); } catch (e) {}
-                }
                 try { return JSON.stringify(err); } catch (e) { return String(err); }
             }
 
@@ -856,120 +1144,165 @@
                 aiResult.classList.remove('active');
                 aiResultBody.textContent = '';
             }
-            function showAIImage(src) {
-                aiGeneratedSrc = src;
-                aiGeneratedImg.src = src;
-                aiImageResult.classList.add('active');
-            }
-            function hideAIImage() {
-                aiImageResult.classList.remove('active');
-                aiGeneratedImg.src = '';
-                aiGeneratedSrc = null;
-            }
 
-            // ===== FUNGSI OCR REUSABLE =====
-            async function runOCR(silent = false) {
-                if (!imageDataUrl) {
-                    if (!silent) alert('Unggah gambar dulu.');
-                    return false;
+            function extractLines(data) {
+                const lines = [];
+                if (!data) return lines;
+                const blocks = data.blocks || [];
+                for (const block of blocks) {
+                    const paragraphs = block.paragraphs || [];
+                    for (const para of paragraphs) {
+                        const paraLines = para.lines || [];
+                        for (const line of paraLines) {
+                            const words = (line.words || []).filter(w =>
+                                w.text && w.text.trim().length > 0 &&
+                                (w.confidence == null || w.confidence > 30)
+                            );
+                            if (words.length) lines.push(words);
+                        }
+                    }
                 }
-                if (typeof window.LensCore === 'undefined') {
-                    if (!silent) alert('⚠️ Chrome Lens OCR belum siap. Tunggu sebentar lalu muat ulang halaman.');
-                    return false;
+                if (lines.length === 0 && Array.isArray(data.words)) {
+                    const validWords = data.words.filter(w =>
+                        w.text && w.text.trim().length > 0 &&
+                        (w.confidence == null || w.confidence > 30)
+                    );
+                    const groups = [];
+                    for (const w of validWords) {
+                        const b = w.bbox;
+                        const cy = (b.y0 + b.y1) / 2;
+                        const h = Math.max(1, b.y1 - b.y0);
+                        let placed = false;
+                        for (const g of groups) {
+                            if (Math.abs(g.cy - cy) < h * 0.6) {
+                                g.sum += cy;
+                                g.words.push(w);
+                                g.cy = g.sum / g.words.length;
+                                placed = true;
+                                break;
+                            }
+                        }
+                        if (!placed) groups.push({ cy, sum: cy, words: [w] });
+                    }
+                    groups.sort((a, b) => a.cy - b.cy);
+                    for (const g of groups) {
+                        g.words.sort((a, b) => a.bbox.x0 - b.bbox.x0);
+                        lines.push(g.words);
+                    }
                 }
+                return lines;
+            }
 
-                try {
-                    // 1. Konversi data URL ke Uint8Array
-                    const response = await fetch(imageDataUrl);
-                    const buffer = await response.arrayBuffer();
-                    const uint8Array = new Uint8Array(buffer);
-
-                    // 2. Dapatkan dimensi original gambar
+            function retypeDocument(src, lines) {
+                return new Promise((resolve) => {
                     const img = new Image();
-                    const dims = await new Promise((resolve) => {
-                        img.onload = () => resolve([img.naturalWidth, img.naturalHeight]);
-                        img.onerror = () => resolve([1, 1]);
-                        img.src = imageDataUrl;
-                    });
-
-                    // 3. Ekstrak MIME type
-                    const mimeMatch = imageDataUrl.match(/^data:(image\/\w+);base64,/);
-                    const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
-
-                    // 4. Jalankan OCR
-                    const lens = new window.LensCore();
-                    const result = await lens.scanByData(uint8Array, mimeType, dims);
-
-                    // 5. Ambil teks
-                    const text = (result.segments || []).map(seg => seg.text).join('\n').trim();
-                    lastOCRText = text;
-
-                    showAIResult('Hasil OCR (otomatis)', text || '(Tidak ada teks yang terdeteksi)');
-                    return true;
-                } catch (err) {
-                    console.error('Chrome Lens OCR error:', err);
-                    if (!silent) alert('❌ OCR gagal: ' + formatAIError(err));
-                    return false;
-                }
+                    img.onload = () => {
+                        const W = img.width, H = img.height;
+                        const canvas = document.createElement('canvas');
+                        canvas.width = W; canvas.height = H;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        ctx.fillStyle = '#ffffff';
+                        for (const line of lines) {
+                            for (const word of line) {
+                                const b = word.bbox;
+                                const bw = b.x1 - b.x0;
+                                const bh = b.y1 - b.y0;
+                                const padX = Math.max(1, bw * 0.04);
+                                const padY = Math.max(1, bh * 0.18);
+                                ctx.fillRect(b.x0 - padX, b.y0 - padY, bw + padX * 2, bh + padY * 2);
+                            }
+                        }
+                        ctx.fillStyle = '#111111';
+                        ctx.textBaseline = 'middle';
+                        ctx.textAlign = 'left';
+                        for (const line of lines) {
+                            for (const word of line) {
+                                const b = word.bbox;
+                                const bw = Math.max(1, b.x1 - b.x0);
+                                const bh = Math.max(1, b.y1 - b.y0);
+                                let fontSize = Math.max(9, Math.round(bh * 0.92));
+                                let fontFamily = 'Arial, "Helvetica Neue", Helvetica, sans-serif';
+                                ctx.font = `500 ${fontSize}px ${fontFamily}`;
+                                const measured = ctx.measureText(word.text).width;
+                                if (measured > 0 && measured > bw * 1.08) {
+                                    const scale = (bw * 1.05) / measured;
+                                    fontSize = Math.max(7, Math.round(fontSize * scale));
+                                    ctx.font = `500 ${fontSize}px ${fontFamily}`;
+                                }
+                                const cy = b.y0 + bh / 2;
+                                ctx.fillText(word.text, b.x0, cy);
+                            }
+                        }
+                        try { resolve(canvas.toDataURL('image/png')); }
+                        catch (e) { resolve(null); }
+                    };
+                    img.onerror = () => resolve(null);
+                    img.src = src;
+                });
             }
 
-            // ===== Tombol OCR Ulang (manual) =====
             btnAIOCR.addEventListener('click', async () => {
                 if (!imageDataUrl) { alert('Unggah gambar dulu.'); return; }
-                setAILoading(btnAIOCR, 'OCR membaca...');
-                await runOCR(false);
-                resetAILoading(btnAIOCR);
-            });
-
-            // ===== AI Enhance (Puter.js) =====
-            btnAIEnhance.addEventListener('click', async () => {
-                if (!imageDataUrl) { alert('Unggah gambar dulu.'); return; }
-                if (typeof puter === 'undefined' || !puter.ai) {
-                    alert('⚠️ Puter.js belum siap untuk AI Enhance. Periksa koneksi internet Anda.');
+                if (typeof Tesseract === 'undefined') {
+                    alert('⚠️ Tesseract.js belum siap. Periksa koneksi internet lalu muat ulang halaman.');
                     return;
                 }
+                if (!btnAIOCR.dataset.origHtml) btnAIOCR.dataset.origHtml = btnAIOCR.innerHTML;
+                btnAIOCR.disabled = true;
+                btnAIOCR.innerHTML = '<span class="spinner"></span> Memuat OCR...';
 
-                setAILoading(btnAIEnhance, 'AI memperbaiki dokumen...');
+                let worker = null;
                 try {
-                    const smallImg = await prepareImageForAI(imageDataUrl, 1400, 0.9);
-                    const paddedImg = await padImageWhite(smallImg, 0.25, 0.9);
-                    const base64Payload = paddedImg.split(',')[1];
-
-                    const aspect = canvasWidth && canvasHeight ? canvasWidth / canvasHeight : 1;
-                    const outputSize = aspect > 1.15 ? '1536x1024' : '1024x1536';
-
-                    const prompt =
-                        'This image shows a document positioned in the CENTER of a large white canvas, ' +
-                        'with generous white space on ALL FOUR SIDES around the document. ' +
-                        'Clean up the document: remove shadows and stains, boost contrast so text is crisp black on white paper, ' +
-                        'sharpen text edges, and gently straighten any slight skew. ' +
-                        'CRITICAL RULES: ' +
-                        '(1) The entire document must remain in the CENTER, fully visible — every edge, corner, margin, and line must remain. ' +
-                        '(2) Do NOT crop, zoom, pan, or cut off any part of the document. ' +
-                        '(3) Do NOT change, add, remove, translate, or reword any text, number, logo, or signature. ' +
-                        '(4) Preserve the exact layout, position, and proportions of all elements inside the document. ' +
-                        '(5) Keep the large white space on all four sides — the document must NOT touch the image edges. ' +
-                        'Output the same document in the same center position, same framing, just cleaned up like a professional scan.';
-
-                    const imgElement = await puter.ai.txt2img(prompt, {
-                        model: 'openai/gpt-image-1-mini',
-                        quality: 'high',
-                        size: outputSize,
-                        input_image: base64Payload,
-                        input_image_mime_type: 'image/jpeg'
+                    worker = await Tesseract.createWorker(['ind', 'eng'], 1, {
+                        logger: m => {
+                            if (m.status === 'recognizing text') {
+                                const pct = Math.round((m.progress || 0) * 100);
+                                btnAIOCR.innerHTML = `<span class="spinner"></span> OCR ${pct}%`;
+                            } else if (m.status && m.progress !== undefined) {
+                                btnAIOCR.innerHTML = `<span class="spinner"></span> ${m.status}...`;
+                            }
+                        }
                     });
+                    const { data } = await worker.recognize(imageDataUrl);
+                    await worker.terminate();
+                    worker = null;
+                    const lines = extractLines(data);
+                    let retypedSrc = null;
+                    if (lines.length) {
+                        btnAIOCR.innerHTML = '<span class="spinner"></span> Mengetik ulang dokumen...';
+                        retypedSrc = await retypeDocument(imageDataUrl, lines);
+                    }
+                    const text = (data.text || '').trim();
+                    showAIResult('Hasil Ketik Ulang Dokumen',
+                        text || '(Tidak ada teks yang terdeteksi)');
 
-                    if (!imgElement || !imgElement.src) throw new Error('AI tidak mengembalikan gambar.');
-
-                    const trimmed = await autoTrimWhiteBorder(imgElement.src, 0.03);
-                    const a4Src = await fitToA4(trimmed, 'contain');
-
-                    showAIImage(a4Src);
+                    if (retypedSrc) {
+                        previewImage.style.display = 'none';
+                        const oldCanvas = scanFrame.querySelector('canvas:not(#cropCanvas)');
+                        if (oldCanvas) oldCanvas.remove();
+                        const outImg = new Image();
+                        outImg.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = outImg.width;
+                            canvas.height = outImg.height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(outImg, 0, 0);
+                            canvas.style.maxWidth = '100%';
+                            canvas.style.maxHeight = '340px';
+                            canvas.style.borderRadius = '12px';
+                            canvas.style.position = 'relative';
+                            scanFrame.insertBefore(canvas, cropCanvas);
+                            scannedCanvas = canvas;
+                        };
+                        outImg.src = retypedSrc;
+                    }
                 } catch (err) {
-                    console.error('AI Enhance error:', err);
-                    alert('❌ AI Enhance gagal: ' + formatAIError(err));
+                    console.error('OCR error:', err);
+                    alert('❌ OCR gagal: ' + formatAIError(err));
                 } finally {
-                    resetAILoading(btnAIEnhance);
+                    if (worker) { try { await worker.terminate(); } catch (e) {} }
+                    resetAILoading(btnAIOCR);
                 }
             });
 
@@ -1001,21 +1334,6 @@
                 setTimeout(() => URL.revokeObjectURL(url), 1000);
             });
 
-            btnUseAIImage.addEventListener('click', () => {
-                if (!aiGeneratedSrc) return;
-                loadImageFromDataURL(aiGeneratedSrc);
-                hideAIImage();
-                document.getElementById('appContent').scrollTop = 0;
-            });
-
-            btnDownloadAIImage.addEventListener('click', () => {
-                if (!aiGeneratedSrc) return;
-                const link = document.createElement('a');
-                link.href = aiGeneratedSrc;
-                link.download = `ai_scan_${Date.now()}.png`;
-                link.click();
-            });
-
             // ============= INDEXEDDB =============
             const DB_NAME = 'ScanKuDB';
             const STORE_NAME = 'history';
@@ -1035,7 +1353,7 @@
                 });
             }
 
-            function saveHistoryItem(originalDataUrl, scannedDataUrl, mode, ocrText) {
+            function saveHistoryItem(originalDataUrl, scannedDataUrl, mode) {
                 return new Promise((resolve, reject) => {
                     if (!db) { reject('DB not open'); return; }
                     const tx = db.transaction(STORE_NAME, 'readwrite');
@@ -1044,7 +1362,6 @@
                         original: originalDataUrl,
                         scanned: scannedDataUrl,
                         mode: mode,
-                        ocrText: ocrText || '',
                         timestamp: new Date().toISOString()
                     };
                     const request = store.add(item);
@@ -1108,7 +1425,6 @@
                     items.forEach(item => {
                         const div = document.createElement('div');
                         div.className = 'history-item';
-
                         const dateObj = new Date(item.timestamp);
                         const dateStr = dateObj.toLocaleDateString('id-ID', {
                             day: 'numeric', month: 'short', year: 'numeric'
@@ -1116,10 +1432,8 @@
                         const timeStr = dateObj.toLocaleTimeString('id-ID', {
                             hour: '2-digit', minute: '2-digit'
                         });
-
                         const modeLabel = item.mode === 'color' ? 'Berwarna' : 'Hitam-Putih';
                         const modeDot = item.mode === 'color' ? 'color' : '';
-                        const hasOCR = item.ocrText && item.ocrText.length > 0;
 
                         div.innerHTML = `
                             <div class="thumb">
@@ -1130,16 +1444,12 @@
                                 <div class="title">
                                     <span class="dot ${modeDot}"></span>
                                     ${modeLabel}
-                                    ${hasOCR ? ' <i class="fas fa-font" style="font-size:10px;color:#8e24aa;" title="Ada teks OCR"></i>' : ''}
                                 </div>
                                 <div class="date">
                                     <i class="fas fa-calendar-alt"></i> ${dateStr} · ${timeStr}
                                 </div>
                             </div>
                             <div class="actions">
-                                ${hasOCR ? `<button class="ocr-btn" data-id="${item.id}" title="Lihat Teks OCR">
-                                    <i class="fas fa-font"></i>
-                                </button>` : ''}
                                 <button class="view-btn" data-id="${item.id}" title="Lihat di Beranda">
                                     <i class="fas fa-eye"></i>
                                 </button>
@@ -1153,21 +1463,6 @@
                         `;
 
                         historyList.appendChild(div);
-
-                        const ocrBtn = div.querySelector('.ocr-btn');
-                        if (ocrBtn) {
-                            ocrBtn.addEventListener('click', function() {
-                                const id = parseInt(this.dataset.id);
-                                const found = items.find(i => i.id === id);
-                                if (found && found.ocrText) {
-                                    showPage('home');
-                                    showAIResult('Hasil OCR (dari riwayat)', found.ocrText);
-                                    setTimeout(() => {
-                                        aiResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                                    }, 200);
-                                }
-                            });
-                        }
 
                         div.querySelector('.view-btn').addEventListener('click', function() {
                             const id = parseInt(this.dataset.id);
@@ -1207,8 +1502,8 @@
                 try {
                     const scannedDataUrl = scannedCanvas.toDataURL('image/png');
                     const mode = modeColor.checked ? 'color' : 'bw';
-                    await saveHistoryItem(imageDataUrl, scannedDataUrl, mode, lastOCRText);
-                    alert('✅ Tersimpan ke riwayat!' + (lastOCRText ? '\n(Termasuk teks OCR)' : ''));
+                    await saveHistoryItem(imageDataUrl, scannedDataUrl, mode);
+                    alert('✅ Tersimpan ke riwayat!');
                     btnSaveHistory.disabled = true;
                     if (document.getElementById('pageHistory').classList.contains('active')) {
                         renderHistory();
@@ -1318,36 +1613,38 @@
             // ============= RESET =============
             btnReset.addEventListener('click', () => {
                 imageDataUrl = null;
-                originalColorData = null;
                 scannedCanvas = null;
-                isScanning = false;
                 isProcessing = false;
-                lastOCRText = '';
+                cropActive = false;
+                cropCanvas.style.display = 'none';
+                cropHint.classList.remove('active');
+                cropActions.classList.remove('active');
                 previewImage.style.display = 'block';
+                previewImage.style.visibility = 'visible';
                 previewImage.src = '';
-                const old = scanFrame.querySelector('canvas');
+                const old = scanFrame.querySelector('canvas:not(#cropCanvas)');
                 if (old) old.remove();
                 previewSection.classList.remove('active');
                 uploadZone.style.display = 'block';
                 scanLine.classList.remove('active');
-                thresholdControl.style.display = 'none';
                 modeControl.style.display = 'none';
                 btnScan.disabled = false;
-                btnScan.innerHTML = '<i class="fas fa-camera"></i> Scan + OCR';
+                btnScan.innerHTML = '<i class="fas fa-camera"></i> Scan';
                 btnPNG.disabled = true;
                 btnPDF.disabled = true;
                 btnSaveHistory.disabled = true;
+                btnCrop.disabled = false;
+                btnAutoCrop.disabled = false;
                 fileInput.value = '';
-                modeBW.checked = true;
+                modeColor.checked = true;
                 hideAIResult();
-                hideAIImage();
             });
 
             // ============= INIT =============
             (async function init() {
                 await openDB();
                 showPage('home');
-                console.log('📸 ScanKu Pro siap! Scan = Scan + OCR otomatis');
+                console.log('📸 ScanKu Pro siap! + Auto Crop (edge detection) + Manual Crop');
             })();
 
         })();
