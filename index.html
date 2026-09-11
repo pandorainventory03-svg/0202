@@ -703,8 +703,9 @@
                 });
             }
 
-            // ⭐ Padding putih di sekeliling gambar supaya AI tidak memotong tepi
-            function padImageWhite(dataUrl, padPercent = 0.10, quality = 0.9) {
+            // ⭐ BARU: Padding putih di sekeliling gambar
+            // supaya AI tidak memotong tepi dokumen
+            function padImageWhite(dataUrl, padPercent = 0.08, quality = 0.9) {
                 return new Promise((resolve) => {
                     const img = new Image();
                     img.onload = () => {
@@ -728,7 +729,7 @@
                 });
             }
 
-            // ⭐ Auto-crop border putih setelah AI selesai
+            // ⭐ BARU: Auto-crop border putih (hasil padding tadi)
             function autoTrimWhiteBorder(src, tolerance = 0.02) {
                 return new Promise((resolve) => {
                     const img = new Image();
@@ -782,6 +783,7 @@
                 });
             }
 
+            // Fit gambar ke rasio A4 (1240×1754)
             function fitToA4(src, mode = 'contain') {
                 return new Promise((resolve) => {
                     const img = new Image();
@@ -920,25 +922,25 @@
                 }
             });
 
-            // ===== AI Enhance (FIXED: padding + fallback model + A4) =====
+            // ===== AI Enhance (FIXED: anti-crop dengan padding + prompt tegas) =====
             btnAIEnhance.addEventListener('click', async () => {
                 if (!imageDataUrl) { alert('Unggah gambar dulu.'); return; }
                 if (!checkPuter()) return;
 
                 setAILoading(btnAIEnhance, 'AI memperbaiki dokumen...');
                 try {
-                    // 1. Resize
+                    // 1. Resize dulu
                     const smallImg = await prepareImageForAI(imageDataUrl, 1400, 0.9);
 
-                    // 2. Padding putih 10% supaya AI tidak potong tepi
-                    const paddedImg = await padImageWhite(smallImg, 0.10, 0.9);
+                    // 2. ⭐ Padding putih 8% di sekeliling → AI tidak akan memotong tepi
+                    const paddedImg = await padImageWhite(smallImg, 0.08, 0.9);
                     const base64Payload = paddedImg.split(',')[1];
 
-                    // 3. Ukuran output — portrait untuk dokumen
+                    // 3. Rasio output — selalu portrait untuk dokumen
                     const aspect = canvasWidth && canvasHeight ? canvasWidth / canvasHeight : 1;
                     const outputSize = aspect > 1.15 ? '1536x1024' : '1024x1536';
 
-                    // 4. Prompt tegas soal edge preservation
+                    // 4. Prompt lebih tegas soal edge preservation
                     const prompt =
                         'This image shows a document on a white background with white padding around all four edges. ' +
                         'Clean up the document: remove shadows and stains, boost contrast so text is crisp black on white paper, ' +
@@ -951,7 +953,7 @@
                         '(5) Keep the white padding around the document — the document must not touch the image edges. ' +
                         'Output the same document, same framing, just cleaned up like a professional scan.';
 
-                    // 5. Coba gpt-image-1 dulu, fallback ke mini
+                    // 5. Coba gpt-image-1 dulu (lebih patuh), fallback ke mini
                     let imgElement;
                     try {
                         imgElement = await puter.ai.txt2img(prompt, {
@@ -971,9 +973,10 @@
                             input_image_mime_type: 'image/jpeg'
                         });
                     }
+
                     if (!imgElement || !imgElement.src) throw new Error('AI tidak mengembalikan gambar.');
 
-                    // 6. Trim padding putih hasil AI
+                    // 6. Crop balik padding putih yang kita tambahkan tadi
                     const trimmed = await autoTrimWhiteBorder(imgElement.src, 0.02);
 
                     // 7. Render ke rasio A4
